@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizWheel – Drehen. Fragen. Gewinnen.</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --pink: #FF2D78;
+    --cyan: #00D4FF;
+    --gold: #FFD700;
+    --bg: #0A0A18;
+    --bg2: #0F0F22;
+    --bg3: #13132a;
+    --text: #ffffff;
+    --muted: #888;
+    --border: #1e1e40;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', Arial, sans-serif; overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 6vw;
+    background: rgba(10,10,24,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size:22px; font-weight:900; letter-spacing:2px; color:var(--text); text-decoration:none; }
+  .nav-logo span { color: var(--pink); }
+  .nav-links { display:flex; gap:32px; align-items:center; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; letter-spacing:1px; transition:color .2s; }
+  .nav-links a:hover { color:#fff; }
+  .nav-cta {
+    background: var(--pink); color:#fff; font-weight:700; font-size:14px;
+    letter-spacing:1px; padding:10px 24px; border-radius:6px;
+    text-decoration:none; transition: opacity .2s;
+  }
+  .nav-cta:hover { opacity:.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align: center; padding: 120px 6vw 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,45,120,.12) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-badge {
+    display:inline-block; background:rgba(255,45,120,.15); border:1px solid rgba(255,45,120,.4);
+    color:var(--pink); font-size:12px; font-weight:700; letter-spacing:3px;
+    padding:6px 18px; border-radius:20px; margin-bottom:28px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 92px); font-weight:900; line-height:1.05;
+    letter-spacing:-1px; margin-bottom:24px;
+    animation: fadeUp .6s ease .1s both;
+  }
+  .hero h1 .accent { color: var(--pink); }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 22px); color: var(--muted); max-width:640px;
+    line-height:1.6; margin-bottom:48px;
+    animation: fadeUp .6s ease .2s both;
+  }
+  .hero-sub strong { color:#fff; }
+  .hero-btns {
+    display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+    animation: fadeUp .6s ease .3s both;
+  }
+  .btn-primary {
+    background: var(--pink); color:#fff; font-weight:800; font-size:16px;
+    letter-spacing:1px; padding:16px 40px; border-radius:8px;
+    text-decoration:none; transition:transform .2s, opacity .2s;
+  }
+  .btn-primary:hover { transform:translateY(-2px); opacity:.9; }
+  .btn-secondary {
+    background: transparent; color:#fff; font-weight:700; font-size:15px;
+    letter-spacing:1px; padding:16px 32px; border-radius:8px;
+    border:1px solid var(--border); text-decoration:none;
+    transition:border-color .2s;
+  }
+  .btn-secondary:hover { border-color:var(--muted); }
+
+  /* WHEEL VISUAL */
+  .wheel-visual {
+    margin-top:64px; animation: fadeUp .8s ease .4s both;
+    position:relative;
+  }
+  .wheel-arrow {
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    font-size:36px; filter:drop-shadow(0 0 8px var(--pink));
+  }
+
+  /* TRUST BAR */
+  .trust-bar {
+    padding:24px 6vw; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; gap:48px; flex-wrap:wrap;
+    background:var(--bg2);
+  }
+  .trust-item { font-size:13px; color:var(--muted); letter-spacing:2px; font-weight:600; }
+  .trust-item span { color:#fff; }
+
+  /* SECTIONS */
+  section { padding: 100px 6vw; }
+  .section-label {
+    font-size:12px; color:var(--pink); letter-spacing:4px; font-weight:700;
+    text-transform:uppercase; margin-bottom:16px; text-align:center;
+  }
+  .section-title {
+    font-size:clamp(32px,4vw,52px); font-weight:900; text-align:center;
+    margin-bottom:16px; line-height:1.1;
+  }
+  .section-sub {
+    font-size:clamp(15px,1.6vw,18px); color:var(--muted); text-align:center;
+    max-width:560px; margin:0 auto 64px; line-height:1.6;
+  }
+
+  /* USE CASES */
+  .use-cases { background: var(--bg2); }
+  .cases-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px;
+    max-width:1100px; margin:0 auto;
+  }
+  .case-card {
+    background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+    padding:32px 28px; transition:border-color .3s, transform .3s;
+  }
+  .case-card:hover { border-color:var(--pink); transform:translateY(-4px); }
+  .case-icon { font-size:40px; margin-bottom:16px; }
+  .case-title { font-size:18px; font-weight:800; margin-bottom:10px; }
+  .case-text { font-size:14px; color:var(--muted); line-height:1.6; }
+
+  /* HOW IT WORKS */
+  .steps { display:flex; gap:0; max-width:900px; margin:0 auto; position:relative; }
+  .steps::before {
+    content:''; position:absolute; top:40px; left:calc(16.66% + 8px); right:calc(16.66% + 8px);
+    height:2px; background:linear-gradient(to right, var(--pink), var(--cyan));
+  }
+  .step { flex:1; text-align:center; padding:0 16px; }
+  .step-num {
+    width:80px; height:80px; border-radius:50%; margin:0 auto 20px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; font-weight:900; position:relative; z-index:1;
+  }
+  .step:nth-child(1) .step-num { background:var(--pink); }
+  .step:nth-child(2) .step-num { background:linear-gradient(135deg,var(--pink),var(--cyan)); }
+  .step:nth-child(3) .step-num { background:var(--cyan); color:#0A0A18; }
+  .step-title { font-size:18px; font-weight:800; margin-bottom:10px; }
+  .step-text { font-size:14px; color:var(--muted); line-height:1.6; }
+
+  /* FEATURES */
+  .features-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px;
+    max-width:1100px; margin:0 auto;
+  }
+  .feature-card {
+    background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+    padding:28px; display:flex; gap:20px; align-items:flex-start;
+  }
+  .feature-icon { font-size:32px; flex-shrink:0; }
+  .feature-title { font-size:16px; font-weight:800; margin-bottom:8px; }
+  .feature-text { font-size:14px; color:var(--muted); line-height:1.6; }
+
+  /* PRICING */
+  .pricing { background: var(--bg2); }
+  .pricing-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px;
+    max-width:900px; margin:0 auto;
+  }
+  .price-card {
+    background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+    padding:40px 32px; text-align:center; position:relative;
+  }
+  .price-card.featured { border-color:var(--pink); box-shadow:0 0 40px rgba(255,45,120,.15); }
+  .price-badge {
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    background:var(--pink); color:#fff; font-size:11px; font-weight:800;
+    letter-spacing:2px; padding:4px 16px; border-radius:20px; white-space:nowrap;
+  }
+  .price-name { font-size:14px; color:var(--muted); letter-spacing:3px; font-weight:600; margin-bottom:16px; }
+  .price-amount { font-size:52px; font-weight:900; line-height:1; margin-bottom:8px; }
+  .price-amount sup { font-size:24px; vertical-align:top; margin-top:12px; display:inline-block; }
+  .price-period { font-size:13px; color:var(--muted); margin-bottom:28px; }
+  .price-features { list-style:none; text-align:left; margin-bottom:32px; display:flex; flex-direction:column; gap:10px; }
+  .price-features li { font-size:14px; color:var(--muted); display:flex; gap:10px; align-items:flex-start; }
+  .price-features li::before { content:'✓'; color:var(--pink); font-weight:900; flex-shrink:0; }
+  .price-features li.out::before { content:'–'; color:#333; }
+  .price-features li.out { color:#444; }
+  .btn-plan {
+    display:block; width:100%; padding:14px; border-radius:8px; font-weight:800;
+    font-size:15px; letter-spacing:1px; text-decoration:none; text-align:center;
+    transition:opacity .2s; cursor:pointer;
+  }
+  .btn-plan:hover { opacity:.85; }
+  .btn-plan-primary { background:var(--pink); color:#fff; }
+  .btn-plan-outline { background:transparent; border:1px solid var(--border); color:var(--muted); }
+
+  /* EARLY ACCESS */
+  .early-access {
+    text-align:center;
+    background:radial-gradient(ellipse 100% 100% at 50% 100%, rgba(255,45,120,.1) 0%, transparent 70%);
+  }
+  .email-form { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:40px; }
+  .email-input {
+    background:var(--bg3); border:1px solid var(--border); color:#fff;
+    padding:14px 24px; border-radius:8px; font-size:15px; width:320px; max-width:100%;
+    outline:none; transition:border-color .2s;
+  }
+  .email-input:focus { border-color:var(--pink); }
+  .email-input::placeholder { color:var(--muted); }
+
+  /* FOOTER */
+  footer {
+    padding:40px 6vw; border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  }
+  .footer-logo { font-size:18px; font-weight:900; letter-spacing:2px; }
+  .footer-logo span { color:var(--pink); }
+  .footer-text { font-size:13px; color:var(--muted); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .reveal { opacity:0; transform:translateY(32px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Quiz<span>Wheel</span> 🎡</a>
+  <div class="nav-links">
+    <a href="#anwendungen">Anwendungen</a>
+    <a href="#so-funktionierts">Wie es funktioniert</a>
+    <a href="#preise">Preise</a>
+  </div>
+  <a href="#early-access" class="nav-cta">Früher Zugang</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🎡 DEMNÄCHST VERFÜGBAR</div>
+  <h1>Weniger vorbereiten.<br><span class="accent">Mehr begeistern.</span></h1>
+  <p class="hero-sub">
+    Erstelle interaktive Quiz-Erlebnisse für <strong>Schulen, Events, Messen, Familien</strong>
+    und vieles mehr – in wenigen Minuten fertig, überall spielbar.
+  </p>
+  <div class="hero-btns">
+    <a href="#early-access" class="btn-primary">🚀 Früher Zugang sichern</a>
+    <a href="#so-funktionierts" class="btn-secondary">Wie es funktioniert →</a>
+  </div>
+  <div class="wheel-visual">
+    <div class="wheel-arrow">▼</div>
+    <canvas id="hero-wheel" width="300" height="300"></canvas>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">🏫 <span>Schulen</span></div>
+  <div class="trust-item">🎉 <span>Firmen-Events</span></div>
+  <div class="trust-item">🏛️ <span>Ausstellungen</span></div>
+  <div class="trust-item">👨‍👩‍👧 <span>Familienabende</span></div>
+  <div class="trust-item">📣 <span>Werbung</span></div>
+  <div class="trust-item">🎭 <span>Shows</span></div>
+</div>
+
+<!-- USE CASES -->
+<section class="use-cases" id="anwendungen">
+  <div class="section-label">Für wen</div>
+  <h2 class="section-title">Ein Tool. <span style="color:var(--pink)">Unzählige Anlässe.</span></h2>
+  <p class="section-sub">QuizWheel passt sich jedem Rahmen an – vom Klassenzimmer bis zur Messe, vom Spieleabend bis zur Marken-Aktivierung.</p>
+  <div class="cases-grid">
+    <div class="case-card reveal">
+      <div class="case-icon">🏫</div>
+      <div class="case-title">Schulen & Bildung</div>
+      <p class="case-text">Unvergessliche Lektionen gestalten. Schülerinnen und Schüler treten in Teams gegeneinander an – das Rad hält die Spannung hoch.</p>
+    </div>
+    <div class="case-card reveal">
+      <div class="case-icon">🎉</div>
+      <div class="case-title">Firmen-Events</div>
+      <p class="case-text">Teambuilding, Firmenfeiern, Onboarding-Tage – QuizWheel bricht das Eis und bringt alle zusammen.</p>
+    </div>
+    <div class="case-card reveal">
+      <div class="case-icon">🏛️</div>
+      <div class="case-title">Messen & Ausstellungen</div>
+      <p class="case-text">Besucher an deinen Stand locken mit einem interaktiven Quiz. Aufmerksamkeit, die bleibt.</p>
+    </div>
+    <div class="case-card reveal">
+      <div class="case-icon">👨‍👩‍👧</div>
+      <div class="case-title">Familienabende</div>
+      <p class="case-text">Eigene Quizze für Geburtstage, Feiertage oder einfach einen lustigen Abend – jedes Thema, jedes Alter.</p>
+    </div>
+    <div class="case-card reveal">
+      <div class="case-icon">📣</div>
+      <div class="case-title">Marketing & Werbung</div>
+      <p class="case-text">Verwandle deine Marke in ein Spiel. Quizze rund um deine Produkte – Kunden spielen, Kunden merken sich.</p>
+    </div>
+    <div class="case-card reveal">
+      <div class="case-icon">🎭</div>
+      <div class="case-title">Shows & Quiz-Nights</div>
+      <p class="case-text">Pub-Quiz, Live-Shows, Vereinsabende – das drehende Rad erzeugt Dramatik, die kein statisches Quiz liefern kann.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="so-funktionierts">
+  <div class="section-label">Wie es funktioniert</div>
+  <h2 class="section-title">Fertig in <span style="color:var(--cyan)">3 Schritten.</span></h2>
+  <p class="section-sub">Keine Design-Kenntnisse nötig. Keine Installation. Einfach öffnen, ausfüllen, spielen.</p>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">✏️</div>
+      <div class="step-title">Erstellen</div>
+      <p class="step-text">Bis zu 6 Themen mit je 5 Fragen eingeben. Bilder, Audio oder Musik-Vorschau hinzufügen.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">🎡</div>
+      <div class="step-title">Drehen</div>
+      <p class="step-text">Das Rad wählt das nächste Thema zufällig. Spannung garantiert – jede einzelne Runde.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">🏆</div>
+      <div class="step-title">Gewinnen</div>
+      <p class="step-text">Punkte bleiben bis zum Schluss geheim. 3-2-1 Countdown – dann die dramatische Sieger-Enthüllung.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="background:var(--bg2)">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Alles was du <span style="color:var(--pink)">brauchst.</span></h2>
+  <p class="section-sub">Für den grossen Bildschirm gebaut – Beamer, TV, Monitor. Läuft in jedem Browser, auf jedem Gerät.</p>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">🎡</div>
+      <div>
+        <div class="feature-title">Animiertes Zufallsrad</div>
+        <p class="feature-text">Mit Ratschengeräusch und Sound-Effekten. Zufällige Themenwahl die echte Spannung erzeugt.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🖼️</div>
+      <div>
+        <div class="feature-title">Bilder, Audio & Video</div>
+        <p class="feature-text">Medien per Drag & Drop hinzufügen. Oder Musik-Vorschau direkt via iTunes-Suche laden.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🔒</div>
+      <div>
+        <div class="feature-title">Geheimer Spielstand</div>
+        <p class="feature-text">Punkte bleiben bis zum Finale verborgen. Dramatischer 3-2-1 Countdown vor der Sieger-Enthüllung.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">⚡</div>
+      <div>
+        <div class="feature-title">Gleichstand-Schätzfrage</div>
+        <p class="feature-text">Automatischer Tiebreaker bei Gleichstand. Beide Teams schätzen – wer am nächsten dran ist, gewinnt.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🌍</div>
+      <div>
+        <div class="feature-title">Überall einsetzbar</div>
+        <p class="feature-text">Keine Installation. Öffnet im Browser – Mac, Windows, iPad, Chromebook. Auf jeden Bildschirm projizierbar.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">💾</div>
+      <div>
+        <div class="feature-title">Automatisch gespeichert</div>
+        <p class="feature-text">Dein Quiz wird automatisch gespeichert. Genau dort weitermachen wo du aufgehört hast – jederzeit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="preise">
+  <div class="section-label">Preise</div>
+  <h2 class="section-title">Einfach. <span style="color:var(--gold)">Fair.</span></h2>
+  <p class="section-sub">Keine versteckten Kosten. Jederzeit kündbar. Für Einzelpersonen und Institutionen.</p>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="price-name">EINZELPERSON</div>
+      <div class="price-amount"><sup>CHF </sup>5</div>
+      <div class="price-period">pro Monat · jederzeit kündbar</div>
+      <ul class="price-features">
+        <li>Unbegrenzte Quizze</li>
+        <li>6 Themen mit je 5 Fragen</li>
+        <li>Bilder, Audio & Video</li>
+        <li>iTunes Musik-Vorschau</li>
+        <li class="out">Teamverwaltung</li>
+        <li class="out">Prioritäts-Support</li>
+      </ul>
+      <a href="#early-access" class="btn-plan btn-plan-outline">Früher Zugang sichern</a>
+    </div>
+    <div class="price-card featured reveal">
+      <div class="price-badge">AM BELIEBTESTEN</div>
+      <div class="price-name">SCHULE / UNTERNEHMEN</div>
+      <div class="price-amount"><sup>CHF </sup>19</div>
+      <div class="price-period">pro Monat · unbegrenzte Nutzer</div>
+      <ul class="price-features">
+        <li>Alles aus Einzelperson</li>
+        <li>Unbegrenzte Teammitglieder</li>
+        <li>Gemeinsame Quiz-Bibliothek</li>
+        <li>Prioritäts-Support</li>
+        <li>Rechnung auf Wunsch</li>
+        <li>Erster Zugang zu neuen Features</li>
+      </ul>
+      <a href="#early-access" class="btn-plan btn-plan-primary">Früher Zugang sichern</a>
+    </div>
+  </div>
+</section>
+
+<!-- EARLY ACCESS -->
+<section class="early-access" id="early-access">
+  <div class="section-label">Früher Zugang</div>
+  <h2 class="section-title">Sei dabei.<br><span style="color:var(--pink)">Von Anfang an.</span></h2>
+  <p class="section-sub">QuizWheel startet bald. Trag dich jetzt ein und sichere dir frøhen Zugang – plus einen direkten Draht zur Entwicklung.</p>
+  <div class="email-form">
+    <input type="email" class="email-input" id="email-input" placeholder="deine@email.ch">
+    <a href="#" class="btn-primary" onclick="handleSignup(event)">🚀 Jetzt eintragen</a>
+  </div>
+  <p style="margin-top:20px;font-size:13px;color:var(--muted)">Kein Spam. Jederzeit abmeldbar. Wir schreiben nur wenn es sich lohnt.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Quiz<span>Wheel</span> 🎡</div>
+  <div class="footer-text">© 2026 QuizWheel · Made in Switzerland 🇨🇭</div>
+  <div class="footer-text">quizwheel.ch · quizwheel.de · quizwheel.app</div>
+</footer>
+
+<script>
+// ── HERO WHEEL ─────────────────────────────────────────────
+const canvas = document.getElementById('hero-wheel');
+const ctx = canvas.getContext('2d');
+const topics = ['🎵 Musik','🏆 Sport','🌍 Geografie','🔬 Wissen','🎬 Film','🍕 Essen'];
+const colors = ['#FF2D78','#FF6B35','#FFD700','#00D4FF','#7878FF','#00C853'];
+let angle = 0;
+
+function drawWheel() {
+  const cx = canvas.width/2, cy = canvas.height/2, R = 130;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const slice = (Math.PI*2)/topics.length;
+  topics.forEach((t,i) => {
+    const start = angle + i*slice, end = start + slice;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,start,end);
+    ctx.fillStyle = colors[i]; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=2; ctx.stroke();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+slice/2);
+    ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 11px Helvetica Neue,Arial';
+    ctx.fillText(t, R-10, 5); ctx.restore();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,22,0,Math.PI*2);
+  ctx.fillStyle='#0A0A18'; ctx.fill();
+  ctx.strokeStyle='#FF2D78'; ctx.lineWidth=3; ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 14px Helvetica Neue'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('?',cx,cy);
+}
+function animate() { angle += 0.004; drawWheel(); requestAnimationFrame(animate); }
+animate();
+
+// ── SCROLL REVEAL ──────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── SIGNUP ─────────────────────────────────────────────────
+function handleSignup(e) {
+  e.preventDefault();
+  const input = document.getElementById('email-input');
+  if (!input.value || !input.value.includes('@')) { input.focus(); return; }
+  input.value = '';
+  input.placeholder = '✓ Danke! Wir melden uns bald.';
+  input.style.borderColor = '#00C853';
+}
+</script>
+</body>
+</html>
