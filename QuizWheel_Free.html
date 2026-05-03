@@ -423,14 +423,20 @@ label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transf
     <div class="raffle-prize-name" id="raffle-prize-name"></div>
     <div class="raffle-prize-value" id="raffle-prize-value"></div>
     <div class="raffle-invite" id="raffle-invite"></div>
-    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;margin-top:8px">
+    <!-- 🔒 FREE: Lock-Banner über dem Formular -->
+    <div id="raffle-free-banner" style="display:none;width:100%;max-width:400px;background:linear-gradient(135deg,rgba(255,45,120,.15),rgba(255,215,0,.08));border:1px solid rgba(255,45,120,.4);border-radius:12px;padding:14px 18px;text-align:center;cursor:pointer" onclick="showProHint('Verlosung &amp; Lead-Capture')">
+      <div style="font-size:22px;margin-bottom:4px">🔒</div>
+      <div style="font-size:11px;color:#FF2D78;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">Vollversion</div>
+      <div style="font-size:13px;color:#aaa;line-height:1.5">Einträge speichern &amp; CSV-Export<br><span style="color:#FF2D78;font-weight:700">→ Vollversion anfragen</span></div>
+    </div>
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;margin-top:8px;position:relative">
       <input id="raffle-name"  class="raffle-inp" type="text"  placeholder="Dein Name" autocomplete="off">
       <input id="raffle-email" class="raffle-inp" type="email" placeholder="Deine E-Mail-Adresse" autocomplete="off">
     </div>
-    <button class="btn btn-gold btn-lg" onclick="submitRaffleEntry()" style="min-width:220px">✓ &nbsp; Eintragen</button>
+    <button id="raffle-submit-btn" class="btn btn-gold btn-lg" onclick="submitRaffleEntry()" style="min-width:220px">✓ &nbsp; Eintragen</button>
     <div class="raffle-count" id="raffle-count"></div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px">
-      <button class="btn btn-green" onclick="showRaffleAdmin()" style="font-size:14px;padding:10px 22px">📋 &nbsp; Alle Einträge anzeigen</button>
+      <button class="btn btn-green" onclick="showProHint('Verlosung &amp; Lead-Capture')" style="font-size:14px;padding:10px 22px;opacity:0.5">🔒 &nbsp; Alle Einträge anzeigen</button>
       <button class="btn btn-ghost" onclick="showScreen('screen-end')" style="font-size:14px;padding:10px 22px">← Zurück</button>
     </div>
   </div>
@@ -2480,6 +2486,25 @@ function showRaffle() {
   document.getElementById('raffle-name').value = '';
   document.getElementById('raffle-email').value = '';
   _updateRaffleCount();
+
+  // FREE VERSION: Felder sperren, Lock-Banner zeigen
+  if (QUIZWHEEL_FREE) {
+    const nameInp  = document.getElementById('raffle-name');
+    const emailInp = document.getElementById('raffle-email');
+    const submitBtn = document.getElementById('raffle-submit-btn');
+    const banner   = document.getElementById('raffle-free-banner');
+    nameInp.disabled  = true;
+    emailInp.disabled = true;
+    nameInp.style.opacity  = '0.35';
+    emailInp.style.opacity = '0.35';
+    nameInp.style.cursor   = 'not-allowed';
+    emailInp.style.cursor  = 'not-allowed';
+    submitBtn.onclick = () => showProHint('Verlosung & Lead-Capture');
+    submitBtn.innerHTML = '🔒 &nbsp; Vollversion erforderlich';
+    submitBtn.style.opacity = '0.7';
+    if (banner) banner.style.display = 'block';
+  }
+
   showScreen('screen-raffle');
 }
 
