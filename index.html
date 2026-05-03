@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'none';">
 <title>QuizWheel – Dein Logo. Deine Farben. Deine Show.</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   :root {
     --pink: #FF2D78;
-    --cyan: #00D4FF;
+    --cyan: #FFD700;
     --gold: #FFD700;
     --bg: #0A0A18;
     --bg2: #0F0F22;
@@ -35,7 +36,7 @@
   .nav-links a { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; letter-spacing:1px; transition:color .2s; }
   .nav-links a:hover { color:#fff; }
   .nav-cta {
-    background: var(--pink); color:#fff; font-weight:700; font-size:14px;
+    background: linear-gradient(135deg, var(--pink), var(--gold)); color:#0A0A18; font-weight:800; font-size:14px;
     letter-spacing:1px; padding:10px 24px; border-radius:6px;
     text-decoration:none; transition: opacity .2s;
   }
@@ -55,7 +56,7 @@
   }
   .hero::before {
     content:''; position:absolute; inset:0;
-    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,45,120,.15) 0%, transparent 70%);
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,45,120,.12) 0%, rgba(255,215,0,.07) 60%, transparent 100%);
     pointer-events:none;
   }
   .hero-badge {
@@ -82,7 +83,7 @@
     animation: fadeUp .6s ease .3s both;
   }
   .btn-primary {
-    background: var(--pink); color:#fff; font-weight:800; font-size:16px;
+    background: linear-gradient(135deg, var(--pink), var(--gold)); color:#0A0A18; font-weight:800; font-size:16px;
     letter-spacing:1px; padding:16px 40px; border-radius:8px;
     text-decoration:none; transition:transform .2s, opacity .2s;
     box-shadow: 0 0 32px rgba(255,45,120,.4);
@@ -379,23 +380,23 @@
   <a href="#" class="nav-logo">Quiz<span>Wheel</span> 🎡</a>
   <div class="nav-links">
     <a href="#anwendungen">Anwendungen</a>
-    <a href="#vergleich">vs. Kahoot</a>
     <a href="#preise">Preise</a>
+    <a href="#beta">Beta-Test</a>
   </div>
-  <a href="#early-access" class="nav-cta">Früher Zugang</a>
+  <a href="#beta" class="nav-cta">Prototyp anfordern</a>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
   <canvas id="hero-canvas"></canvas>
-  <div class="hero-badge">🏆 B2B LIVE ENTERTAINMENT · KEIN KAHOOT</div>
+  <div class="hero-badge">🧪 BETA-PHASE · PROTOTYP JETZT VERFÜGBAR</div>
   <h1>Dein Logo.<br><span class="accent">Deine Farben.</span><br>Deine Show.</h1>
   <p class="hero-sub">
     QuizWheel verwandelt jeden Event in eine Live-Spielshow — mit <strong>deiner Marke, deinen Fragen, deinen Preisen.</strong>
-    Autohaus, Messe, Verein oder Coiffeur: Das Rad dreht. Die Besucher bleiben. Die Leads kommen.
+    Wir suchen echte Tester. <strong>45 Tage Vollversion gratis — auf Anfrage.</strong>
   </p>
   <div class="hero-btns">
-    <a href="#early-access" class="btn-primary">🚀 Früher Zugang sichern</a>
+    <a href="#beta" class="btn-primary">🚀 Prototyp anfordern</a>
     <a href="#branding" class="btn-secondary">Wie das Branding funktioniert ↓</a>
   </div>
 
@@ -496,75 +497,6 @@
   </div>
 </section>
 
-<!-- VS KAHOOT -->
-<section class="compare" id="vergleich">
-  <div class="section-label">Der Unterschied</div>
-  <h2 class="section-title">QuizWheel vs. <span style="color:var(--muted)">Kahoot</span></h2>
-  <p class="section-sub">Kahoot ist ein Lern-Tool für Klassenzimmer. QuizWheel ist eine Spielshow-Maschine für Events mit echter Markenwirkung.</p>
-  <div class="compare-table reveal">
-    <table>
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th class="ours">QuizWheel 🎡</th>
-          <th class="theirs">Kahoot</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Logo-Upload + automatisches Farbbranding</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Drehendes Rad mit Spannung</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Kiosk-Modus (läuft ohne Moderator)</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Lead-Capture (E-Mails der Teilnehmer)</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Offline-Betrieb (kein WLAN nötig)</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Joker, Doppelpunkt, Klauen auf dem Rad</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Punkte bis zum Finale geheim</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Dramatische Sieger-Enthüllung</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-        <tr>
-          <td>Schüler-App notwendig</td>
-          <td class="highlight-col"><span class="yes">Nein</span></td>
-          <td>Ja</td>
-        </tr>
-        <tr>
-          <td>Für Events & Messen gebaut</td>
-          <td class="highlight-col"><span class="yes">✓</span></td>
-          <td><span class="no">✗</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
 
 <!-- USE CASES -->
 <section class="use-cases" id="anwendungen">
@@ -716,6 +648,20 @@
         <p class="feature-text">Automatischer Tiebreaker wenn es gleichsteht. Beide Teams schätzen — wer am nächsten dran ist, gewinnt alles.</p>
       </div>
     </div>
+    <div class="feature-card featured reveal">
+      <div class="feature-icon">⏱️</div>
+      <div>
+        <div class="feature-title">Spieldauer-Wahl <span class="feature-new">NEU</span></div>
+        <p class="feature-text">⚡ Speed-Runde (5 Min.) bis volles 45-Min.-Quiz — direkt vor dem Start wählbar. QuizWheel wählt automatisch die passende Fragenanzahl aus dem Pool.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📤</div>
+      <div>
+        <div class="feature-title">Quiz Export & Import <span class="feature-new">NEU</span></div>
+        <p class="feature-text">Komplettes Quiz inkl. Medien als JSON exportieren, sichern und auf anderem Gerät importieren. Einmal erstellt — überall einsetzbar.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -723,7 +669,7 @@
 <section class="pricing" id="preise">
   <div class="section-label">Preise</div>
   <h2 class="section-title">Einfach. <span style="color:var(--gold)">Ehrlich. Fair.</span></h2>
-  <p class="section-sub">Alle Kernfunktionen sind kostenlos — für immer. Profi-Features für Events auf grosser Bühne kommen dazu.</p>
+  <p class="section-sub">Alle Kernfunktionen sind kostenlos — für immer. Profi-Features für Events auf grosser Bühne ab CHF 49. Jetzt als Beta-Tester 45 Tage die Vollversion gratis testen.</p>
   <div class="pricing-grid">
 
     <div class="price-card reveal">
@@ -736,30 +682,31 @@
         <li>Animiertes Rad + Soundeffekte</li>
         <li>Jahrmarkt-Show im Hintergrund</li>
         <li>Geheime Punkte · 3-2-1 Finale</li>
+        <li>Spieldauer-Wahl (Speed bis 45 Min.)</li>
         <li>Offline – keine App, kein Login</li>
         <li class="out">Logo-Branding + CI-Farben</li>
         <li class="out">Audio & Video (Datei-Upload)</li>
-        <li class="out">Kiosk-Modus</li>
-        <li class="out">Mehrere Quiz-Profile</li>
+        <li class="out">Lead-Capture & CSV-Export</li>
+        <li class="out">Quiz Export & Import</li>
       </ul>
       <a href="QuizWheel.html" class="btn-plan btn-plan-outline">Jetzt ausprobieren</a>
     </div>
 
     <div class="price-card featured reveal">
-      <div class="price-badge">DEMNÄCHST</div>
-      <div class="price-name">Event-Paket</div>
+      <div class="price-badge">EVENT-PAKET</div>
+      <div class="price-name">Vollversion</div>
       <div class="price-amount"><sup>CHF </sup>49</div>
       <div class="price-period">einmalig · oder CHF 12 / Monat</div>
       <ul class="price-features">
         <li>Alles aus Kostenlos</li>
         <li>✦ Dein Logo + automatische CI-Farben</li>
         <li>✦ Audio & Video (MP3, MP4 per Upload)</li>
-        <li>Kiosk-Modus (saubere Vollbild-Show)</li>
-        <li>Mehrere Quiz-Profile speichern</li>
+        <li>✦ Lead-Capture + CSV-Export</li>
+        <li>Kiosk-Modus (Vollbild-Show)</li>
         <li>Quiz exportieren & importieren</li>
         <li>Setup-Support per E-Mail</li>
       </ul>
-      <a href="#early-access" class="btn-plan btn-plan-primary">Früher Zugang sichern</a>
+      <a href="#beta" class="btn-plan btn-plan-primary">45 Tage gratis testen →</a>
     </div>
 
     <div class="price-card reveal">
@@ -772,32 +719,70 @@
         <li>White-Label / eigene Domain</li>
         <li>Vor-Ort-Schulung & Support</li>
       </ul>
-      <a href="#early-access" class="btn-plan btn-plan-gold">Anfrage stellen</a>
+      <a href="#beta" class="btn-plan btn-plan-gold">Anfrage stellen</a>
     </div>
 
   </div>
   <p style="text-align:center; margin-top:40px; font-size:14px; color:var(--muted)">
-    Fragen zum Modell? <a href="#early-access" style="color:var(--pink); text-decoration:none;">Schreib uns →</a>
+    Fragen zum Modell? <a href="#beta" style="color:var(--pink); text-decoration:none;">Schreib uns →</a>
   </p>
 </section>
 
-<!-- EARLY ACCESS -->
-<section class="early-access" id="early-access">
-  <div class="section-label">Früher Zugang</div>
-  <h2 class="section-title">Die Show<br><span style="color:var(--pink)">beginnt bald.</span></h2>
-  <p class="section-sub">QuizWheel startet in Kürze. Trag dich jetzt ein — Early-Access-Nutzer zahlen nie den vollen Preis, und du gestaltest das Produkt mit.</p>
-  <div class="email-form">
-    <input type="email" class="email-input" id="email-input" placeholder="deine@email.ch">
-    <a href="#" class="btn-primary" onclick="handleSignup(event)">🎡 Jetzt dabei sein</a>
+<!-- BETA -->
+<section class="early-access" id="beta">
+  <div class="section-label">Beta-Testphase</div>
+  <h2 class="section-title">Teste QuizWheel.<br><span style="color:var(--pink)">45 Tage. Gratis.</span></h2>
+  <p class="section-sub">QuizWheel ist produktionsreif. Wir suchen ausgewählte Tester, die den Prototyp unter echten Bedingungen einsetzen — am Messestand, im Unterricht, am Event. Dafür bekommst du die komplette Vollversion, kostenlos.</p>
+
+  <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin:48px 0 32px;">
+    <div style="text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">🎡</div>
+      <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:1px;">VOLLVERSION</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">Alle Features freigeschaltet</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">📅</div>
+      <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:1px;">45 TAGE</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">Zeitlich begrenzt · kein Abo</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">💬</div>
+      <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:1px;">DEIN FEEDBACK</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">Hilft uns das Produkt zu verbessern</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">🎁</div>
+      <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:1px;">0 CHF</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">Keine Kreditkarte · keine Pflichten</div>
+    </div>
   </div>
-  <p style="margin-top:20px;font-size:13px;color:var(--muted)">Kein Spam. Jederzeit abmeldbar. Wir schreiben nur wenn es sich lohnt.</p>
+
+  <form id="beta-form" onsubmit="handleBetaRequest(event)" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:480px;margin:0 auto">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%">
+      <input type="text"  class="email-input" id="beta-name"  placeholder="Dein Name"       required style="width:200px;flex:1">
+      <input type="email" class="email-input" id="beta-email" placeholder="deine@email.ch"  required style="width:200px;flex:1">
+    </div>
+    <button type="submit" class="btn-primary" style="width:100%;max-width:320px;border:none;cursor:pointer;font-family:inherit">🧪 Prototyp anfordern</button>
+  </form>
+
+  <div id="beta-download" style="display:none;flex-direction:column;align-items:center;gap:16px;margin-top:8px;animation:fadeUp .5s ease both">
+    <div style="font-size:15px;color:#00C853;font-weight:700">✓ Danke! Dein E-Mail-Programm hat sich geöffnet.</div>
+    <p style="font-size:13px;color:var(--muted);max-width:400px;text-align:center">Wir melden uns bei dir. In der Zwischenzeit kannst du direkt loslegen:</p>
+    <a href="https://quizwheel.ch" target="_blank" class="btn-primary" style="font-size:16px;padding:16px 48px">🎡 QuizWheel starten →</a>
+    <p style="font-size:12px;color:var(--muted)">🖥️ Für Desktop optimiert · Chrome oder Safari empfohlen</p>
+  </div>
+
+  <p id="beta-hint" style="margin-top:16px;font-size:13px;color:var(--muted)">Kein Spam. Keine Pflichten. Wir melden uns bei dir. &nbsp;·&nbsp; 🖥️ Für Desktop optimiert</p>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Quiz<span>Wheel</span> 🎡</div>
   <div class="footer-text">© 2026 QuizWheel · Made in Switzerland 🇨🇭 · by baelli innovations</div>
-  <div class="footer-text">quizwheel.ch · quizwheel.de · quizwheel.app</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+    <a href="impressum.html" style="font-size:13px;color:var(--muted);text-decoration:none">Impressum</a>
+    <a href="datenschutz.html" style="font-size:13px;color:var(--muted);text-decoration:none">Datenschutz</a>
+  </div>
 </footer>
 
 <script>
@@ -856,13 +841,19 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // ── SIGNUP ──────────────────────────────────────────────────────────────────
-function handleSignup(e) {
+function handleBetaRequest(e) {
   e.preventDefault();
-  const input = document.getElementById('email-input');
-  if (!input.value || !input.value.includes('@')) { input.focus(); return; }
-  input.value = '';
-  input.placeholder = '✓ Danke! Wir melden uns bald.';
-  input.style.borderColor = '#00C853';
+  const name  = document.getElementById('beta-name').value.trim();
+  const email = document.getElementById('beta-email').value.trim();
+  const body  = `Name: ${name}\nE-Mail: ${email}\n\nIch möchte QuizWheel als Beta-Tester (45 Tage Vollversion kostenlos) ausprobieren.\n\nFreundliche Grüsse\n${name}\n\n---\nQuizWheel direkt starten: https://quizwheel.ch\n(Empfohlen: Desktop · Chrome oder Safari)`;
+  window.location.href = `mailto:info@baelli.com?subject=${encodeURIComponent('QuizWheel Beta-Anfrage von ' + name)}&body=${encodeURIComponent(body)}`;
+  // Formular verstecken, Download-Link + Bestätigung anzeigen
+  setTimeout(() => {
+    document.getElementById('beta-form').style.display = 'none';
+    document.getElementById('beta-hint').style.display = 'none';
+    const dl = document.getElementById('beta-download');
+    dl.style.display = 'flex';
+  }, 500);
 }
 
 // ── HERO JAHRMARKT BACKGROUND ────────────────────────────────

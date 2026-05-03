@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datenschutz – QuizWheel</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --pink: #FF2D78;
+    --gold: #FFD700;
+    --bg: #0A0A18;
+    --bg2: #0F0F22;
+    --bg3: #13132a;
+    --text: #ffffff;
+    --muted: #888;
+    --border: #1e1e40;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', Arial, sans-serif; min-height: 100vh; }
+
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 6vw;
+    background: rgba(10,10,24,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size:22px; font-weight:900; letter-spacing:2px; color:var(--text); text-decoration:none; }
+  .nav-logo span { color: var(--pink); }
+
+  .page { max-width: 720px; margin: 0 auto; padding: 120px 6vw 80px; }
+  .page-label { font-size:12px; color:var(--pink); letter-spacing:4px; font-weight:700; text-transform:uppercase; margin-bottom:16px; }
+  .page-title { font-size: clamp(32px, 4vw, 52px); font-weight:900; margin-bottom:48px; line-height:1.1; }
+
+  .block { margin-bottom: 40px; }
+  .block h2 { font-size:16px; font-weight:700; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+  .block p { font-size:16px; color:var(--muted); line-height:1.8; margin-bottom:8px; }
+  .block a { color:var(--pink); text-decoration:none; }
+  .block a:hover { text-decoration:underline; }
+
+  .highlight-box {
+    background: var(--bg3); border:1px solid var(--border); border-radius:12px;
+    padding:20px 24px; margin-top:16px;
+  }
+  .highlight-box p { margin-bottom:0; }
+
+  footer {
+    padding:40px 6vw; border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  }
+  .footer-logo { font-size:18px; font-weight:900; letter-spacing:2px; }
+  .footer-logo span { color:var(--pink); }
+  .footer-text { font-size:13px; color:var(--muted); }
+  .footer-links { display:flex; gap:24px; }
+  .footer-links a { font-size:13px; color:var(--muted); text-decoration:none; }
+  .footer-links a:hover { color:#fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Quiz<span>Wheel</span> 🎡</a>
+</nav>
+
+<div class="page">
+  <div class="page-label">Rechtliches</div>
+  <h1 class="page-title">Datenschutz&shy;erklärung</h1>
+
+  <div class="block">
+    <h2>Verantwortliche Stelle</h2>
+    <p>Markus Baelli · baelli-innovations<br>
+    Kirchenfeldstrasse 56 · 5630 Muri · Schweiz<br>
+    <a href="mailto:info@baelli.com">info@baelli.com</a></p>
+  </div>
+
+  <div class="block">
+    <h2>Grundsatz</h2>
+    <p>Der Schutz Ihrer persönlichen Daten ist uns wichtig. Diese Datenschutzerklärung informiert Sie darüber, welche Daten auf quizwheel.ch erhoben werden, zu welchem Zweck und wie sie verarbeitet werden. Sie entspricht den Anforderungen des Schweizer Datenschutzgesetzes (DSG) sowie der europäischen Datenschutz-Grundverordnung (DSGVO), soweit anwendbar.</p>
+  </div>
+
+  <div class="block">
+    <h2>Erhobene Daten</h2>
+    <p>Auf quizwheel.ch wird das folgende Formular angeboten:</p>
+    <div class="highlight-box">
+      <p><strong style="color:#fff">Beta-Anfrage-Formular</strong><br>
+      Felder: Name, E-Mail-Adresse<br>
+      Zweck: Bereitstellung des QuizWheel-Prototyps für Testzwecke sowie Kontaktaufnahme mit Interessenten.<br>
+      Übermittlung: Die Daten werden ausschliesslich über Ihr lokales E-Mail-Programm (mailto:) direkt an <a href="mailto:info@baelli.com">info@baelli.com</a> übertragen. Es erfolgt keine Speicherung auf einem Server von quizwheel.ch.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>QuizWheel-App (lokale Nutzung)</h2>
+    <p>Die QuizWheel-App (QuizWheel.html) läuft vollständig lokal im Browser des Nutzers. Alle eingegebenen Inhalte (Quiz-Fragen, Antworten, Mediendateien) werden ausschliesslich im lokalen Speicher des Geräts (localStorage, IndexedDB) abgelegt. Es erfolgt keine Übertragung dieser Daten an externe Server.</p>
+  </div>
+
+  <div class="block">
+    <h2>Cookies und Tracking</h2>
+    <p>quizwheel.ch verwendet keine Tracking-Cookies, keine Analyse-Tools (z. B. Google Analytics) und keine Werbenetzwerke. Es werden keine Nutzungsprofile erstellt.</p>
+  </div>
+
+  <div class="block">
+    <h2>Hosting</h2>
+    <p>Die Website quizwheel.ch wird über GitHub Pages (GitHub Inc., USA) gehostet. Beim Aufruf der Website können technische Daten wie IP-Adresse und Zeitpunkt des Zugriffs im Rahmen der Server-Logs von GitHub erfasst werden. Diese unterliegen der Datenschutzerklärung von GitHub: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank">github.com/privacy</a>.</p>
+  </div>
+
+  <div class="block">
+    <h2>Ihre Rechte</h2>
+    <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten. Für entsprechende Anfragen wenden Sie sich bitte an: <a href="mailto:info@baelli.com">info@baelli.com</a></p>
+  </div>
+
+  <div class="block">
+    <h2>Änderungen</h2>
+    <p>Diese Datenschutzerklärung kann bei Bedarf angepasst werden. Die jeweils aktuelle Version ist auf quizwheel.ch abrufbar.</p>
+    <p style="margin-top:12px;font-size:14px;">Stand: Mai 2026</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Quiz<span>Wheel</span> 🎡</div>
+  <div class="footer-links">
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="index.html">Zurück zur Startseite</a>
+  </div>
+  <div class="footer-text">© 2026 QuizWheel · by baelli innovations</div>
+</footer>
+
+</body>
+</html>

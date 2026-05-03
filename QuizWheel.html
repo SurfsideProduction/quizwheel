@@ -1,0 +1,2968 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; frame-src https://open.spotify.com; connect-src https://itunes.apple.com;">
+<title>QuizWheel – Dein Logo. Deine Farben. Deine Show.</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0D0D1A;font-family:Arial,sans-serif;color:#fff}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s;padding:20px;overflow:hidden}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:clamp(10px,2vh,18px) clamp(22px,4vw,48px);font-size:clamp(14px,2vw,22px);font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:transform .15s;letter-spacing:1px;white-space:nowrap}
+.btn:hover{transform:scale(1.05)}.btn:active{transform:scale(.96)}
+.btn-xl{padding:clamp(14px,2.5vh,24px) clamp(36px,7vw,72px);font-size:clamp(18px,2.8vw,30px)}
+.btn-lg{padding:clamp(11px,2vh,20px) clamp(28px,5vw,56px);font-size:clamp(15px,2.2vw,24px)}
+.btn-pink{background:#FF2D78;color:#fff}
+.btn-gold{background:#FFD700;color:#0D0D1A}
+.btn-green{background:#00C853;color:#fff}
+.btn-dark{background:#1A1A3E;color:#fff;border:2px solid #333}
+.btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4)}
+.btn-spin{background:linear-gradient(135deg,#FF2D78,#FFD700);color:#fff;font-size:clamp(18px,3vw,32px);padding:clamp(12px,2.5vh,22px) clamp(40px,8vw,80px);border-radius:50px;box-shadow:0 4px 24px rgba(255,45,120,.45);letter-spacing:3px}
+.btn-spin:disabled{background:#222;color:#444;box-shadow:none;cursor:not-allowed;transform:none}
+
+/* ════════════════════════════
+   SETUP SCREEN
+════════════════════════════ */
+#screen-setup{padding:0;justify-content:flex-start;overflow:hidden}
+.setup-header{width:100%;background:#080810;border-bottom:2px solid #1a1a3e;padding:13px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.setup-logo{font-size:24px}
+.setup-app-name{font-size:16px;font-weight:700;color:#FFD700;letter-spacing:1px}
+.setup-step-badge{margin-left:auto;background:#1A1A3E;border:1px solid #2a2a5e;padding:4px 14px;border-radius:20px;font-size:13px;color:#888}
+
+.setup-progress{height:3px;background:#1a1a3e;width:100%;flex-shrink:0}
+.setup-progress-fill{height:100%;background:linear-gradient(90deg,#FF2D78,#FFD700);transition:width .4s}
+
+.setup-body{flex:1;width:100%;overflow-y:auto;display:flex;flex-direction:column;align-items:center}
+.setup-inner{width:100%;max-width:680px;padding:28px 24px 56px}
+
+.step-title{font-size:clamp(20px,2.8vw,30px);font-weight:900;margin-bottom:6px}
+.step-sub{font-size:14px;color:#bbb;margin-bottom:24px;line-height:1.6}
+
+/* Form */
+label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
+.inp{width:100%;padding:12px 16px;font-size:16px;font-weight:600;background:#16163A;border:2px solid #2a2a5e;border-radius:8px;color:#fff;outline:none;transition:border-color .2s}
+.inp:focus{border-color:#FF2D78}
+.inp::placeholder{color:#888;font-weight:400}
+.form-group{margin-bottom:18px}
+
+/* Topics grid */
+.topics-grid{display:flex;flex-direction:column;gap:8px}
+.topic-row{display:flex;align-items:center;gap:10px}
+.topic-row-num{min-width:20px;font-size:12px;color:#888;font-weight:700;text-align:right;flex-shrink:0}
+.inp-icon{width:58px;text-align:center;font-size:22px;padding:10px 6px;flex-shrink:0}
+.inp-topic{flex:1}
+
+/* Topic indicator in question editor */
+.topic-indicator{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:10px;margin-bottom:20px;border:2px solid}
+.topic-indicator-icon{font-size:26px;line-height:1}
+.topic-indicator-info{}
+.topic-indicator-name{font-size:17px;font-weight:700;color:#fff}
+.topic-indicator-sub{font-size:12px;color:#888;margin-top:2px}
+
+/* Q&A editor */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-item{background:#16163A;border-radius:8px;padding:14px 16px}
+.qa-item-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.qa-item-num{font-size:12px;font-weight:700;color:#999;background:#0D0D1A;padding:2px 8px;border-radius:4px}
+.qa-sublabel{font-size:10px;color:#999;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.qa-gap{height:8px}
+
+/* Tiebreaker setup */
+.tb-hint-box{background:#1a1205;border:2px solid #FFD700;border-radius:10px;padding:18px;margin-bottom:20px}
+.tb-hint-text{font-size:13px;color:#cca000;line-height:1.8}
+
+.inp-row{display:flex;gap:10px}
+.inp-row .inp{flex:1}
+.inp-unit{max-width:130px}
+
+/* Saved quiz banner */
+.saved-banner{background:#0D2B0D;border:2px solid #00C853;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:opacity .2s}
+.saved-banner:hover{opacity:.8}
+.saved-text{flex:1}
+.saved-main{font-size:14px;color:#00C853;font-weight:700}
+.saved-meta{font-size:12px;color:#446644;margin-top:2px}
+
+/* Nav buttons */
+.setup-nav{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+
+/* ════════════════════════════
+   START SCREEN
+════════════════════════════ */
+#screen-start{background:#0D0D1A;gap:clamp(10px,2vh,22px);user-select:none}
+.deco{position:fixed;font-size:clamp(60px,12vw,140px);opacity:.06;pointer-events:none}
+.start-fach{font-size:clamp(11px,1.6vw,17px);color:#666;letter-spacing:4px;text-transform:uppercase;animation:fadeUp .4s ease both}
+.main-title{font-size:clamp(28px,6.5vw,78px);font-weight:900;color:#fff;letter-spacing:4px;text-align:center;text-shadow:0 0 40px rgba(255,45,120,.3);animation:fadeUp .5s ease .1s both}
+.vs-badge{background:#FF2D78;color:#fff;font-weight:700;font-size:clamp(13px,1.8vw,20px);letter-spacing:4px;padding:6px 26px;border-radius:4px;animation:fadeUp .5s ease .2s both}
+.start-info{font-size:clamp(12px,1.5vw,17px);color:#999;font-style:italic;animation:fadeUp .5s ease .3s both}
+.dur-btn{background:#1A1A3E;border:2px solid #2a2a5e;color:#666;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:1px;font-family:inherit}
+.dur-btn:hover{border-color:#FF2D78;color:#fff}
+.dur-active{border-color:#FF2D78!important;color:#FF2D78!important;background:#2a0a18!important}
+
+/* ── VERLOSUNG ── */
+#screen-raffle,#screen-raffle-admin{background:#0D0D1A;gap:0;padding:0;justify-content:flex-start;overflow-y:auto}
+.raffle-prize-img{max-width:min(380px,80vw);max-height:36vh;object-fit:contain;border-radius:12px;margin:0 auto}
+.raffle-prize-name{font-size:clamp(20px,3.5vw,38px);font-weight:900;color:#FFD700;letter-spacing:2px;text-align:center}
+.raffle-prize-value{font-size:clamp(13px,1.8vw,20px);color:#aaa;text-align:center}
+.raffle-invite{font-size:clamp(13px,1.6vw,18px);color:#ccc;text-align:center;max-width:480px;line-height:1.6}
+.raffle-inp{width:100%;max-width:400px;padding:13px 16px;font-size:16px;font-weight:600;background:#16163A;border:2px solid #2a2a5e;border-radius:8px;color:#fff;outline:none;font-family:inherit}
+.raffle-inp:focus{border-color:#FFD700}
+.raffle-count{font-size:14px;color:#00C853;font-weight:700;min-height:22px;text-align:center}
+.raffle-entry-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#16163A;border-radius:7px;gap:12px;font-size:14px}
+.raffle-entry-name{font-weight:700;color:#fff}
+.raffle-entry-email{color:#888;font-size:13px}
+
+/* ════════════════════════════
+   WHEEL SCREEN
+════════════════════════════ */
+#screen-wheel{gap:clamp(6px,1.2vh,12px);user-select:none}
+#screen-wheel>*:not(#bg-canvas){position:relative;z-index:1}
+#q-counter{font-size:clamp(12px,1.5vw,17px);color:#555;letter-spacing:2px}
+.wheel-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+#wheel-canvas{display:block}
+#topic-banner{min-height:clamp(44px,7vh,68px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(8px);text-align:center}
+#topic-banner.show{opacity:1;transform:translateY(0)}
+.t-label{font-size:clamp(10px,1.3vw,14px);color:#888;letter-spacing:3px;text-transform:uppercase}
+.t-name{font-size:clamp(16px,2.8vw,38px);font-weight:900;letter-spacing:2px}
+.wheel-btns{display:flex;gap:clamp(10px,2vw,20px);align-items:center;flex-wrap:wrap;justify-content:center}
+
+/* ════════════════════════════
+   QUESTION SCREEN
+════════════════════════════ */
+#screen-question{padding:0;justify-content:flex-start;user-select:none}
+.q-topbar{width:100%;display:flex;justify-content:space-between;flex-shrink:0}
+.q-badge-l{padding:clamp(8px,1.5vh,15px) clamp(16px,2.5vw,28px);font-size:clamp(12px,1.5vw,17px);font-weight:700;color:#fff}
+.q-badge-r{padding:clamp(8px,1.5vh,15px) clamp(16px,2.5vw,28px);background:#FFD700;font-size:clamp(12px,1.5vw,17px);font-weight:700;color:#0D0D1A}
+.q-content{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(16px,3vh,40px) clamp(24px,5vw,80px);width:100%}
+.q-text{text-align:center;font-weight:700;color:#fff;line-height:1.4;max-width:900px;animation:fadeUp .35s ease both}
+.q-bottombar{width:100%;height:clamp(50px,8vh,68px);background:#1A1A3E;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:clamp(16px,3vw,40px)}
+.buzz-hint{font-size:clamp(12px,1.5vw,17px);color:#888}
+
+/* ════════════════════════════
+   ANSWER SCREEN
+════════════════════════════ */
+#screen-answer{padding:0;justify-content:flex-start;user-select:none}
+.a-header{width:100%;height:clamp(48px,8vh,66px);background:#00C853;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.8vw,20px);font-weight:700;color:#fff;letter-spacing:1px}
+.a-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(14px,2.5vh,32px) clamp(24px,5vw,80px);gap:clamp(10px,2vh,20px);width:100%;max-width:1000px;align-self:center}
+.a-recap{font-size:clamp(12px,1.5vw,17px);color:#888;font-style:italic;text-align:center;animation:fadeUp .3s ease both}
+.a-answer-box{background:#0D2B0D;border:3px solid #00C853;border-radius:10px;padding:clamp(14px,2.5vh,28px) clamp(20px,4vw,56px);text-align:center;width:100%;max-width:840px;animation:popIn .4s cubic-bezier(.17,.67,.35,1.4) .1s both}
+.a-answer-text{font-weight:900;color:#00C853;line-height:1.3}
+.a-explanation{font-size:clamp(12px,1.5vw,17px);color:#999;font-style:italic;text-align:center;line-height:1.6;max-width:760px;animation:fadeUp .35s ease .2s both}
+.a-bottombar{width:100%;flex-shrink:0;background:#080810;border-top:1px solid #222;display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding:clamp(10px,1.5vh,18px) clamp(16px,3vw,32px);flex-wrap:wrap;justify-content:center}
+.score-btn{font-size:clamp(14px,2vw,20px);font-weight:700;padding:clamp(10px,1.8vh,16px) clamp(20px,3.5vw,44px);border:none;border-radius:8px;cursor:pointer;transition:all .18s}
+.score-btn:hover{transform:scale(1.06)}.score-btn:active{transform:scale(.95)}
+.score-btn.scored{opacity:.5;cursor:default}
+.score-btn-a{background:#FF2D78;color:#fff}
+.score-btn-b{background:#00D4FF;color:#0D0D1A}
+
+/* ════════════════════════════
+   TIEBREAKER (QUIZ)
+════════════════════════════ */
+#screen-tiebreaker{background:#0D0D1A;gap:clamp(10px,1.8vh,20px);text-align:center;padding:clamp(20px,4vh,48px);overflow-y:auto;user-select:none}
+.tb-title{font-size:clamp(26px,5vw,60px);font-weight:900;color:#FFD700;letter-spacing:4px;animation:popIn .5s ease both}
+.tb-sub{font-size:clamp(13px,1.6vw,18px);color:#aaa}
+.tb-scores{display:flex;gap:clamp(14px,2.5vw,36px);justify-content:center}
+.tb-score-chip{padding:clamp(7px,1.2vh,13px) clamp(16px,2.8vw,34px);border-radius:8px;font-weight:700;font-size:clamp(13px,1.8vw,20px)}
+.tb-score-a{background:#FF2D78;color:#fff}.tb-score-b{background:#00D4FF;color:#0D0D1A}
+.tb-question-box{background:#16163A;border:2px solid #FFD700;border-radius:12px;padding:clamp(14px,2.5vh,28px) clamp(18px,3.5vw,48px);max-width:820px;width:100%}
+.tb-question-text{font-size:clamp(15px,2.2vw,26px);font-weight:700;color:#fff;line-height:1.5}
+.tb-answer-reveal{margin-top:10px;font-size:clamp(12px,1.5vw,16px);color:#FFD700;font-weight:700;display:none}
+.tb-inputs{display:flex;gap:clamp(14px,2.5vw,36px);justify-content:center;flex-wrap:wrap}
+.tb-input-group{display:flex;flex-direction:column;align-items:center;gap:8px}
+.tb-input-label{font-size:clamp(13px,1.6vw,18px);font-weight:700}
+.tb-input-label-a{color:#FF2D78}.tb-input-label-b{color:#00D4FF}
+.tb-input{width:clamp(150px,18vw,220px);padding:clamp(10px,1.6vh,14px) 14px;font-size:clamp(15px,2vw,22px);font-weight:700;text-align:center;background:#1A1A3E;border:2px solid #333;border-radius:8px;color:#fff;outline:none;transition:border-color .2s}
+.tb-input:focus{border-color:#FFD700}
+.tb-result{display:none;flex-direction:column;align-items:center;gap:10px;animation:popIn .5s ease both}
+.tb-result-winner{font-size:clamp(20px,3.5vw,48px);font-weight:900;color:#FFD700;letter-spacing:2px}
+.tb-result-detail{font-size:clamp(11px,1.4vw,16px);color:#888;line-height:1.8}
+
+/* ════════════════════════════
+   END SCREEN
+════════════════════════════ */
+#screen-end{background:#0D0D1A;gap:clamp(8px,1.8vh,18px);text-align:center;user-select:none}
+.end-trophy{font-size:clamp(56px,11vw,120px);animation:popIn .6s ease both}
+.end-title{font-size:clamp(22px,4.5vw,56px);font-weight:900;color:#FFD700;letter-spacing:4px;animation:fadeUp .4s ease .1s both}
+.end-sub{font-size:clamp(12px,1.5vw,17px);color:#666;animation:fadeUp .4s ease .2s both}
+#end-scores{display:none;gap:clamp(14px,2.5vw,34px);margin-top:1vh;flex-wrap:wrap;justify-content:center}
+#end-scores.vis{display:flex}
+.team-card{width:clamp(140px,16vw,240px);padding:clamp(16px,2.5vh,28px) clamp(14px,2vw,24px);border-radius:12px;text-align:center;animation:popIn .6s cubic-bezier(.17,.67,.35,1.35) both}
+.team-card-a{background:#FF2D78}.team-card-b{background:#00D4FF}
+.team-card.winner{border:4px solid #FFD700;box-shadow:0 0 36px rgba(255,215,0,.5)}
+.card-crown{font-size:clamp(18px,3vw,36px);min-height:clamp(26px,3.5vw,44px)}
+.card-name{font-size:clamp(14px,2vw,24px);font-weight:900;color:#fff}
+.team-card-b .card-name{color:#0D0D1A}
+.card-score{font-size:clamp(40px,7vw,80px);font-weight:900;color:#fff;line-height:1}
+.team-card-b .card-score{color:#0D0D1A}
+.card-label{font-size:clamp(11px,1.3vw,15px);color:rgba(255,255,255,.7)}
+.team-card-b .card-label{color:rgba(0,0,0,.55)}
+#end-verdict{display:none;font-size:clamp(18px,3.5vw,44px);font-weight:900;color:#FFD700;letter-spacing:2px;animation:popIn .5s ease both}
+#end-verdict.vis{display:block}
+#end-actions{display:none;gap:14px;margin-top:1vh}
+#end-actions.vis{display:flex;flex-wrap:wrap;justify-content:center}
+
+.countdown-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:200;animation:fadeUp .25s ease}
+.countdown-num{font-size:clamp(80px,20vw,200px);font-weight:900;color:#FFD700;animation:popIn .25s ease;line-height:1}
+.countdown-sub{font-size:clamp(14px,2.2vw,26px);color:#aaa;letter-spacing:3px}
+
+#progress-bar{position:fixed;bottom:0;left:0;height:5px;background:linear-gradient(90deg,#FF2D78,#FFD700);transition:width .6s;z-index:99}
+#key-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:#252525;letter-spacing:1px;pointer-events:none;z-index:50;white-space:nowrap}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+/* ── LOGO DROP ZONE ── */
+.logo-drop-zone{border:2px dashed #2a2a5e;border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:#0D0D1A;position:relative}
+.logo-drop-zone:hover,.logo-drop-zone.drag-over{border-color:#FF2D78;background:#16163A}
+.logo-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.logo-drop-text{font-size:13px;color:#666;pointer-events:none}
+.logo-preview-wrap{display:flex;align-items:center;gap:16px;margin-top:14px}
+.logo-preview-img{height:48px;max-width:180px;object-fit:contain;border-radius:6px;background:#fff;padding:4px}
+.color-chips{display:flex;gap:8px;flex-wrap:wrap}
+.color-chip{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px}
+.color-hint{font-size:12px;color:#999;margin-top:6px;line-height:1.6}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.umd.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-setup" class="screen active">
+
+  <div class="setup-header">
+    <div class="setup-logo">🎡</div>
+    <div class="setup-app-name">QUIZWHEEL</div>
+    <div class="setup-step-badge" id="step-badge">Schritt 1 / 9</div>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+      <button onclick="exportQuiz()" title="Quiz als Datei exportieren" style="background:rgba(255,255,255,0.06);border:1px solid #2a2a5e;color:#999;border-radius:6px;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px;white-space:nowrap" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#999'">⬇ Export</button>
+      <label title="Quiz aus Datei importieren" style="background:rgba(255,255,255,0.06);border:1px solid #2a2a5e;color:#999;border-radius:6px;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px;white-space:nowrap" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#999'">⬆ Import<input type="file" accept=".json" onchange="importQuiz(this)" style="display:none"></label>
+      <button class="btn btn-dark" onclick="goToStart()" style="font-size:12px;padding:6px 14px;color:#666;border-color:#333">← Startseite</button>
+    </div>
+  </div>
+
+  <div class="setup-progress">
+    <div class="setup-progress-fill" id="setup-progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="setup-body">
+    <div class="setup-inner" id="setup-inner">
+      <!-- Dynamisch per JS befüllt -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     START SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-start" class="screen">
+  <canvas id="bg-canvas-start" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1"></canvas>
+  <div class="deco" style="left:2vw;top:6vh">?</div>
+  <div class="deco" style="right:2vw;bottom:8vh">✦</div>
+  <div id="demo-hint-top" style="display:none;flex-direction:column;align-items:center;gap:0;animation:fadeUp .4s ease both;margin-bottom:16px;width:min(580px,92vw)">
+    <div style="background:#FF2D78;color:#fff;font-size:clamp(10px,1.1vw,12px);font-weight:800;letter-spacing:5px;text-transform:uppercase;padding:6px 24px;border-radius:10px 10px 0 0;width:100%;text-align:center;box-sizing:border-box">🎭 &nbsp; Demo &nbsp; 🎭</div>
+    <div style="border:2px solid #FF2D78;border-top:none;border-radius:0 0 12px 12px;padding:16px 28px 18px;background:rgba(255,45,120,0.07);backdrop-filter:blur(8px);width:100%;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:clamp(14px,1.9vw,21px);color:#fff;font-weight:700;line-height:1.4"><span style="color:#FF2D78">APEX Motors</span> ist ein fiktives Autohaus</div>
+      <div style="font-size:clamp(11px,1.2vw,14px);color:#aaa;line-height:1.5">Lade dein Logo hoch — QuizWheel übernimmt dein CI automatisch.</div>
+    </div>
+  </div>
+  <img id="start-logo" src="" alt="Logo" style="display:none;max-height:70px;max-width:220px;object-fit:contain;border-radius:8px;background:#fff;padding:6px 12px;margin-bottom:4px;animation:fadeUp .4s ease both">
+  <div class="main-title" id="start-title">QUIZ</div>
+  <div style="display:flex;align-items:center;gap:10px;animation:fadeUp .5s ease .2s both">
+    <span style="background:#FF2D78;color:#fff;font-weight:700;font-size:clamp(13px,1.8vw,20px);letter-spacing:4px;padding:6px 18px;border-radius:4px">TEAM A</span>
+    <span style="color:#fff;font-weight:700;font-size:clamp(13px,1.8vw,20px)">⚡ VS ⚡</span>
+    <span style="background:#00D4FF;color:#0D0D1A;font-weight:700;font-size:clamp(13px,1.8vw,20px);letter-spacing:4px;padding:6px 18px;border-radius:4px">TEAM B</span>
+  </div>
+  <div class="start-info" id="start-info">30 Fragen · Geheimstand · Zufallsrad</div>
+
+  <!-- ── SPIELDAUER-WAHL ── -->
+  <div id="duration-picker" style="display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeUp .5s ease .35s both">
+    <div style="font-size:10px;color:#999;letter-spacing:3px;text-transform:uppercase;font-weight:700">Spieldauer</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <button onclick="setDuration(5)"  id="dur-5"  class="dur-btn">⚡ Speed</button>
+      <button onclick="setDuration(10)" id="dur-10" class="dur-btn">10 Min.</button>
+      <button onclick="setDuration(20)" id="dur-20" class="dur-btn">20 Min.</button>
+      <button onclick="setDuration(30)" id="dur-30" class="dur-btn">30 Min.</button>
+      <button onclick="setDuration(45)" id="dur-45" class="dur-btn dur-active">45 Min.</button>
+    </div>
+    <div id="dur-hint" style="font-size:12px;color:#999;font-style:italic"></div>
+  </div>
+
+  <button class="btn btn-pink btn-xl" id="btn-start-quiz" onclick="startQuiz()" style="margin-top:8px;animation:fadeUp .5s ease .4s both">
+    ▶ &nbsp; <span id="btn-start-label">Quiz starten</span>
+  </button>
+  <button id="btn-edit" class="btn btn-dark" onclick="goToSetup()" style="animation:fadeUp .5s ease .5s both;font-size:14px;padding:10px 22px">
+    ✏️ &nbsp; Quiz bearbeiten
+  </button>
+  <div id="demo-hint" style="display:none;flex-direction:column;align-items:center;animation:fadeUp .5s ease .55s both;width:100%;max-width:320px">
+    <div style="display:flex;align-items:center;gap:12px;width:100%">
+      <div style="flex:1;height:1px;background:linear-gradient(to right,transparent,#444)"></div>
+      <span style="color:#666;font-size:12px;letter-spacing:3px;font-weight:600">ODER</span>
+      <div style="flex:1;height:1px;background:linear-gradient(to left,transparent,#444)"></div>
+    </div>
+  </div>
+  <button id="btn-demo-create" class="btn btn-gold" onclick="goToSetup()" style="display:none;animation:fadeUp .5s ease .6s both;font-size:clamp(13px,1.6vw,17px);padding:12px 32px">
+    ✏️ &nbsp; Eigenes Quiz mit eigenem Logo erstellen
+  </button>
+  <div style="position:absolute;bottom:12px;right:18px;font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif;user-select:none">© baelli-innovations</div>
+</div>
+
+<!-- Demo-Abbrechen: direkt im DEMO-Badge integriert (klickbar) -->
+
+<!-- ══════════════════════════════════════════════
+     WHEEL SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-wheel" class="screen">
+  <canvas id="bg-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0"></canvas>
+  <img id="wheel-logo" src="" style="display:none;position:absolute;top:24px;left:32px;height:120px;max-width:340px;object-fit:contain;opacity:1;z-index:10;pointer-events:none">
+  <div id="q-counter">Frage &nbsp;<span id="q-done">0</span> / <span id="q-total">30</span></div>
+  <div class="wheel-wrap">
+    <canvas id="wheel-canvas"></canvas>
+  </div>
+  <div id="topic-banner">
+    <div class="t-label">✦ &nbsp;Thema ausgewählt&nbsp; ✦</div>
+    <div class="t-name" id="t-name-text"></div>
+  </div>
+  <div class="wheel-btns">
+    <button class="btn-spin btn" id="spin-btn" onclick="spinWheel()">🎲 &nbsp; DREHEN!</button>
+    <button class="btn btn-gold btn-lg" id="ask-btn" style="display:none" onclick="goToQuestion()">▶ &nbsp; Frage stellen!</button>
+  </div>
+  <button class="btn btn-dark btn-end-game" onclick="confirmEndGame()" style="margin-top:8px;font-size:12px;padding:7px 16px;color:#666;border-color:#333">✕ &nbsp; Spiel beenden</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     QUESTION SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-question" class="screen">
+  <div class="q-topbar">
+    <div class="q-badge-l" id="q-badge-l">Thema</div>
+    <div class="q-badge-r" id="q-badge-r">1 / 30</div>
+  </div>
+  <div class="q-content" id="q-content"></div>
+  <div class="q-bottombar">
+    <span class="buzz-hint">💭 &nbsp; Wer weiss die Antwort?</span>
+    <button class="btn btn-green btn-lg" onclick="revealAnswer()">✓ &nbsp; Antwort zeigen</button>
+    <button class="btn btn-dark btn-end-game" onclick="confirmEndGame()" style="font-size:12px;padding:7px 16px;color:#666;border-color:#333">✕ &nbsp; Spiel beenden</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ANSWER SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-answer" class="screen">
+  <div class="a-header" id="a-header">✓ Auflösung</div>
+  <div class="a-body">
+    <div class="a-recap" id="a-recap"></div>
+    <div class="a-answer-box">
+      <div class="a-answer-text" id="a-answer-text"></div>
+    </div>
+    <div class="a-explanation" id="a-explanation"></div>
+  </div>
+  <div class="a-bottombar">
+    <button class="score-btn score-btn-a" id="score-a" onclick="addScore('a')">✅ &nbsp; Punkt für Team A</button>
+    <button class="score-btn score-btn-b" id="score-b" onclick="addScore('b')">✅ &nbsp; Punkt für Team B</button>
+    <button class="btn btn-dark btn-lg" onclick="backToWheel()" style="margin-left:auto">🎡 &nbsp; Zum Rad</button>
+    <button class="btn btn-dark btn-end-game" onclick="confirmEndGame()" style="font-size:12px;padding:7px 16px;color:#666;border-color:#333">✕ &nbsp; Spiel beenden</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     END SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-end" class="screen">
+  <div class="end-trophy">🏆</div>
+  <div class="end-title">QUIZ BEENDET!</div>
+  <div class="end-sub" id="end-sub">Alle Fragen gespielt</div>
+  <button class="btn btn-gold btn-xl" id="reveal-btn" onclick="revealScores()" style="margin-top:clamp(14px,2.5vh,28px)">
+    🎉 &nbsp; Ergebnis enthüllen!
+  </button>
+  <div id="end-scores">
+    <div class="team-card team-card-a" id="card-a" style="animation-delay:.1s">
+      <div class="card-crown" id="crown-a"></div>
+      <div class="card-name">TEAM A</div>
+      <div class="card-score" id="score-disp-a">0</div>
+      <div class="card-label">Punkte</div>
+    </div>
+    <div class="team-card team-card-b" id="card-b" style="animation-delay:.25s">
+      <div class="card-crown" id="crown-b"></div>
+      <div class="card-name">TEAM B</div>
+      <div class="card-score" id="score-disp-b">0</div>
+      <div class="card-label">Punkte</div>
+    </div>
+  </div>
+  <div id="end-verdict"></div>
+  <div id="end-actions">
+    <button id="btn-raffle" class="btn btn-gold btn-lg" onclick="showRaffle()" style="display:none">🎁 &nbsp; Verlosung starten</button>
+    <button class="btn btn-ghost btn-lg" onclick="restartQuiz()">↺ &nbsp; Nochmal spielen</button>
+    <button class="btn btn-dark" onclick="goToSetup()" style="font-size:15px;padding:12px 24px">✏️ &nbsp; Quiz bearbeiten</button>
+    <div style="display:flex;align-items:center;gap:12px;width:100%;max-width:320px;margin-top:8px">
+      <div style="flex:1;height:1px;background:linear-gradient(to right,transparent,#333)"></div>
+      <span style="color:#444;font-size:11px;letter-spacing:3px;font-weight:600;white-space:nowrap">HAT ES GEFALLEN?</span>
+      <div style="flex:1;height:1px;background:linear-gradient(to left,transparent,#333)"></div>
+    </div>
+    <button class="btn btn-ghost" onclick="shareQuizWheel(this)" style="font-size:14px;padding:10px 28px;border-color:#333;color:#888;display:flex;align-items:center;gap:8px">
+      🎡 &nbsp; QuizWheel weiterempfehlen
+    </button>
+  </div>
+  <div style="position:absolute;bottom:12px;right:18px;font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif;user-select:none">© baelli-innovations</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VERLOSUNG SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-raffle" class="screen">
+  <div style="width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 24px 48px;margin:0 auto">
+    <div style="font-size:11px;color:#555;letter-spacing:4px;text-transform:uppercase;font-weight:700">🎁 &nbsp; Verlosung</div>
+    <img id="raffle-img" src="" alt="" style="display:none" class="raffle-prize-img">
+    <div class="raffle-prize-name" id="raffle-prize-name"></div>
+    <div class="raffle-prize-value" id="raffle-prize-value"></div>
+    <div class="raffle-invite" id="raffle-invite"></div>
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;margin-top:8px">
+      <input id="raffle-name"  class="raffle-inp" type="text"  placeholder="Dein Name" autocomplete="off">
+      <input id="raffle-email" class="raffle-inp" type="email" placeholder="Deine E-Mail-Adresse" autocomplete="off">
+    </div>
+    <button class="btn btn-gold btn-lg" onclick="submitRaffleEntry()" style="min-width:220px">✓ &nbsp; Eintragen</button>
+    <div class="raffle-count" id="raffle-count"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+      <button class="btn btn-green" onclick="showRaffleAdmin()" style="font-size:14px;padding:10px 22px">📋 &nbsp; Alle Einträge anzeigen</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-end')" style="font-size:14px;padding:10px 22px">← Zurück</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VERLOSUNG ADMIN SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-raffle-admin" class="screen">
+  <div style="width:100%;max-width:580px;display:flex;flex-direction:column;gap:16px;padding:32px 24px 48px;margin:0 auto">
+    <div style="font-size:11px;color:#555;letter-spacing:4px;text-transform:uppercase;font-weight:700;text-align:center">📋 &nbsp; Verlosungs-Einträge</div>
+    <div id="raffle-admin-count" style="text-align:center;font-size:18px;font-weight:700;color:#FFD700"></div>
+    <div id="raffle-admin-list" style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+      <button class="btn btn-green btn-lg" onclick="downloadRaffleCSV()" style="font-size:15px">⬇ &nbsp; CSV herunterladen</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-raffle')" style="font-size:14px;padding:10px 22px">← Zurück zur Verlosung</button>
+      <button class="btn btn-dark" onclick="goToStart()" style="font-size:14px;padding:10px 22px">🏠 &nbsp; Startmenü</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VORSCHAU SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-preview" class="screen" style="background:#0D0D1A;flex-direction:column;gap:0;padding:0;justify-content:flex-start">
+  <div style="width:100%;background:#080810;border-bottom:2px solid #1a1a3e;padding:13px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0">
+    <div style="font-size:20px">👁</div>
+    <div style="font-size:15px;font-weight:700;color:#FFD700;letter-spacing:1px">VORSCHAU</div>
+    <button class="btn btn-dark" onclick="backFromPreview()" style="margin-left:auto;font-size:13px;padding:8px 18px">← Zurück bearbeiten</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:28px 24px 48px;gap:24px;width:100%">
+    <!-- Quiz-Titel Vorschau -->
+    <div style="text-align:center">
+      <div id="pv-title" style="font-size:clamp(24px,5vw,52px);font-weight:900;color:#fff;letter-spacing:3px"></div>
+      <div style="background:#FF2D78;color:#fff;font-weight:700;font-size:13px;letter-spacing:3px;padding:4px 18px;border-radius:4px;display:inline-block;margin-top:8px">TEAM A ⚡ VS ⚡ TEAM B</div>
+    </div>
+    <!-- Rad Vorschau -->
+    <canvas id="preview-wheel-canvas" style="display:block;border-radius:50%"></canvas>
+    <!-- Themen-Übersicht -->
+    <div style="width:100%;max-width:600px">
+      <div style="font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Themen & Fragen</div>
+      <div id="pv-topics" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <!-- Schätzfrage -->
+    <div id="pv-tiebreaker" style="width:100%;max-width:600px;display:none">
+      <div style="font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Schätzfrage (Gleichstand)</div>
+      <div id="pv-tb-text" style="background:#1a1205;border:2px solid #FFD700;border-radius:8px;padding:12px 16px;font-size:14px;color:#cca000"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TIEBREAKER SCREEN (QUIZ)
+══════════════════════════════════════════════ -->
+<div id="screen-tiebreaker" class="screen">
+  <div class="tb-title">⚡ GLEICHSTAND! ⚡</div>
+  <div class="tb-sub">Beide Teams haben gleich viele Punkte – eine Schätzfrage entscheidet!</div>
+  <div class="tb-scores">
+    <div class="tb-score-chip tb-score-a">TEAM A &nbsp;·&nbsp; <span id="tb-score-a">0</span> Punkte</div>
+    <div class="tb-score-chip tb-score-b">TEAM B &nbsp;·&nbsp; <span id="tb-score-b">0</span> Punkte</div>
+  </div>
+  <div class="tb-question-box">
+    <div class="tb-question-text" id="tb-question-text">Schätzfrage</div>
+    <div class="tb-answer-reveal" id="tb-answer-reveal"></div>
+  </div>
+  <div class="tb-inputs">
+    <div class="tb-input-group">
+      <div class="tb-input-label tb-input-label-a">🔴 &nbsp; TEAM A</div>
+      <input class="tb-input" id="tb-input-a" type="number" min="0" placeholder="Antwort…">
+    </div>
+    <div class="tb-input-group">
+      <div class="tb-input-label tb-input-label-b">🔵 &nbsp; TEAM B</div>
+      <input class="tb-input" id="tb-input-b" type="number" min="0" placeholder="Antwort…">
+    </div>
+  </div>
+  <button class="btn btn-gold btn-lg" id="tb-calc-btn" onclick="calcTiebreaker()">🏆 &nbsp; Gewinner ermitteln!</button>
+  <div class="tb-result" id="tb-result">
+    <div class="tb-result-winner" id="tb-result-winner"></div>
+    <div class="tb-result-detail" id="tb-result-detail"></div>
+    <button id="btn-raffle-tb" class="btn btn-gold btn-lg" onclick="showRaffle()" style="display:none;margin-top:6px">🎁 &nbsp; Verlosung starten</button>
+    <button class="btn btn-ghost btn-lg" onclick="restartQuiz()" style="margin-top:6px">↺ &nbsp; Nochmal spielen</button>
+  </div>
+</div>
+
+<div id="progress-bar" style="width:0%"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  KONFIGURATION – Standard-Beispieldaten (Musikquiz)
+// ════════════════════════════════════════════════════════════
+const PALETTE = ['#7C3AED','#059669','#DC2626','#0284C7','#D97706','#DB2777'];
+
+// ── Emoji-Vorschläge nach Thema-Name ─────────────────────────
+const EMOJI_MAP = [
+  // ── Schulfächer ───────────────────────────────────────────
+  { keys:['mathematik','mathe','math','rechnen','geometrie','algebra','zahlen','brüche','statistik'],        emoji:['➕','📐','🔢','📊'] },
+  { keys:['deutsch','grammatik','literatur','schreiben','lesen','text','aufsatz','rechtschreibung'],          emoji:['📝','📖','✏️','🖊️'] },
+  { keys:['französisch','franz','français','france'],                                                         emoji:['🥐','🗼','🇫🇷'] },
+  { keys:['englisch','english','britain','british'],                                                          emoji:['🇬🇧','💬','🗣️'] },
+  { keys:['spanisch','español','spain','espana'],                                                             emoji:['🇪🇸','💃','🌮'] },
+  { keys:['italienisch','italiano','italy'],                                                                   emoji:['🇮🇹','🍕','🤌'] },
+  { keys:['latein','rom','römer','antike','caesar','gladiator'],                                              emoji:['🏛️','⚔️','🦅'] },
+  { keys:['geographie','geo','erdkunde','rzg','raum','länder','kontinente','karte','atlas','topographie'],    emoji:['🌍','🗺️','🧭','⛰️'] },
+  { keys:['geschichte','historisch','histor','zeitreise','vergangenheit','epoche','mittelalter','krieg'],     emoji:['📜','⏳','🏰','⚔️'] },
+  { keys:['biologie','bio','anatomie','nt','naturwiss','zelle','genetik'],                                    emoji:['🔬','🌿','🧬','🐾'] },
+  { keys:['chemie','chemisch','reaktion','elemente','periodensystem','molekül','atom'],                       emoji:['⚗️','🧪','⚛️','🔥'] },
+  { keys:['physik','optik','mechanik','strom','elektrizität','kraft','energie','wellen'],                     emoji:['⚡','🔭','💡','🧲'] },
+  { keys:['musik','noten','lied','song','instrument','klang','melodie','rhythmus','band','chor'],             emoji:['🎵','🎸','🎹','🎺','🥁'] },
+  { keys:['kunst','zeichnen','malen','farben','bild','malerei','skulptur','design'],                          emoji:['🎨','✏️','🖌️','🖼️'] },
+  { keys:['sport','turnen','bewegung','fitness'],                                                             emoji:['🏃','⚽','🏀','🏊','🎽'] },
+  { keys:['informatik','computer','programmieren','coding','it','digital','software','hardware','netzwerk'],  emoji:['💻','⌨️','🖥️','🤖'] },
+  { keys:['religion','ethik','werte','glaube','philosophie','moral','kirche'],                               emoji:['☮️','✝️','🕌','🙏'] },
+  { keys:['wirtschaft','wat','beruf','geld','finanzen','handel','markt','unternehmen'],                      emoji:['💼','💰','📈','🏦'] },
+  { keys:['kochen','ernährung','essen','küche','rezept','lebensmittel','nahrung'],                            emoji:['🍳','🥗','🍽️','🥦'] },
+  { keys:['politik','demokratie','gesellschaft','sozial','staat','parlament','wahl'],                        emoji:['🗳️','⚖️','🏛️','📣'] },
+  { keys:['umwelt','klima','ökologie','nachhaltig','recycling','co2'],                                       emoji:['🌱','♻️','🌏','☀️'] },
+  { keys:['medien','film','kino','video','fernsehen','internet','kommunikation'],                            emoji:['🎬','📱','📺','📡'] },
+  { keys:['theater','drama','schauspiel','bühne','regie'],                                                   emoji:['🎭','🎬','🎪'] },
+  { keys:['weltraum','astronomie','planet','stern','universum','galaxie','nasa'],                             emoji:['🚀','🌙','⭐','🔭','🪐'] },
+  // ── Tiere (einzeln) ───────────────────────────────────────
+  { keys:['löwe','lion'],           emoji:['🦁'] },
+  { keys:['tiger'],                 emoji:['🐯'] },
+  { keys:['bär','bear','panda'],    emoji:['🐻','🐼'] },
+  { keys:['wolf'],                  emoji:['🐺'] },
+  { keys:['fuchs'],                 emoji:['🦊'] },
+  { keys:['hund','hunde','dog'],    emoji:['🐶','🦮'] },
+  { keys:['katze','katzen','cat'],  emoji:['🐱','🐈'] },
+  { keys:['pferd','pony'],          emoji:['🐴','🦄'] },
+  { keys:['kuh','rind','stier'],    emoji:['🐮','🐂'] },
+  { keys:['schwein'],               emoji:['🐷'] },
+  { keys:['schaf','lamm'],          emoji:['🐑'] },
+  { keys:['ziege'],                 emoji:['🐐'] },
+  { keys:['huhn','hahn','henne'],   emoji:['🐔'] },
+  { keys:['ente','entenküken'],     emoji:['🦆'] },
+  { keys:['fisch','fische'],        emoji:['🐟','🐠','🐡'] },
+  { keys:['hai'],                   emoji:['🦈'] },
+  { keys:['delfin','dolphin'],      emoji:['🐬'] },
+  { keys:['wal','whale'],           emoji:['🐳','🐋'] },
+  { keys:['elefant'],               emoji:['🐘'] },
+  { keys:['giraffe'],               emoji:['🦒'] },
+  { keys:['zebra'],                 emoji:['🦓'] },
+  { keys:['affe','gorilla','schimpanse'], emoji:['🐒','🦍'] },
+  { keys:['schlange','python'],     emoji:['🐍'] },
+  { keys:['frosch'],                emoji:['🐸'] },
+  { keys:['krokodil','alligator'],  emoji:['🐊'] },
+  { keys:['schildkröte'],           emoji:['🐢'] },
+  { keys:['spinne'],                emoji:['🕷️'] },
+  { keys:['biene','wespe'],         emoji:['🐝'] },
+  { keys:['schmetterling'],         emoji:['🦋'] },
+  { keys:['vogel','vögel'],         emoji:['🐦','🦅','🦜'] },
+  { keys:['adler'],                 emoji:['🦅'] },
+  { keys:['eule'],                  emoji:['🦉'] },
+  { keys:['pinguin'],               emoji:['🐧'] },
+  { keys:['flamingo'],              emoji:['🦩'] },
+  { keys:['papagei'],               emoji:['🦜'] },
+  { keys:['dinosaurier','dino','t-rex'], emoji:['🦕','🦖'] },
+  { keys:['einhorn'],               emoji:['🦄'] },
+  { keys:['drache'],                emoji:['🐉'] },
+  // ── Sportarten ────────────────────────────────────────────
+  { keys:['fussball','soccer'],     emoji:['⚽','🥅'] },
+  { keys:['basketball'],            emoji:['🏀'] },
+  { keys:['tennis'],                emoji:['🎾'] },
+  { keys:['volleyball'],            emoji:['🏐'] },
+  { keys:['schwimmen','swimming'],  emoji:['🏊','🌊'] },
+  { keys:['skifahren','ski','schnee','winter'], emoji:['⛷️','🎿','🏔️'] },
+  { keys:['fahrrad','velofahren','cycling'], emoji:['🚴','🚵'] },
+  { keys:['laufen','rennen','jogging'], emoji:['🏃','👟'] },
+  { keys:['boxen','boxing'],        emoji:['🥊'] },
+  { keys:['kampfsport','karate','judo'], emoji:['🥋'] },
+  // ── Länder & Regionen ─────────────────────────────────────
+  { keys:['deutschland','german'],  emoji:['🇩🇪'] },
+  { keys:['schweiz','swiss','kanton'], emoji:['🇨🇭','🏔️'] },
+  { keys:['österreich'],            emoji:['🇦🇹'] },
+  { keys:['europa','europäisch'],   emoji:['🇪🇺','🗺️'] },
+  { keys:['usa','america','amerik'], emoji:['🇺🇸','🗽'] },
+  { keys:['china','chinesisch'],    emoji:['🇨🇳','🐉'] },
+  { keys:['japan','japanisch'],     emoji:['🇯🇵','⛩️'] },
+  { keys:['indien','indisch'],      emoji:['🇮🇳','🐘'] },
+  { keys:['brasilien'],             emoji:['🇧🇷','🌴'] },
+  { keys:['africa','afrika'],       emoji:['🌍','🦁'] },
+  { keys:['asien','asiatisch'],     emoji:['🌏','🗾'] },
+  { keys:['alpen','berg','berge'],  emoji:['🏔️','⛰️'] },
+  // ── Natur & Umwelt ────────────────────────────────────────
+  { keys:['tier','zoo','tierwelt','wildtier','haustier'], emoji:['🐾','🦁','🐘','🦋'] },
+  { keys:['pflanze','blume','botanik','garten'], emoji:['🌸','🌳','🌵','🍀'] },
+  { keys:['baum','wald','forst'],   emoji:['🌳','🌲','🍂'] },
+  { keys:['blume','rose','tulpe'],  emoji:['🌹','🌷','🌻'] },
+  { keys:['wasser','meer','ozean','fluss','see','küste'], emoji:['🌊','🐟','⛵','🏖️'] },
+  { keys:['feuer','brand','vulkan'], emoji:['🔥','🌋'] },
+  { keys:['eis','frost','gletscher'], emoji:['🧊','❄️'] },
+  { keys:['regen','gewitter','sturm'], emoji:['🌧️','⛈️','🌪️'] },
+  { keys:['sonne','sonnenschein','sommer'], emoji:['☀️','🌞','🌈'] },
+  { keys:['mond','nacht','sterne'], emoji:['🌙','⭐','🌟'] },
+  // ── Essen & Trinken ───────────────────────────────────────
+  { keys:['pizza'],                 emoji:['🍕'] },
+  { keys:['burger','hamburger'],    emoji:['🍔'] },
+  { keys:['sushi'],                 emoji:['🍣'] },
+  { keys:['früchte','obst','früchten'], emoji:['🍎','🍊','🍇'] },
+  { keys:['gemüse'],                emoji:['🥦','🥕','🥬'] },
+  { keys:['schokolade','süssigkeit'], emoji:['🍫','🍬','🍭'] },
+  { keys:['brot','backen'],         emoji:['🍞','🥐','🥖'] },
+  { keys:['kaffee','café'],         emoji:['☕','🫖'] },
+  // ── Geschichte & Epochen ──────────────────────────────────
+  { keys:['mittelalter','ritter','burg','kreuzzug'], emoji:['🏰','⚔️','🛡️','🗡️'] },
+  { keys:['ägypten','pharao','pyramide'], emoji:['🪆','🐪','🏜️'] },
+  { keys:['griech','sparta','athen','olymp'], emoji:['🏛️','🫒','🏺'] },
+  { keys:['revolution','freiheit','aufklärung'], emoji:['🗽','⚡','📣'] },
+  { keys:['weltkrieg','hitler','nazi','holocaust'], emoji:['📜','⚔️','🕊️'] },
+  { keys:['kalter krieg','ussr','sowjet'], emoji:['🚀','☢️','🧱'] },
+  { keys:['viking','wikinger','norse'], emoji:['⚓','🪓','🛡️'] },
+  // ── Körper & Gesundheit ───────────────────────────────────
+  { keys:['herz','herzkreislauf'],  emoji:['❤️','🫀'] },
+  { keys:['gehirn','hirn','nerven'], emoji:['🧠','🫀'] },
+  { keys:['knochen','skelett'],     emoji:['🦴','💀'] },
+  { keys:['auge','sehen','optik'],  emoji:['👁️','🔬'] },
+  { keys:['ohr','hören','musik'],   emoji:['👂','🎵'] },
+  { keys:['zahn','zähne','zahnarzt'], emoji:['🦷'] },
+  // ── Berufe & Gesellschaft ─────────────────────────────────
+  { keys:['arzt','ärztin','medizin','krankenhaus'], emoji:['🩺','💊','🏥'] },
+  { keys:['lehrer','lehrerin','schule','unterricht'], emoji:['👩‍🏫','📚','🏫'] },
+  { keys:['polizei','polizist'],    emoji:['👮','🚔'] },
+  { keys:['feuerwehr'],             emoji:['🚒','🔥','👨‍🚒'] },
+  { keys:['bauer','landwirtschaft','hof'], emoji:['🧑‍🌾','🚜','🌾'] },
+  { keys:['architekt','bau','gebäude'], emoji:['🏗️','🏛️','🏠'] },
+  { keys:['künstler','maler','artist'], emoji:['🎨','🖌️'] },
+  { keys:['musiker','sänger','komponist'], emoji:['🎸','🎤','🎼'] },
+  // ── Technologie & Zukunft ─────────────────────────────────
+  { keys:['roboter','robot','ki','künstliche intelligenz'], emoji:['🤖','⚙️'] },
+  { keys:['auto','autos','fahrzeug','verkehr'], emoji:['🚗','🏎️','🚦'] },
+  { keys:['flugzeug','luftfahrt','pilot'], emoji:['✈️','🛫','👨‍✈️'] },
+  { keys:['schiff','boot','segel'], emoji:['⛵','🚢','⚓'] },
+  { keys:['bahn','zug','eisenbahn'], emoji:['🚂','🚆','🛤️'] },
+  { keys:['raket','raumfahrt','iss'], emoji:['🚀','🛸','🌌'] },
+  { keys:['energie','solar','wind','strom'], emoji:['⚡','☀️','💧'] },
+];
+
+function suggestEmoji(name) {
+  if (!name.trim()) return [];
+  const lower = name.toLowerCase();
+  const hits = [];
+  for (const entry of EMOJI_MAP) {
+    if (entry.keys.some(k => lower.includes(k))) {
+      entry.emoji.forEach(e => { if (!hits.includes(e)) hits.push(e); });
+    }
+    if (hits.length >= 8) break;
+  }
+  return hits.slice(0, 8);
+}
+
+const DEFAULT_EMOJI = '📚';
+
+function updateEmojiSuggestions() {
+  const name = (document.getElementById('inp-name') || {}).value || '';
+  const chip = document.getElementById('emoji-chip');
+  if (!chip) return;
+  const suggestions = suggestEmoji(name);
+  const emoji = suggestions.length ? suggestions[0] : DEFAULT_EMOJI;
+  chip.textContent = emoji;
+  chip.dataset.emoji = emoji;
+}
+
+function applyEmojiChip() {
+  const chip = document.getElementById('emoji-chip');
+  if (chip) pickEmoji(chip.dataset.emoji || DEFAULT_EMOJI);
+}
+
+function pickEmoji(e) {
+  const inp = document.getElementById('inp-icon');
+  const btn = document.getElementById('inp-icon-btn');
+  if (inp) inp.value = e;
+  if (btn) { btn.textContent = e; btn.style.animation='none'; void btn.offsetWidth; btn.style.animation='fadeUp .15s ease'; }
+  closeEmojiPicker();
+}
+
+// ── EMOJI PICKER ─────────────────────────────────────────────
+const EMOJI_PICKER_DATA = [
+  { cat:'😀 Gesichter',    list:'😀😃😄😁😆😅🤣😂🙂😊😇🥰😍🤩😘😗😚😙😋😜😝😛🤑😎🤓🧐🥳🤗😏😒😞😔😟😕😣😫😩🥺😢😭😠😡🤬🤯😳🥵🥶😱😨😰😅🤔🤭🤫🤥😬🙄😑😶' },
+  { cat:'👋 Gesten',       list:'👋🤚🖐️✋🖖🤙👌🤌🤏✌️🤞🤟🤘👈👉👆🖕👇☝️👍👎✊👊🤛🤜👏🙌🤲🤝🙏💪' },
+  { cat:'🐶 Tiere',        list:'🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🙈🙉🙊🐔🐧🐦🦅🦆🦉🦋🐛🐝🐞🐢🐍🦎🐳🐬🐟🦈🐙🦑🦞🦀🦜🦚🦩🦢🐓🦔' },
+  { cat:'🍕 Essen',        list:'🍕🍔🌮🌯🥗🍝🍜🍲🥘🍛🍣🍱🍦🎂🍰🧁🍩🍪🍫🍬🍭🍺🥂🍷🍸🥤🧃🧋☕🍵' },
+  { cat:'⚽ Sport',        list:'⚽🏀🏈⚾🎾🏐🏉🥏🎱🏓🏸🥊🥋🎽🛹🛼⛸️⛳🎣🤿🏋️🤸⛹️🤾🏌️🧘🏄🏊🚵🚴🏆🥇🥈🥉🎖️🏅' },
+  { cat:'🎵 Kreativität',  list:'🎵🎶🎸🎹🎺🎻🥁🎤🎧🎼🎙️🎭🎨🖌️🖍️✏️📝🎬🎥📷📸🎮🕹️🎲🧩♟️🎯🎳🎪🎠🎡🎢🎆🎇✨🎉🎊🎈🎁🎀' },
+  { cat:'🏫 Schule',       list:'📚📖📝✏️🖊️📏📐🔬🔭🧪🧫🧬💡🔋💻🖥️⌨️🖱️📱☎️📡🗺️🌍🌏🌎🏔️🌋🗻🏕️🏛️🏙️' },
+  { cat:'❤️ Symbole',      list:'❤️🧡💛💚💙💜🖤🤍💔❣️💕💞💓💗💖💘💝☮️✝️☪️🕉️✡️☯️🛐⭐🌟💫⚡🔥💥🌈☀️⛅❄️🌊💧🌙🌞' },
+  { cat:'🚗 Fahrzeuge',    list:'🚗🚕🚙🚌🏎️🚓🚑🚒🛻🚚🚛🚜🏍️🛵🚲🛴🛹🚂🚅🚇✈️🛫🛬💺🚀🛸🚁⛵🚤🛳️⛴️🚢' },
+  { cat:'🏠 Orte & Natur', list:'🏠🏡🏢🏥🏦🏫🏬🏭🏯🏰💒🗼🗽⛪🕌🕍🕋⛩️🎑🏞️🌅🌄🌠🎇🎆🌇🌆🏙️🌃🌉🌌🌁🌿🌲🌳🌴🌵🌾🍀🍁🌻🌹🌺🌸🍃' },
+];
+
+function openEmojiPicker() {
+  let overlay = document.getElementById('emoji-picker-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'emoji-picker-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center';
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeEmojiPicker(); });
+    document.body.appendChild(overlay);
+  }
+  const rows = EMOJI_PICKER_DATA.map(cat => `
+    <div>
+      <div style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">${cat.cat}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:3px">
+        ${[...cat.list].filter(c=>c.trim()).map(e=>`<button type="button" data-ep="${encodeURIComponent(e)}" style="background:#0d0d22;border:1px solid #1a1a3a;border-radius:6px;padding:4px;font-size:22px;cursor:pointer;line-height:1;transition:background .1s" onmouseenter="this.style.background='#1e1e4a'" onmouseleave="this.style.background='#0d0d22'">${e}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  overlay.innerHTML = `
+    <div style="background:#13132a;border:1px solid #2a2a5e;border-radius:16px;padding:20px 20px 16px;width:min(480px,94vw);max-height:72vh;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 48px #000;animation:fadeUp .2s ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase">Emoji auswählen</div>
+        <button onclick="closeEmojiPicker()" style="background:none;border:none;color:#666;font-size:20px;cursor:pointer;line-height:1">✕</button>
+      </div>
+      <div style="overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-right:2px">${rows}</div>
+    </div>`;
+  overlay.querySelectorAll('button[data-ep]').forEach(btn => {
+    btn.addEventListener('click', () => pickEmoji(decodeURIComponent(btn.dataset.ep)));
+  });
+  overlay.style.display = 'flex';
+}
+
+function closeEmojiPicker() {
+  const o = document.getElementById('emoji-picker-overlay');
+  if (o) o.style.display = 'none';
+}
+
+const DEFAULT_DATA = {
+  logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgMjAwIj4KICA8IS0tIEhpbnRlcmdydW5kIC0tPgogIDxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMEEwQTBBIiByeD0iMTAiLz4KCiAgPCEtLSBSb3RlIEFremVudGxpbmllIG9iZW4gLS0+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjUwMCIgaGVpZ2h0PSI1IiBmaWxsPSIjQzgxMDJFIiByeD0iMiIvPgoKICA8IS0tIFNjaGlsZC9FbWJsZW0gbGlua3MgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSI1NSwzMCA5NSwzMCAxMTAsMTAwIDc1LDE2NSA0MCwxMDAiIGZpbGw9IiMxYTFhMWEiIHN0cm9rZT0iI0M4MTAyRSIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPCEtLSBJbm5lcmVzIFNjaGlsZCAtLT4KICA8cG9seWdvbiBwb2ludHM9IjYyLDQyIDg4LDQyIDEwMCwxMDAgNzUsMTUwIDUwLDEwMCIgZmlsbD0iI0M4MTAyRSIvPgogIDwhLS0gQSBpbSBTY2hpbGQgLS0+CiAgPHRleHQgeD0iNzUiIHk9IjEyMiIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI1MiIgZmlsbD0iIzBBMEEwQSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9Ii0yIj5BPC90ZXh0PgogIDwhLS0gUXVlcmJhbGtlbiBBIHZlcnN0w6Rya2VuIC0tPgogIDxyZWN0IHg9IjU4IiB5PSIxMDMiIHdpZHRoPSIzNCIgaGVpZ2h0PSI1IiBmaWxsPSIjMEEwQTBBIi8+CgogIDwhLS0gVmVydGlrYWxlIFRyZW5ubGluaWUgLS0+CiAgPHJlY3QgeD0iMTMyIiB5PSIzNSIgd2lkdGg9IjEuNSIgaGVpZ2h0PSIxMzAiIGZpbGw9IiNDODEwMkUiIG9wYWNpdHk9IjAuNSIvPgoKICA8IS0tIEFQRVggZ3Jvc3MgLS0+CiAgPHRleHQgeD0iMTU1IiB5PSIxMDgiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjaywgQXJpYWwiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iNjgiIGZpbGw9IiNmZmZmZmYiIGxldHRlci1zcGFjaW5nPSI0Ij5BUEVYPC90ZXh0PgoKICA8IS0tIE1PVE9SUyBrbGVpbiBkYXJ1bnRlciBtaXQgU3BhY2luZyAtLT4KICA8dGV4dCB4PSIxNTciIHk9IjEzOCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNDAwIiBmb250LXNpemU9IjIwIiBmaWxsPSIjQzgxMDJFIiBsZXR0ZXItc3BhY2luZz0iMTIiPk1PVE9SUzwvdGV4dD4KCiAgPCEtLSBEZWtvcmF0aXZlIExpbmllIHVudGVyIE1PVE9SUyAtLT4KICA8cmVjdCB4PSIxNTciIHk9IjE0OCIgd2lkdGg9IjI5MCIgaGVpZ2h0PSIxLjUiIGZpbGw9IiNDODEwMkUiIG9wYWNpdHk9IjAuNCIvPgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIxNTciIHk9IjE2OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2NjY2IiBsZXR0ZXItc3BhY2luZz0iMyI+UEVSRk9STUFOQ0UgwrcgUEFTU0lPTiDCtyBQUkVDSVNJT048L3RleHQ+CgogIDwhLS0gRHJlaSByb3RlIFB1bmt0ZSBhbHMgQWt6ZW50IC0tPgogIDxjaXJjbGUgY3g9IjQ0MyIgY3k9IjQwIiByPSI0IiBmaWxsPSIjQzgxMDJFIi8+CiAgPGNpcmNsZSBjeD0iNDU2IiBjeT0iNDAiIHI9IjQiIGZpbGw9IiNDODEwMkUiIG9wYWNpdHk9IjAuNiIvPgogIDxjaXJjbGUgY3g9IjQ2OSIgY3k9IjQwIiByPSI0IiBmaWxsPSIjQzgxMDJFIiBvcGFjaXR5PSIwLjMiLz4KPC9zdmc+',
+  subject: 'Autohaus',
+  quizTitle: 'AUTOHAUS QUIZ',
+  topics: [
+    { name: 'Automarken', icon: '🚗',
+      questions: [
+        { q: 'Welche Automarke hat den Slogan «Vorsprung durch Technik»?', a: 'Audi', e: 'Audi verwendet diesen Slogan seit 1971 – er steht für Innovation und Ingenieurskunst.' },
+        { q: 'Was bedeutet die Abkürzung BMW?', a: 'Bayerische Motoren Werke', e: 'BMW wurde 1916 in München gegründet – ursprünglich als Flugmotorenhersteller.' },
+        { q: 'Welche Automarke zeigt einen springenden Stier als Logo?', a: 'Lamborghini', e: 'Ferruccio Lamborghini wurde im Sternzeichen Stier geboren – daher der Stier im Logo.' },
+        { q: 'Aus welchem Land kommt die Marke Ferrari?', a: 'Italien – Maranello', e: 'Ferrari wurde 1939 von Enzo Ferrari in Maranello, Norditalien, gegründet.' },
+        { q: 'Welches Unternehmen besitzt die Marken VW, Audi, Porsche, Seat und Škoda?', a: 'Volkswagen Group', e: 'Der VW-Konzern ist einer der grössten Automobilhersteller der Welt mit über 10 Marken.' }
+      ]},
+    { name: 'Motor & Technik', icon: '🔧',
+      questions: [
+        { q: 'Was bedeutet PS bei einem Auto?', a: 'Pferdestärke', e: '1 PS = 0.7355 kW. Ein durchschnittlicher Familienwagen hat heute ca. 120–150 PS.' },
+        { q: 'Wie viele Zylinder hat ein V8-Motor?', a: '8 Zylinder', e: 'Die 8 Zylinder sind in V-Form angeordnet – typisch für Sportwagen und Pick-ups.' },
+        { q: 'Was ist der Vorteil eines Elektromotors gegenüber einem Verbrenner?', a: 'Sofortiges maximales Drehmoment, kein Getriebe nötig', e: 'Elektromotoren liefern von der ersten Umdrehung an ihr volles Drehmoment.' },
+        { q: 'Was macht ein Turbolader im Motor?', a: 'Er verdichtet die Ansaugluft für mehr Leistung', e: 'Der Turbolader nutzt Abgasenergie um mehr Luft in den Zylinder zu pressen – mehr Luft = mehr Power.' },
+        { q: 'Was bedeutet AWD?', a: 'Allradantrieb (All Wheel Drive)', e: 'AWD verteilt die Antriebskraft auf alle vier Räder – besser bei Nässe, Schnee und Sport.' }
+      ]},
+    { name: 'Rekorde & PS', icon: '🏎️',
+      questions: [
+        { q: 'Wie schnell beschleunigt ein Tesla Model S Plaid von 0 auf 100 km/h?', a: 'Ca. 2,1 Sekunden', e: 'Der Tesla Model S Plaid hält den Beschleunigungsrekord unter den Serienfahrzeugen.' },
+        { q: 'Wie viele PS hat der Bugatti Chiron Super Sport 300+?', a: "1'600 PS", e: 'Mit 1600 PS und einem Topspeed von über 490 km/h ist er eines der stärksten Serienfahrzeuge.' },
+        { q: 'Welches ist das meistverkaufte Auto der Welt aller Zeiten?', a: 'Toyota Corolla', e: 'Über 50 Millionen Einheiten seit 1966 – der Corolla ist die ewige Nummer 1.' },
+        { q: 'Welches war das erste Auto, das 100 km/h erreichte?', a: 'Jamais Contente (1899)', e: 'Der belgische Elektro-Rennwagen «La Jamais Contente» fuhr 1899 als erstes Fahrzeug über 100 km/h.' },
+        { q: 'Wie viel PS hat ein durchschnittlicher Neuwagen in der Schweiz heute?', a: 'Ca. 130–160 PS', e: 'Der Trend geht zu stärkeren Fahrzeugen – auch durch Hybridisierung und Elektromobilität.' }
+      ]},
+    { name: 'Autos & Schweiz', icon: '🇨🇭',
+      questions: [
+        { q: 'Wo befindet sich das grösste Verkehrsmuseum der Schweiz?', a: 'Luzern – Verkehrshaus der Schweiz', e: 'Das Verkehrshaus in Luzern ist das meistbesuchte Museum der Schweiz.' },
+        { q: 'Wie heisst der Schweizer Formel-1-Rennstall?', a: 'Sauber (heute: Stake F1 Team)', e: 'Sauber wurde 1970 von Peter Sauber gegründet – Sitz in Hinwil, Kanton Zürich.' },
+        { q: 'Wie viele Personenwagen sind in der Schweiz zugelassen?', a: 'Ca. 4,7 Millionen', e: 'Auf 1000 Einwohner kommen in der Schweiz ca. 540 Personenwagen.' },
+        { q: 'Welche Höchstgeschwindigkeit gilt auf Schweizer Autobahnen?', a: '120 km/h', e: 'Seit 1985 gilt in der Schweiz Tempo 120 auf Autobahnen.' },
+        { q: 'Was kostet die Autobahnvignette in der Schweiz (2024)?', a: '40 CHF', e: 'Die Jahresvignette gilt für das laufende und die beiden Nachbarkалендарjahre.' }
+      ]},
+    { name: 'Design & Geschichte', icon: '🎨',
+      questions: [
+        { q: 'Wer gilt als Erfinder des Automobils?', a: 'Carl Benz', e: 'Carl Benz erhielt 1886 das Patent für seinen «Benz Patent-Motorwagen» – das erste Automobil der Geschichte.' },
+        { q: 'In welchem Jahr wurde das erste Automobil patentiert?', a: '1886', e: 'Am 29. Januar 1886 erteilte das Kaiserliche Patentamt das Patent Nr. 37435 an Carl Benz.' },
+        { q: 'Welches Auto war das erste Massenproduktionsfahrzeug der Geschichte?', a: 'Ford Model T (1908)', e: 'Henry Ford revolutionierte mit dem Fliessband die Produktion – das Model T machte das Auto erschwinglich.' },
+        { q: 'Wer nannte den Jaguar E-Type «das schönste Auto der Welt»?', a: 'Enzo Ferrari', e: 'Der Jaguar E-Type (1961) gilt als Ikone des Automobildesigns – Enzo Ferraris Aussage ist legendär.' },
+        { q: 'Welches Auto ist seit Jahrzehnten das meistverkaufte in Europa?', a: 'VW Golf', e: 'Der VW Golf ist seit seiner Einführung 1974 das dauerhaft meistverkaufte Auto Europas.' }
+      ]},
+    { name: 'Errate das Auto', icon: '🎯',
+      questions: [
+        { q: '👁️ Welches legendäre Sportauto ist das?', a: 'Ferrari F40', e: 'Der Ferrari F40 (1987) war das letzte Auto, das Enzo Ferrari persönlich abnahm – ein echtes Kultfahrzeug.', mediaFile: 'Ferrari_F40.jpg' },
+        { q: '👁️ Welcher Sportwagen ist das?', a: 'Porsche 911 (992)', e: 'Der Porsche 911 wird seit 1963 gebaut – kaum ein anderes Auto verbindet Tradition und Performance so meisterhaft.', mediaFile: 'Porsche_992_911_Carrera_S_White_(22).jpg' },
+        { q: '👁️ Von welcher Marke ist dieser Supersportwagen?', a: 'Lamborghini Aventador', e: 'Der Aventador mit V12-Saugmotor (700+ PS) ist eines der letzten grossen Lamborghini-Flaggschiffe.', mediaFile: 'Lamborghini_Aventador.jpg' },
+        { q: '🔊 Von welcher britischen Indie-Band stammt dieser Song?', a: 'Electric Soft Parade', e: 'The Electric Soft Parade wurde 2000 in Brighton gegründet – die Brüder Alex und Tom White prägten den britischen Indie-Sound der frühen 2000er.', mediaFile: 'itunes: Electric Soft Parade There\'s A Silence' },
+        { q: '🔊 Welcher Song von Depeche Mode ist das?', a: 'Black Celebration', e: 'Black Celebration (1986) ist eines der dunkelsten und ikonischsten Alben von Depeche Mode – Synthpop-Pioniere aus Basildon, England.', mediaFile: 'itunes: Depeche Mode Black Celebration' }
+      ]}
+  ],
+  tiebreaker: {
+    q: "Wie viel CHF kostet ein neuer Porsche 911 Carrera (Basispreis 2024 in der Schweiz)?",
+    a: 130000,
+    unit: 'CHF'
+  },
+  raffle: {
+    active: false,
+    prize: 'E-Bike Specialized Turbo Como',
+    value: "CHF 3'490.–",
+    text: 'Trag dich ein und nimm an der Verlosung teil!',
+    mediaFile: ''
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+//  SETUP STATE
+// ════════════════════════════════════════════════════════════
+const TOTAL_STEPS = 9; // 1 Fach + 6 Themen + 1 Schätzfrage + 1 Vorschau
+let currentStep = 1;
+let setupData = null;
+let _isDemo = false;       // true = Autohaus-Demo geladen, noch nicht bearbeitet
+let _previewMode = false;  // true = Vorschau aktiv, currentStep beibehalten
+
+// ════════════════════════════════════════════════════════════
+//  INDEXEDDB  – Mediendateien dauerhaft speichern (kein Limit)
+// ════════════════════════════════════════════════════════════
+const _IDB_NAME  = 'quizwheel_media';
+const _IDB_STORE = 'files';
+
+function _openMediaDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(_IDB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(_IDB_STORE);
+    req.onsuccess  = e => res(e.target.result);
+    req.onerror    = e => rej(e.target.error);
+  });
+}
+function _idbSave(key, data) {
+  return _openMediaDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction(_IDB_STORE, 'readwrite');
+    tx.objectStore(_IDB_STORE).put(data, key);
+    tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+  }));
+}
+function _idbLoad(key) {
+  return _openMediaDB().then(db => new Promise((res, rej) => {
+    const tx  = db.transaction(_IDB_STORE, 'readonly');
+    const req = tx.objectStore(_IDB_STORE).get(key);
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  }));
+}
+
+// Ersetze idb:-Platzhalter im geladenen Quiz durch echte dataURLs
+async function _resolveMedia(data) {
+  const tasks = [];
+  data.topics.forEach((t, ti) => t.questions.forEach((q, qi) => {
+    if (q.mediaFile && q.mediaFile.startsWith('idb:')) {
+      const key = q.mediaFile.slice(4);
+      q._idbKey = key;
+      tasks.push(_idbLoad(key).then(url => { q.mediaFile = url || ''; }).catch(() => { q.mediaFile = ''; }));
+    } else if (q.mediaFile && q.mediaFile.startsWith('data:')) {
+      // Alt-Format: einmalig nach IDB migrieren
+      const key = `t${ti}q${qi}`;
+      q._idbKey = key;
+      tasks.push(_idbSave(key, q.mediaFile).catch(() => {}));
+      // dataURL bleibt vorerst im Arbeitsspeicher
+    }
+  }));
+  await Promise.all(tasks);
+  return data;
+}
+
+// ════════════════════════════════════════════════════════════
+function loadSavedData() {
+  try {
+    const saved = localStorage.getItem('quizwheel_data');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function saveData() {
+  if (_isDemo) return; // Demo-Daten nie speichern
+  // Vor dem Speichern: dataURLs durch idb:-Schlüssel ersetzen → kein Überlauf
+  const copy = JSON.parse(JSON.stringify(setupData));
+  copy.topics.forEach(t => t.questions.forEach((q, qi) => {
+    if (q.mediaFile && q.mediaFile.startsWith('data:')) {
+      q.mediaFile = q._idbKey ? `idb:${q._idbKey}` : '';
+    }
+    delete q._idbKey;
+  }));
+  try { localStorage.setItem('quizwheel_data', JSON.stringify(copy)); } catch(e) {}
+}
+
+function initSetupData(fromDefault) {
+  const src = fromDefault ? DEFAULT_DATA : {
+    subject: '',
+    quizTitle: '',
+    topics: PALETTE.map((_,i) => ({
+      name: '', icon: ['📚','🔬','🌍','➕','📖','🎨'][i],
+      questions: Array(5).fill(null).map(() => ({q:'',a:'',e:'',mediaFile:''}))
+    })),
+    tiebreaker: { q: '', a: '', unit: '' },
+    raffle: { active: false, prize: '', value: '', text: '', mediaFile: '' },
+    logo: '',
+    brandColor: '',
+    brandAccent: ''
+  };
+  setupData = JSON.parse(JSON.stringify(src));
+}
+
+// ════════════════════════════════════════════════════════════
+//  SETUP RENDERING
+// ════════════════════════════════════════════════════════════
+function renderSetup() {
+  const inner = document.getElementById('setup-inner');
+  const pct = ((currentStep - 1) / TOTAL_STEPS) * 100;
+  document.getElementById('setup-progress-fill').style.width = pct + '%';
+  document.getElementById('step-badge').textContent = `Schritt ${currentStep} / ${TOTAL_STEPS}`;
+  inner.innerHTML = '';
+
+  if (currentStep === 1) renderStep1(inner);
+  else if (currentStep >= 2 && currentStep <= 7) renderStepTopic(inner, currentStep - 2);
+  else if (currentStep === 8) renderStepTiebreaker(inner);
+  else if (currentStep === 9) renderStepPreview(inner);
+
+  inner.scrollTop = 0;
+}
+
+function renderStep1(el) {
+  const saved = loadSavedData();
+  el.innerHTML = `
+    <div class="step-title">🎡 Quiz erstellen</div>
+    <div class="step-sub">Gib deinem Quiz einen Titel.</div>
+
+    ${saved ? `<div class="saved-banner" onclick="loadSaved()">
+      <div style="font-size:22px">💾</div>
+      <div class="saved-text">
+        <div class="saved-main">Gespeichertes Quiz laden: «${saved.quizTitle || 'Quiz'}»</div>
+        <div class="saved-meta">${(()=>{
+          if (!saved.quizTitle) return '→ Weiter bei Schritt 1: Titel';
+          for (let i=0;i<6;i++) { if (!saved.topics[i]||!saved.topics[i].name) return '→ Weiter bei Thema '+(i+1)+' von 6'; }
+          if (!saved.tiebreaker||!saved.tiebreaker.q) return '→ Weiter bei der Schätzfrage';
+          return '✓ Fertig – zur Abschluss-Vorschau';
+        })()}</div>
+      </div>
+      <div style="font-size:20px;color:#00C853">→</div>
+    </div>` : ''}
+
+    <div class="form-group">
+      <label class="lbl">Quiz-Titel (erscheint auf dem Startscreen)</label>
+      <input class="inp" id="inp-title" placeholder="Beispiel: Firmen-Event, Messe, Vereinsfest …" value="${esc(setupData.quizTitle)}" style="text-transform:uppercase">
+    </div>
+
+    <div class="form-group">
+      <label class="lbl">🎨 Logo hochladen <span style="color:#999;font-size:10px;letter-spacing:1px">(optional – Farben werden automatisch erkannt)</span></label>
+      <div class="logo-drop-zone" id="logo-drop-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleLogoDrop(event)">
+        <input type="file" accept="image/*" onchange="handleLogoFile(this.files[0])">
+        <div class="logo-drop-text">📁 Logo hierher ziehen oder klicken zum Auswählen<br><span style="font-size:11px;color:#999">PNG, JPG, SVG</span></div>
+      </div>
+      <div id="logo-preview-area" style="display:${setupData.logo ? 'flex' : 'none'};align-items:center;gap:14px;margin-top:12px">
+        <img id="logo-preview-img" src="${esc(setupData.logo)}" style="height:48px;max-width:160px;object-fit:contain;border-radius:6px;background:#fff;padding:4px">
+        <div>
+          <div class="color-chips" id="color-chips-display">
+            ${setupData.brandColor ? `<div class="color-chip" style="background:${esc(setupData.brandColor)};color:#fff">${esc(setupData.brandColor)}</div>` : ''}
+            ${setupData.brandAccent ? `<div class="color-chip" style="background:${esc(setupData.brandAccent)};color:#fff">${esc(setupData.brandAccent)}</div>` : ''}
+          </div>
+          <div class="color-hint">Automatisch aus deinem Logo extrahiert</div>
+          <button onclick="clearLogo()" style="margin-top:6px;background:none;border:none;color:#999;font-size:12px;cursor:pointer;padding:0">✕ Logo entfernen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-nav">
+      <button class="btn btn-pink btn-lg" onclick="saveStep1()">Weiter →</button>
+      <button class="btn btn-dark" onclick="previewQuiz()" style="font-size:13px;padding:10px 18px">👁 Vorschau</button>
+      <button class="btn btn-dark" onclick="resetQuiz()" style="font-size:13px;padding:10px 18px;color:#555;border-color:#222">🗑 Neu starten</button>
+    </div>
+    <div style="margin-top:20px;font-size:12px;color:#aaa;line-height:1.8">
+      💡 Das Quiz hat 6 Themen mit je 5 Fragen (30 Fragen total).<br>
+      Im nächsten Schritt gibst du die Themen und Fragen ein.
+    </div>
+  `;
+  setTimeout(() => document.getElementById('inp-title').focus(), 100);
+}
+
+function renderStepTopic(el, topicIdx) {
+  const t = setupData.topics[topicIdx];
+  const color = PALETTE[topicIdx];
+  el.innerHTML = `
+    <div class="step-title">Thema ${topicIdx + 1} von 6</div>
+    <div class="step-sub">Name, Emoji und 5 Fragen für dieses Thema eingeben.</div>
+
+    <div style="display:flex;gap:12px;margin-bottom:20px;align-items:flex-start">
+      <div class="form-group" style="flex-shrink:0;margin-bottom:0;position:relative">
+        <label class="lbl">Emoji</label>
+        <button type="button" id="inp-icon-btn" onclick="openEmojiPicker()"
+          style="width:72px;height:58px;text-align:center;font-size:32px;line-height:1;
+                 background:#16163A;border:2px solid #2a2a5e;border-radius:8px;cursor:pointer;
+                 transition:border-color .2s;display:flex;align-items:center;justify-content:center"
+          onmouseenter="this.style.borderColor='#FF2D78'" onmouseleave="this.style.borderColor='#2a2a5e'"
+          title="Emoji auswählen">${esc(t.icon || DEFAULT_EMOJI)}</button>
+        <input type="hidden" id="inp-icon" value="${esc(t.icon)}">
+      </div>
+      <div class="form-group" style="flex:1;margin-bottom:0">
+        <label class="lbl">Thema-Name</label>
+        <input class="inp" id="inp-name"
+          placeholder="z.B. Geographie, Sport, Musik …"
+          value="${esc(t.name)}"
+          oninput="updateEmojiSuggestions()"
+          style="font-size:20px;padding:13px 16px">
+        <div style="margin-top:7px;display:flex;align-items:center;gap:8px;min-height:26px">
+          <span style="font-size:11px;color:#555;letter-spacing:1px;text-transform:uppercase">Vorschlag:</span>
+          <button type="button" id="emoji-chip"
+            onclick="applyEmojiChip()"
+            data-emoji="${esc(t.icon || DEFAULT_EMOJI)}"
+            style="background:#12122a;border:1px solid #2a2a5a;border-radius:8px;padding:3px 10px;font-size:20px;cursor:pointer;transition:background .15s;line-height:1"
+            onmouseenter="this.style.background='#1e1e4a'" onmouseleave="this.style.background='#12122a'"
+            title="Übernehmen">${esc(t.icon || DEFAULT_EMOJI)}</button>
+          <span style="font-size:11px;color:#444">← übernehmen</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top:2px solid #1a1a3e;padding-top:18px;margin-bottom:14px">
+      <label class="lbl" style="margin-bottom:14px;display:block">5 Fragen + Antworten</label>
+      <div class="qa-list" id="qa-list">
+        ${t.questions.map((q,i) => `
+          <div class="qa-item">
+            <div class="qa-item-top">
+              <span class="qa-item-num" style="background:${color}20;color:${color}">Frage ${i+1}</span>
+            </div>
+            <div class="qa-sublabel">Frage</div>
+            <input class="inp" style="font-size:14px;padding:10px 14px;margin-bottom:8px"
+              id="inp-q-${i}" placeholder="Beispiel: Deine ${i+1}. Frage zum Thema ${topicIdx+1}" value="${esc(q.q)}">
+            <div class="qa-sublabel">Antwort</div>
+            <input class="inp" style="font-size:14px;padding:10px 14px;margin-bottom:4px;border-color:${color}44"
+              id="inp-a-${i}" placeholder="Beispiel: Deine Antwort zu Frage ${i+1} Thema ${topicIdx+1}" value="${esc(q.a)}">
+            <div class="qa-sublabel" style="margin-top:6px">Erklärung der Antwort (optional)</div>
+            <input class="inp" style="font-size:13px;padding:8px 14px;border-color:#1a1a3e;color:#888"
+              id="inp-e-${i}" value="${esc(q.e || '')}">
+            <div class="qa-sublabel" style="margin-top:6px;display:flex;align-items:center;gap:8px">
+              📎 Medien (optional)
+              <span onclick="showMediaHelp()" style="cursor:pointer;background:#1a1a3e;color:#7878ff;border:1px solid #3a3a6e;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0" title="Hilfe zu Medien">ⓘ</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <input class="inp" style="font-size:13px;padding:8px 14px;border-color:#1a1a3e;color:#ccc"
+                id="inp-m-${i}" placeholder="🔗 Bild-URL oder itunes:künstler songname" value="${q.mediaFile && !q.mediaFile.startsWith('data:') ? esc(q.mediaFile) : ''}">
+              <div id="drop-${i}"
+                ondragover="event.preventDefault();this.style.borderColor='#7878ff'"
+                ondragleave="this.style.borderColor='#1a1a3e'"
+                ondrop="handleFileDrop(event,${i})"
+                onclick="document.getElementById('file-inp-${i}').click()"
+                style="border:2px dashed #1a1a3e;border-radius:8px;padding:12px 16px;cursor:pointer;text-align:center;color:#555;font-size:12px;transition:border-color .2s;user-select:none"
+                id="drop-zone-${i}">
+                <span id="drop-label-${i}">${q.mediaFile && (q.mediaFile.startsWith('data:') || q.mediaFile.startsWith('idb:')) ? '<span style=\'color:#7878ff\'>📎 ' + esc(q._mediaName || 'Datei geladen') + '</span>' : q.mediaFile && !q.mediaFile.startsWith('http') && !q.mediaFile.startsWith('itunes:') ? '<span style=\'color:#7878ff\'>📎 ' + esc(q.mediaFile) + '</span>' : '📁 Datei hierher ziehen oder klicken'}</span>
+              </div>
+              <input type="file" id="file-inp-${i}" accept="image/*,audio/*,video/*" style="display:none"
+                onchange="handleFileSelect(this,${i})">
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="setup-nav">
+      <button class="btn btn-dark" onclick="prevStep()">← Zurück</button>
+      <button class="btn btn-pink btn-lg" onclick="saveStepTopic(${topicIdx})">
+        ${topicIdx < 5 ? `Thema ${topicIdx + 2} →` : 'Schätzfrage →'}
+      </button>
+      <button class="btn btn-dark" onclick="previewQuiz()" style="font-size:13px;padding:10px 18px">👁 Vorschau</button>
+    </div>
+  `;
+  setTimeout(() => { document.getElementById('inp-name').focus(); updateEmojiSuggestions(); }, 100);
+}
+
+function renderStepTiebreaker(el) {
+  const tb = setupData.tiebreaker;
+  el.innerHTML = `
+    <div class="step-title">⚡ Schätzfrage</div>
+    <div class="step-sub">Diese Frage wird automatisch bei Gleichstand gespielt. Beide Teams schätzen – wer am nächsten dran ist, gewinnt.</div>
+
+    <div class="tb-hint-box">
+      <div class="tb-hint-text">
+        💡 <strong>Tipp:</strong> Wähle eine Frage mit einer konkreten Zahl als Antwort.<br>
+        Beispiele: «Wie viele Meter hoch ist der Eiffelturm?» → 330 m<br>
+        «In welchem Jahr wurde die Schweiz gegründet?» → 1291
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="lbl">Schätzfrage</label>
+      <input class="inp" id="inp-tb-q" placeholder="Beispiel: Wie viele Einwohner hat die Schweiz?" value="${esc(tb.q)}">
+    </div>
+    <div style="display:flex;gap:12px">
+      <div class="form-group" style="flex:1">
+        <label class="lbl">Richtige Antwort (Zahl)</label>
+        <input class="inp" id="inp-tb-a" type="text" inputmode="numeric" placeholder="Beispiel: 8'700'000"
+          value="${tb.a ? Number(tb.a).toLocaleString('de-CH') : ''}"
+          oninput="formatNumberInput(this)">
+      </div>
+      <div class="form-group" style="width:140px">
+        <label class="lbl">Einheit</label>
+        <input class="inp" id="inp-tb-unit" placeholder="Beispiel: CHF, km, m" value="${esc(tb.unit)}">
+      </div>
+    </div>
+
+    <div class="setup-nav">
+      <button class="btn btn-dark" onclick="prevStep()">← Zurück</button>
+      <button class="btn btn-pink btn-lg" onclick="saveStepTiebreaker()">Abschluss →</button>
+      <button class="btn btn-dark" onclick="previewQuiz()" style="font-size:13px;padding:10px 18px">👁 Vorschau</button>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('inp-tb-q').focus(), 100);
+}
+
+function renderStepPreview(el) {
+  const totalQ = setupData.topics.reduce((s,t) => s + t.questions.filter(q => q.q.trim()).length, 0);
+  el.innerHTML = `
+    <div class="step-title">✅ Bereit!</div>
+    <div class="step-sub">Dein Quiz ist fertig konfiguriert. Überprüfe die Zusammenfassung und starte dann.</div>
+
+    <div style="background:#16163A;border-radius:10px;padding:20px;margin-bottom:20px">
+      <div style="font-size:12px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Zusammenfassung</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#888">Quiz-Titel</span>
+        <strong>${esc(setupData.quizTitle) || '–'}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#888">Thema</span>
+        <strong>${esc(setupData.subject) || '–'}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#888">Themen</span>
+        <strong>${setupData.topics.filter(t => t.name.trim()).length} / 6</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#888">Fragen total</span>
+        <strong>${totalQ}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="color:#888">Schätzfrage</span>
+        <strong style="color:${setupData.tiebreaker.q ? '#00C853' : '#555'}">${setupData.tiebreaker.q ? '✓ vorhanden' : '– leer'}</strong>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      ${setupData.topics.map((t,i) => `
+        <div style="display:flex;align-items:center;gap:10px;background:#16163A;padding:10px 14px;border-radius:8px;border-left:3px solid ${PALETTE[i]}">
+          <span style="font-size:18px">${t.icon || '?'}</span>
+          <span style="font-weight:700;flex:1">${esc(t.name) || '<em style="color:#444">Leer</em>'}</span>
+          <span style="font-size:12px;color:#555">${t.questions.filter(q=>q.q.trim()).length}/5 Fragen</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">🎁 Verlosung (optional)</div>
+      <div style="background:#16163A;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px">
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <input type="checkbox" id="raffle-active" onchange="toggleRaffleFields()" ${setupData.raffle && setupData.raffle.active ? 'checked' : ''} style="width:18px;height:18px;accent-color:#FFD700;cursor:pointer">
+          <span style="font-weight:700;font-size:15px">Verlosung aktivieren</span>
+        </label>
+        <div id="raffle-fields" style="display:${setupData.raffle && setupData.raffle.active ? 'flex' : 'none'};flex-direction:column;gap:12px">
+          <div>
+            <label class="lbl">Preis</label>
+            <input class="inp" id="raffle-prize" placeholder="Zum Beispiel: E-Bike Specialized Turbo Como" value="${esc(setupData.raffle && setupData.raffle.prize || '')}">
+          </div>
+          <div>
+            <label class="lbl">Wert des Preises</label>
+            <input class="inp" id="raffle-value" placeholder="Zum Beispiel: CHF 3'490.–" value="${esc(setupData.raffle && setupData.raffle.value || '')}">
+          </div>
+          <div>
+            <label class="lbl">Einladungstext</label>
+            <input class="inp" id="raffle-text" placeholder="Zum Beispiel: Trag dich ein und nimm an der Verlosung teil!" value="${esc(setupData.raffle && setupData.raffle.text || '')}">
+          </div>
+          <div>
+            <label class="lbl">Foto des Preises (optional – Dateiname im gleichen Ordner)</label>
+            <input class="inp" id="raffle-media" placeholder="Zum Beispiel: ebike.jpg oder Bild-URL" value="${esc(setupData.raffle && setupData.raffle.mediaFile || '')}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-nav">
+      <button class="btn btn-dark" onclick="prevStep()">← Zurück</button>
+      <button class="btn btn-green btn-xl" onclick="finishSetup()">🎡 &nbsp; Quiz starten!</button>
+    </div>
+  `;
+}
+
+function toggleRaffleFields() {
+  const active = document.getElementById('raffle-active').checked;
+  document.getElementById('raffle-fields').style.display = active ? 'flex' : 'none';
+}
+
+// ════════════════════════════════════════════════════════════
+//  SETUP NAVIGATION
+// ════════════════════════════════════════════════════════════
+function esc(str) {
+  if (!str && str !== 0) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function prevStep() {
+  if (currentStep > 1) { currentStep--; renderSetup(); }
+}
+
+function saveStep1() {
+  setupData.quizTitle = document.getElementById('inp-title').value.trim().toUpperCase();
+  if (!setupData.quizTitle) setupData.quizTitle = 'MEIN QUIZ';
+  saveData();
+  currentStep++;
+  renderSetup();
+}
+
+// ── LOGO & BRANDING ─────────────────────────────────────────
+function handleLogoDrop(e) {
+  e.preventDefault();
+  document.getElementById('logo-drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleLogoFile(file);
+}
+
+function handleLogoFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const dataUrl = ev.target.result;
+    setupData.logo = dataUrl;
+    extractColors(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── FRAGEN-MEDIEN (Drag & Drop / Datei-Auswahl) ─────────────
+function handleFileDrop(e, qIdx) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = '#1a1a3e';
+  const file = e.dataTransfer.files[0];
+  if (file) processMediaFile(file, qIdx);
+}
+
+function handleFileSelect(input, qIdx) {
+  const file = input.files[0];
+  if (file) processMediaFile(file, qIdx);
+}
+
+function processMediaFile(file, qIdx) {
+  const topicIdx = currentStep - 2;
+  const idbKey   = `t${topicIdx}q${qIdx}`;
+  const reader   = new FileReader();
+  reader.onload  = function(ev) {
+    const dataUrl = ev.target.result;
+    _idbSave(idbKey, dataUrl).catch(() => {}).finally(() => {
+      setupData.topics[topicIdx].questions[qIdx].mediaFile  = dataUrl; // volle dataURL im RAM
+      setupData.topics[topicIdx].questions[qIdx]._idbKey    = idbKey;  // Schlüssel für saveData
+      setupData.topics[topicIdx].questions[qIdx]._mediaName = file.name;
+      saveData(); // speichert nur idb:-Referenz in localStorage
+      const label = document.getElementById('drop-label-' + qIdx);
+      if (label) label.innerHTML = '<span style="color:#7878ff">📎 ' + esc(file.name) + '</span>';
+      const urlInput = document.getElementById('inp-m-' + qIdx);
+      if (urlInput) urlInput.value = '';
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function extractColors(dataUrl) {
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = function() {
+    try {
+      const thief = new ColorThief();
+      const dominant = thief.getColor(img);
+      const palette  = thief.getPalette(img, 5);
+
+      // Pick best accent: most different from dominant
+      let bestAccent = palette[1] || dominant;
+      let maxDiff = 0;
+      palette.forEach(c => {
+        const diff = Math.abs(c[0]-dominant[0]) + Math.abs(c[1]-dominant[1]) + Math.abs(c[2]-dominant[2]);
+        if (diff > maxDiff) { maxDiff = diff; bestAccent = c; }
+      });
+
+      setupData.brandColor  = sanitizeBrandColor(rgbToHex(dominant[0], dominant[1], dominant[2]));
+      setupData.brandAccent = sanitizeBrandColor(rgbToHex(bestAccent[0], bestAccent[1], bestAccent[2]));
+      saveData();
+      showLogoPreview();
+    } catch(e) {
+      setupData.brandColor = '#FF2D78';
+      setupData.brandAccent = '#00D4FF';
+      saveData();
+      showLogoPreview();
+    }
+  };
+  img.src = dataUrl;
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+// ── FARB-UTILITIES ──────────────────────────────────────────────────────────
+function getLuminance(hex) {
+  const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  const lin = c => c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4);
+  return 0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b);
+}
+function contrastText(hex) {
+  // Gibt '#000000' oder '#ffffff' zurück – je nachdem was besser lesbar ist
+  return getLuminance(hex) > 0.35 ? '#000000' : '#ffffff';
+}
+function hexToHsl(hex) {
+  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0,s=0,l=(max+min)/2;
+  if(max!==min){
+    const d=max-min; s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}
+  }
+  return [h*360,s*100,l*100];
+}
+function hslToHex(h,s,l) {
+  h/=360;s/=100;l/=100;
+  const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+  let r,g,b;
+  if(s===0){r=g=b=l;}else{const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);}
+  return '#'+[r,g,b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+}
+function sanitizeBrandColor(hex) {
+  let [h,s,l]=hexToHsl(hex);
+  if(s<20) s=65;        // zu grau → sättigen
+  if(l<20) l=35;        // zu dunkel → aufhellen
+  if(l>78) l=58;        // zu hell → abdunkeln
+  return hslToHex(h,s,l);
+}
+function alternateBrandColor(hex) {
+  // Erstellt abwechselnde hellere/dunklere Variante für Radsegmente
+  let [h,s,l]=hexToHsl(hex);
+  l=l>50?Math.max(18,l-22):Math.min(82,l+22);
+  return hslToHex(h,Math.max(s,30),l);
+}
+function hexToRgba(hex,alpha) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function showLogoPreview() {
+  const area = document.getElementById('logo-preview-area');
+  const imgEl = document.getElementById('logo-preview-img');
+  const chips = document.getElementById('color-chips-display');
+  if (!area) return;
+  if (imgEl) imgEl.src = setupData.logo;
+  const _hexOk = v => /^#[0-9a-fA-F]{6}$/.test(v);
+  if (chips) chips.innerHTML =
+    (_hexOk(setupData.brandColor)  ? `<div class="color-chip" style="background:${setupData.brandColor};color:#fff">${setupData.brandColor}</div>` : '') +
+    (_hexOk(setupData.brandAccent) ? `<div class="color-chip" style="background:${setupData.brandAccent};color:#fff">${setupData.brandAccent}</div>` : '');
+  area.style.display = 'flex';
+}
+
+function clearLogo() {
+  setupData.logo = '';
+  setupData.brandColor = '';
+  setupData.brandAccent = '';
+  saveData();
+  const area = document.getElementById('logo-preview-area');
+  if (area) area.style.display = 'none';
+}
+
+function applyBranding() {
+  const root = document.documentElement;
+  const bc  = setupData.brandColor;
+  const bc2 = setupData.brandAccent;
+  if (!bc) return _showLogo();
+
+  const txt   = contrastText(bc);
+  const alt   = alternateBrandColor(bc);
+  const glow  = hexToRgba(bc, 0.35);
+
+  // CSS-Variablen setzen
+  root.style.setProperty('--brand',  bc);
+  root.style.setProperty('--brand2', bc2 || alt);
+  root.style.setProperty('--brand-text', txt);
+  root.style.setProperty('--brand-glow', glow);
+
+  // Buttons
+  document.querySelectorAll('.btn-pink,.btn-spin,.btn-primary-brand').forEach(el => {
+    el.style.background = bc;
+    el.style.color = txt;
+    el.style.boxShadow = `0 0 28px ${glow}`;
+  });
+
+  // Score-Farben, Countdown-Akzente, VS-Badge
+  document.querySelectorAll('.team-a-score,.score-a').forEach(el => el.style.color = bc);
+  document.querySelectorAll('.team-b-score,.score-b').forEach(el => el.style.color = bc2 || alt);
+  document.querySelectorAll('.vs-badge,.team-a').forEach(el => el.style.borderColor = bc);
+
+  // Fragen-Screen Akzentlinie
+  document.querySelectorAll('.q-accent,.question-bar').forEach(el => el.style.background = bc);
+
+  // Rad neu zeichnen mit neuen Farben
+  if (typeof drawWheel === 'function' && typeof wheelRot !== 'undefined') drawWheel(wheelRot);
+
+  _showLogo();
+}
+
+function _updateWheelLogo() {
+  const el = document.getElementById('wheel-logo');
+  if (!el) return;
+  if (setupData.logo) {
+    el.src = setupData.logo;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function _showLogo() {
+  const logoEl = document.getElementById('start-logo');
+  if (!logoEl) return;
+  if (setupData.logo) {
+    logoEl.src = setupData.logo;
+    logoEl.style.display = 'block';
+  } else {
+    logoEl.style.display = 'none';
+  }
+}
+
+function saveStepTopic(idx) {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) { alert('Bitte Thema-Name eingeben.'); return; }
+  setupData.topics[idx].name = name;
+  setupData.topics[idx].icon = document.getElementById('inp-icon').value.trim() || '📚';
+  for (let i = 0; i < 5; i++) {
+    setupData.topics[idx].questions[i].q = document.getElementById(`inp-q-${i}`).value.trim();
+    setupData.topics[idx].questions[i].a = document.getElementById(`inp-a-${i}`).value.trim();
+    setupData.topics[idx].questions[i].e = document.getElementById(`inp-e-${i}`).value.trim();
+    const mUrl = document.getElementById(`inp-m-${i}`).value.trim();
+    if (mUrl) {
+      setupData.topics[idx].questions[i].mediaFile = mUrl; // URL eingegeben → überschreiben
+    } else if (!setupData.topics[idx].questions[i].mediaFile?.startsWith('data:')) {
+      setupData.topics[idx].questions[i].mediaFile = ''; // kein Upload & keine URL → leeren
+    }
+    // dataURL (hochgeladene Datei) bleibt unverändert
+  }
+  const filled = setupData.topics[idx].questions.filter(q => q.q && q.a).length;
+  if (filled < 1) { alert('Bitte mindestens 1 Frage mit Antwort eingeben.'); return; }
+  saveData();
+  currentStep++;
+  renderSetup();
+}
+
+function formatNumberInput(el) {
+  const raw = el.value.replace(/[^0-9]/g, '');
+  if (!raw) { el.value = ''; return; }
+  el.value = parseInt(raw, 10).toLocaleString('de-CH');
+}
+
+function saveStepTiebreaker() {
+  setupData.tiebreaker.q    = document.getElementById('inp-tb-q').value.trim();
+  setupData.tiebreaker.a    = parseFloat(document.getElementById('inp-tb-a').value.replace(/[^0-9.]/g, '')) || 0;
+  setupData.tiebreaker.unit = document.getElementById('inp-tb-unit').value.trim();
+  saveData();
+  currentStep++;
+  renderSetup();
+}
+
+function detectLastStep(data) {
+  // Schritt 1: Kein Titel
+  if (!data.quizTitle) return 1;
+  // Schritte 2–7: Erstes Thema ohne Namen
+  for (let i = 0; i < 6; i++) {
+    if (!data.topics[i] || !data.topics[i].name) return i + 2;
+  }
+  // Schritt 8: Keine Schätzfrage
+  if (!data.tiebreaker || !data.tiebreaker.q) return 8;
+  // Schritt 9: Alles ausgefüllt → Abschluss
+  return 9;
+}
+
+function loadSaved() {
+  const saved = loadSavedData();
+  if (saved) {
+    setupData = saved;
+    // Normalize: ensure 6 topics, each with 5 questions
+    while (setupData.topics.length < 6) {
+      setupData.topics.push({ name: '', icon: '📚', questions: Array(5).fill(null).map(()=>({q:'',a:'',e:''})) });
+    }
+    setupData.topics.forEach(t => {
+      while (t.questions.length < 5) t.questions.push({q:'',a:'',e:''});
+    });
+    currentStep = detectLastStep(setupData);
+    renderSetup();
+  }
+}
+
+function resetQuiz() {
+  if (!confirm('Alles löschen und neu beginnen?')) return;
+  try { localStorage.removeItem('quizwheel_data'); } catch(e) {}
+  // Kein eigenes Quiz mehr → Standard-Musikquiz laden (wie beim Erststart)
+  initSetupData(true);
+  _isDemo = true;
+  buildTopics();
+  updateStartScreen();
+  if (setupData.logo) extractColors(setupData.logo);
+  applyBranding();
+  goToStart();
+}
+
+function goToSetup() {
+  if (_isDemo) {
+    // Demo war aktiv → frisch starten mit leeren Feldern
+    initSetupData(false);
+    _isDemo = false;
+    currentStep = 1;
+  } else if (!_previewMode) {
+    currentStep = 1;
+  }
+  _previewMode = false;
+  if (!setupData) initSetupData(false);
+  showDemoBadge(false);
+  renderSetup();
+  showScreen('screen-setup');
+}
+
+function saveCurrentStepSilent() {
+  // Liest die aktuellen Formularfelder ohne Validierung
+  try {
+    if (currentStep === 1) {
+      const t = document.getElementById('inp-title');
+      if (t) setupData.quizTitle = t.value.trim().toUpperCase();
+    } else if (currentStep >= 2 && currentStep <= 7) {
+      const idx  = currentStep - 2;
+      const name = document.getElementById('inp-name');
+      const icon = document.getElementById('inp-icon');
+      if (name) setupData.topics[idx].name = name.value.trim();
+      if (icon) setupData.topics[idx].icon = icon.value.trim() || '📚';
+      for (let i = 0; i < 5; i++) {
+        const q = document.getElementById(`inp-q-${i}`);
+        const a = document.getElementById(`inp-a-${i}`);
+        const e = document.getElementById(`inp-e-${i}`);
+        const m = document.getElementById(`inp-m-${i}`);
+        if (q) setupData.topics[idx].questions[i].q = q.value.trim();
+        if (a) setupData.topics[idx].questions[i].a = a.value.trim();
+        if (e) setupData.topics[idx].questions[i].e = e.value.trim();
+        if (m) {
+          const mUrl = m.value.trim();
+          if (mUrl) {
+            setupData.topics[idx].questions[i].mediaFile = mUrl;
+          } else if (!setupData.topics[idx].questions[i].mediaFile?.startsWith('data:')) {
+            setupData.topics[idx].questions[i].mediaFile = '';
+          }
+        }
+      }
+    } else if (currentStep === 8) {
+      const q = document.getElementById('inp-tb-q');
+      const a = document.getElementById('inp-tb-a');
+      const u = document.getElementById('inp-tb-unit');
+      if (q) setupData.tiebreaker.q    = q.value.trim();
+      if (a) setupData.tiebreaker.a    = parseFloat(a.value.replace(/[^0-9.]/g,'')) || 0;
+      if (u) setupData.tiebreaker.unit = u.value.trim();
+    }
+  } catch(e) {}
+}
+
+function previewQuiz() {
+  _previewMode = true;
+  saveCurrentStepSilent(); // aktuellen Eingabestand lesen
+  buildTopics();
+  renderPreviewScreen();
+  showScreen('screen-preview');
+}
+
+function renderPreviewScreen() {
+  // Titel & Fach
+  document.getElementById('pv-title').textContent = setupData.quizTitle || (setupData.subject || 'QUIZ').toUpperCase() + ' QUIZ';
+
+  // Rad zeichnen
+  const cvs = document.getElementById('preview-wheel-canvas');
+  const size = Math.min(260, window.innerWidth * 0.45);
+  cvs.width = size; cvs.height = size;
+  if (TOPICS.length > 0) drawWheelOnCanvas(cvs, 0);
+
+  // Themen mit allen Fragen & Antworten
+  const container = document.getElementById('pv-topics');
+  container.innerHTML = setupData.topics.map((t, i) => {
+    const color  = PALETTE[i % PALETTE.length];
+    const filled = t.questions.filter(q => q.q && q.a).length;
+    const hasName = t.name.trim();
+
+    const questionsHtml = t.questions.map((q, qi) => {
+      if (!q.q && !q.a) return `
+        <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a3e;opacity:.35">
+          <span style="min-width:22px;font-size:11px;color:#555;font-weight:700;padding-top:2px">F${qi+1}</span>
+          <span style="font-size:12px;color:#444;font-style:italic">Leer</span>
+        </div>`;
+      return `
+        <div style="padding:8px 0;border-bottom:1px solid #1a1a3e">
+          <div style="display:flex;gap:10px;margin-bottom:4px">
+            <span style="min-width:22px;font-size:11px;color:${color};font-weight:700;padding-top:2px">F${qi+1}</span>
+            <span style="font-size:13px;color:#ddd;line-height:1.4">${esc(q.q) || '<em style="color:#555">Frage fehlt</em>'}</span>
+          </div>
+          <div style="display:flex;gap:10px">
+            <span style="min-width:22px;font-size:11px;color:#00C853;font-weight:700;padding-top:2px">A</span>
+            <span style="font-size:13px;color:#00C853;font-weight:600;line-height:1.4">${esc(q.a) || '<em style="color:#555">Antwort fehlt</em>'}</span>
+          </div>
+          ${q.e ? `<div style="display:flex;gap:10px;margin-top:3px"><span style="min-width:22px"></span><span style="font-size:11px;color:#666;font-style:italic">${esc(q.e)}</span></div>` : ''}
+          ${q.mediaFile ? `<div style="display:flex;gap:10px;margin-top:3px"><span style="min-width:22px"></span><span style="font-size:11px;color:#888">📎 ${esc(q.mediaFile)}</span></div>` : ''}
+        </div>`;
+    }).join('');
+
+    return `
+      <div style="background:#16163A;border-radius:10px;border-left:4px solid ${hasName ? color : '#333'};margin-bottom:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:${hasName ? color+'22' : '#111'}">
+          <span style="font-size:20px">${t.icon || '?'}</span>
+          <span style="font-weight:700;font-size:15px;flex:1;color:${hasName ? '#fff' : '#444'}">${t.name || '<em>Thema leer</em>'}</span>
+          <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:${filled>=5?'#00C85322':filled>0?'#FFD70022':'#33333388'};color:${filled>=5?'#00C853':filled>0?'#FFD700':'#555'};font-weight:700">${filled}/5</span>
+        </div>
+        <div style="padding:4px 14px 8px">${questionsHtml}</div>
+      </div>`;
+  }).join('');
+
+  // Schätzfrage
+  const tb = setupData.tiebreaker;
+  const pvTb = document.getElementById('pv-tiebreaker');
+  if (tb && tb.q) {
+    document.getElementById('pv-tb-text').textContent = `${tb.q}  →  ${Number(tb.a).toLocaleString('de-CH')} ${tb.unit}`;
+    pvTb.style.display = '';
+  } else {
+    pvTb.style.display = 'none';
+  }
+}
+
+function drawWheelOnCanvas(cvs, rotDeg) {
+  const c   = cvs.getContext('2d');
+  const N   = TOPICS.length;
+  if (!N) return;
+  const SEG = (2 * Math.PI) / N;
+  const sz = cvs.width, cx = sz/2, cy = sz/2, R = sz/2 - 6;
+  c.clearRect(0, 0, sz, sz);
+  const _pbc  = setupData && setupData.brandColor  ? setupData.brandColor  : '#FF2D78';
+  const _palt = alternateBrandColor(_pbc);
+  c.save();
+  c.beginPath(); c.arc(cx,cy,R+4,0,Math.PI*2);
+  c.strokeStyle=_pbc; c.lineWidth=2; c.stroke();
+  c.restore();
+  c.save(); c.translate(cx,cy); c.rotate(rotDeg * Math.PI/180);
+  TOPICS.forEach((t,i) => {
+    const cA = i*SEG - Math.PI/2;
+    const pSegColor = setupData && setupData.brandColor ? (i%2===0 ? _pbc : _palt) : t.color;
+    c.beginPath(); c.moveTo(0,0); c.arc(0,0,R,cA-SEG/2,cA+SEG/2); c.closePath();
+    c.fillStyle = pSegColor; c.fill();
+    c.strokeStyle='#0D0D1A'; c.lineWidth=2; c.stroke();
+    c.save(); c.rotate(cA);
+    c.font=`${Math.floor(R*0.17)}px Arial`; c.fillStyle=contrastText(pSegColor);
+    c.textAlign='center'; c.textBaseline='middle';
+    c.fillText(t.icon||'?', R*0.40, 0);
+    const lbl = t.title.length>10 ? t.title.substring(0,9)+'…' : t.title;
+    c.font=`bold ${Math.floor(R*0.07)}px Arial`;
+    c.fillText(lbl, R*0.76, 0, R*0.40);
+    c.restore();
+  });
+  c.beginPath(); c.arc(0,0,R*0.1,0,Math.PI*2);
+  c.fillStyle='#0D0D1A'; c.fill();
+  c.strokeStyle='#FFD700'; c.lineWidth=2; c.stroke();
+  c.font=`bold ${Math.floor(R*0.09)}px Arial`; c.fillStyle='#FFD700';
+  c.textAlign='center'; c.textBaseline='middle'; c.fillText('?',0,1);
+  c.restore();
+  // Zeiger
+  c.save();
+  const tipY=cy-R-1, baseY=tipY-Math.floor(R*0.12), bW=Math.floor(R*0.08);
+  c.beginPath(); c.moveTo(cx,tipY); c.lineTo(cx-bW,baseY); c.lineTo(cx+bW,baseY); c.closePath();
+  c.fillStyle='#FFD700'; c.fill();
+  c.restore();
+}
+
+function backFromPreview() {
+  // Direkt zurück zum aktuellen Bearbeitungsschritt — kein Reset
+  renderSetup();
+  showScreen('screen-setup');
+}
+
+function showDemoBadge(show) {
+  let badge = document.getElementById('demo-badge');
+  if (show && !badge) {
+    badge = document.createElement('div');
+    badge.id = 'demo-badge';
+    badge.style.cssText = 'position:fixed;top:14px;right:180px;background:#FFD700;color:#0D0D1A;font-size:12px;font-weight:700;padding:4px 18px;border-radius:20px;letter-spacing:1px;z-index:100;cursor:pointer;user-select:none';
+    badge.textContent = '✦ DEMO  ·  ✕ Beenden ✦';
+    badge.title = 'Demo beenden';
+    badge.onclick = abortDemo;
+    document.body.appendChild(badge);
+  } else if (!show && badge) {
+    badge.remove();
+  }
+  // Demo: Buttons je nach Modus zeigen/verstecken
+  const btnCreate = document.getElementById('btn-demo-create');
+  const btnEdit   = document.getElementById('btn-edit');
+  const btnLabel  = document.getElementById('btn-start-label');
+  if (btnCreate) btnCreate.style.display = show ? '' : 'none';
+  if (btnEdit)   btnEdit.style.display   = show ? 'none' : '';
+  if (btnLabel)  btnLabel.textContent    = show ? 'Demo Quiz starten' : 'Quiz starten';
+  const hint = document.getElementById('demo-hint');
+  if (hint) hint.style.display = show ? 'flex' : 'none';
+  const hintTop = document.getElementById('demo-hint-top');
+  if (hintTop) hintTop.style.display = show ? 'flex' : 'none';
+  // Im Demo-Modus «Spiel beenden» verstecken – «Demo beenden» übernimmt diese Rolle
+  document.querySelectorAll('.btn-end-game').forEach(b => b.style.display = show ? 'none' : '');
+}
+
+function finishSetup() {
+  // Verlosungs-Daten speichern
+  if (!setupData.raffle) setupData.raffle = {};
+  setupData.raffle.active    = !!(document.getElementById('raffle-active') && document.getElementById('raffle-active').checked);
+  setupData.raffle.prize     = (document.getElementById('raffle-prize')  || {value:''}).value.trim();
+  setupData.raffle.value     = (document.getElementById('raffle-value')  || {value:''}).value.trim();
+  setupData.raffle.text      = (document.getElementById('raffle-text')   || {value:''}).value.trim();
+  setupData.raffle.mediaFile = (document.getElementById('raffle-media')  || {value:''}).value.trim();
+  saveData();
+  _isDemo = false;
+  buildTopics();
+  updateStartScreen();
+  applyBranding();
+  showDemoBadge(false);
+  showScreen('screen-start');
+}
+
+// ════════════════════════════════════════════════════════════
+//  BUILD QUIZ FROM SETUP DATA
+// ════════════════════════════════════════════════════════════
+let TOPICS = [];
+
+function buildTopics() {
+  TOPICS = setupData.topics
+    .filter(t => t.name.trim() && t.questions.some(q => q.q && q.a))
+    .map((t, i) => ({
+      title: t.name.toUpperCase(),
+      icon:  t.icon || '📚',
+      color: PALETTE[i % PALETTE.length],
+      questions: t.questions.filter(q => q.q && q.a).map(q => ({
+        q: q.q, a: q.a, e: q.e || '', mediaFile: q.mediaFile || ''
+      }))
+    }));
+}
+
+function updateStartScreen() {
+  // Titel + Fach: nur Demo-Daten zeigen wenn wirklich Demo aktiv ist.
+  // Bei eigenem Quiz (auch leerem) → neutralen Platzhalter zeigen.
+  const showDemo = _isDemo;
+  document.getElementById('start-title').textContent = showDemo
+    ? setupData.quizTitle
+    : (setupData.quizTitle || 'MEIN QUIZ');
+  const totalQ = TOPICS.reduce((s,t) => s + t.questions.length, 0);
+  document.getElementById('start-info').textContent =
+    `${totalQ} Fragen · ${TOPICS.length} Themen · Geheimstand · Zufallsrad`;
+  document.getElementById('q-total').textContent = totalQ;
+  document.getElementById('end-sub').textContent = `Alle ${totalQ} Fragen gespielt`;
+  _updateDurHint();
+}
+
+function goToStart() {
+  // Aktuellen Formularstand lesen, damit der Titel auf dem Startscreen stimmt
+  saveCurrentStepSilent();
+  buildTopics();
+  updateStartScreen();
+  applyBranding();
+  // Demo-Elemente auf Startscreen zeigen/verstecken (ohne floating Badge)
+  const hintTop   = document.getElementById('demo-hint-top');
+  const hint      = document.getElementById('demo-hint');
+  const btnCreate = document.getElementById('btn-demo-create');
+  const btnEdit   = document.getElementById('btn-edit');
+  const btnLabel  = document.getElementById('btn-start-label');
+  if (hintTop)   hintTop.style.display   = _isDemo ? 'flex' : 'none';
+  if (hint)      hint.style.display      = _isDemo ? 'flex' : 'none';
+  if (btnCreate) btnCreate.style.display = _isDemo ? ''     : 'none';
+  if (btnEdit)   btnEdit.style.display   = _isDemo ? 'none' : '';
+  if (btnLabel)  btnLabel.textContent    = _isDemo ? 'Demo Quiz starten' : 'Quiz starten';
+  showScreen('screen-start');
+}
+
+// ════════════════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ════════════════════════════════════════════════════════════
+let audioCtx = null;
+function getAC() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTick(speed) {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const osc = c.createOscillator(); const env = c.createGain();
+    osc.connect(env); env.connect(c.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(160 + speed * 640, t);
+    osc.frequency.exponentialRampToValueAtTime(70, t + 0.04);
+    env.gain.setValueAtTime(0.38 + speed * 0.28, t);
+    env.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    osc.start(t); osc.stop(t + 0.06);
+  } catch(e) {}
+}
+function playCountdownBeep(num) {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const freq = [0,155,185,220][num] || 155;
+    const vol  = [0,0.9,0.75,0.6][num] || 0.7;
+    const sub = c.createOscillator(); const subG = c.createGain();
+    sub.connect(subG); subG.connect(c.destination);
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(freq, t);
+    sub.frequency.exponentialRampToValueAtTime(freq*0.45, t+0.38);
+    subG.gain.setValueAtTime(vol, t);
+    subG.gain.exponentialRampToValueAtTime(0.001, t+0.42);
+    sub.start(t); sub.stop(t+0.45);
+    const hi = c.createOscillator(); const hiG = c.createGain();
+    hi.connect(hiG); hiG.connect(c.destination);
+    hi.type = 'sawtooth';
+    hi.frequency.setValueAtTime(freq*3.2, t);
+    hi.frequency.linearRampToValueAtTime(freq*3.2+35, t+0.36);
+    hiG.gain.setValueAtTime(0.1, t);
+    hiG.gain.exponentialRampToValueAtTime(0.001, t+0.36);
+    hi.start(t); hi.stop(t+0.4);
+  } catch(e) {}
+}
+function playWhoosh() {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const osc = c.createOscillator(); const g = c.createGain();
+    osc.connect(g); g.connect(c.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(280, t);
+    osc.frequency.exponentialRampToValueAtTime(1400, t+0.52);
+    g.gain.setValueAtTime(0.28, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+0.55);
+    osc.start(t); osc.stop(t+0.58);
+  } catch(e) {}
+}
+function playFanfare() {
+  try {
+    const c = getAC();
+    const notes=[{f:261.63,dur:.12,gap:.02},{f:261.63,dur:.12,gap:.02},{f:261.63,dur:.12,gap:.02},{f:329.63,dur:.20,gap:.02},{f:392.00,dur:.20,gap:.02},{f:523.25,dur:.60,gap:0}];
+    let t = c.currentTime + 0.08;
+    notes.forEach(n => {
+      const osc=c.createOscillator(),flt=c.createBiquadFilter(),env=c.createGain();
+      osc.type='sawtooth'; flt.type='lowpass';
+      flt.frequency.setValueAtTime(2800,t); flt.frequency.exponentialRampToValueAtTime(1600,t+n.dur);
+      osc.connect(flt); flt.connect(env); env.connect(c.destination);
+      osc.frequency.setValueAtTime(n.f,t);
+      env.gain.setValueAtTime(0,t); env.gain.linearRampToValueAtTime(0.28,t+0.018);
+      env.gain.setValueAtTime(0.28,t+n.dur-0.025); env.gain.linearRampToValueAtTime(0,t+n.dur);
+      osc.start(t); osc.stop(t+n.dur+0.03);
+      const osc2=c.createOscillator(),env2=c.createGain();
+      osc2.type='triangle'; osc2.connect(env2); env2.connect(c.destination);
+      osc2.frequency.setValueAtTime(n.f*0.5,t);
+      env2.gain.setValueAtTime(0,t); env2.gain.linearRampToValueAtTime(0.13,t+0.018);
+      env2.gain.setValueAtTime(0.13,t+n.dur-0.025); env2.gain.linearRampToValueAtTime(0,t+n.dur);
+      osc2.start(t); osc2.stop(t+n.dur+0.03);
+      t += n.dur + n.gap;
+    });
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════════════════════════
+//  CANVAS WHEEL
+// ════════════════════════════════════════════════════════════
+const canvas = document.getElementById('wheel-canvas');
+const ctx    = canvas.getContext('2d');
+
+function initCanvas() {
+  const size = Math.round(Math.min(520, window.innerWidth * 0.72, window.innerHeight * 0.65));
+  canvas.width = size; canvas.height = size;
+}
+
+function drawWheel(rotDeg, highlightIdx = -1) {
+  if (!TOPICS.length) return;
+  const N   = TOPICS.length;
+  const SEG = (2 * Math.PI) / N;
+  const sz = canvas.width, cx = sz/2, cy = sz/2, R = sz/2 - 10;
+  ctx.clearRect(0, 0, sz, sz);
+
+  // Outer ring – in Markenfarbe
+  const _bc  = setupData && setupData.brandColor  ? setupData.brandColor  : '#FF2D78';
+  const _bc2 = setupData && setupData.brandAccent ? setupData.brandAccent : '#00D4FF';
+  const _alt = alternateBrandColor(_bc);
+  ctx.save();
+  ctx.shadowColor=hexToRgba(_bc,0.35); ctx.shadowBlur=18;
+  ctx.beginPath(); ctx.arc(cx,cy,R+5,0,Math.PI*2);
+  ctx.strokeStyle=_bc; ctx.lineWidth=3; ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotDeg * Math.PI / 180);
+
+  TOPICS.forEach((t, i) => {
+    const exhausted = usedMap[i] && usedMap[i].size >= t.questions.length;
+    const cAngle = i * SEG - Math.PI/2;
+    const sAngle = cAngle - SEG/2;
+    const eAngle = cAngle + SEG/2;
+
+    const segColor = exhausted ? '#1e1e1e' : (setupData && setupData.brandColor ? (i%2===0 ? _bc : _alt) : t.color);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,sAngle,eAngle); ctx.closePath();
+    ctx.fillStyle = segColor; ctx.fill();
+    ctx.strokeStyle='#0D0D1A'; ctx.lineWidth=3; ctx.stroke();
+
+    if (!exhausted) {
+      ctx.beginPath(); ctx.arc(0,0,R-2,sAngle+0.04,eAngle-0.04);
+      ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.lineWidth=4; ctx.stroke();
+    }
+
+    // Text — Icon nah an Mitte, Titel aussen
+    ctx.save();
+    ctx.rotate(cAngle);
+    const txtColor = exhausted ? '#3a3a3a' : (setupData && setupData.brandColor ? contrastText(segColor) : '#fff');
+    const iconSize = Math.floor(R * 0.17);
+    const lblSize  = Math.floor(R * 0.072);
+    const iconR    = R * 0.40;
+    const lblR     = R * 0.76;
+
+    ctx.font = `${iconSize}px Arial`;
+    ctx.fillStyle = txtColor; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(exhausted ? '✓' : t.icon, iconR, 0);
+
+    // Multi-line title
+    const words = t.title.split(' ');
+    let lines;
+    if (words.length === 1) lines = [t.title];
+    else if (words.length === 2) lines = words;
+    else { const mid = Math.ceil(words.length/2); lines = [words.slice(0,mid).join(' '), words.slice(mid).join(' ')]; }
+
+    ctx.font = `bold ${lblSize}px Arial`;
+    ctx.fillStyle = txtColor;
+    const lineH  = lblSize * 1.3;
+    const startY = -(lines.length-1) * lineH / 2;
+    const maxW   = R * 0.42;
+    lines.forEach((line, li) => ctx.fillText(line, lblR, startY + li * lineH, maxW));
+    ctx.restore();
+  });
+
+  // Gold highlight
+  if (highlightIdx >= 0) {
+    const SEG2 = (2*Math.PI)/N;
+    const cA = highlightIdx*SEG2-Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,cA-SEG2/2,cA+SEG2/2); ctx.closePath();
+    ctx.strokeStyle='#FFD700'; ctx.lineWidth=6;
+    ctx.shadowColor='#FFD700'; ctx.shadowBlur=16; ctx.stroke(); ctx.shadowBlur=0;
+  }
+
+  // Centre
+  ctx.beginPath(); ctx.arc(0,0,R*0.11,0,Math.PI*2);
+  ctx.fillStyle='#0D0D1A'; ctx.fill();
+  ctx.strokeStyle='#FFD700'; ctx.lineWidth=3; ctx.stroke();
+  ctx.font=`bold ${Math.floor(R*0.095)}px Arial`; ctx.fillStyle='#FFD700';
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('?',0,1);
+  ctx.restore();
+
+  // Pointer
+  const tipY=cy-R-2, baseY=tipY-Math.floor(R*0.14), baseW=Math.floor(R*0.09);
+  ctx.save(); ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=6;
+  ctx.beginPath(); ctx.moveTo(cx,tipY); ctx.lineTo(cx-baseW,baseY); ctx.lineTo(cx+baseW,baseY); ctx.closePath();
+  ctx.fillStyle='#FFD700'; ctx.fill(); ctx.strokeStyle='#0D0D1A'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  QUIZ STATE
+// ════════════════════════════════════════════════════════════
+let usedMap  = {};
+let scores   = {a:0, b:0};
+let doneQ    = 0;
+let totalQ   = 0;
+let selectedDuration = 45; // Spieldauer in Minuten (Standard: volles Quiz)
+
+// Fragen pro Thema je nach Dauer
+function _qPerTopic(duration) {
+  if (duration <=  5) return 1;
+  if (duration <= 10) return 1;
+  if (duration <= 20) return 2;
+  if (duration <= 30) return 3;
+  return 99; // keine Begrenzung
+}
+
+// Zufällige Fragenauswahl pro Thema basierend auf Spieldauer
+function limitTopicsToDuration(topics, duration) {
+  const qpt = _qPerTopic(duration);
+  if (qpt >= 99) return topics; // 45 Min: alle Fragen
+  return topics.map(t => {
+    const shuffled = [...t.questions].sort(() => Math.random() - 0.5);
+    return { ...t, questions: shuffled.slice(0, Math.min(qpt, shuffled.length)) };
+  });
+}
+
+// Gesamtzahl der Fragen bei gewählter Dauer berechnen
+function calcQuestionCount(topics, duration) {
+  const qpt = _qPerTopic(duration);
+  return topics.reduce((s, t) => s + Math.min(t.questions.length, qpt), 0);
+}
+
+// Dauer-Button aktivieren + Hinweis aktualisieren
+function setDuration(min) {
+  selectedDuration = min;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('dur-active'));
+  const btn = document.getElementById('dur-' + min);
+  if (btn) btn.classList.add('dur-active');
+  _updateDurHint();
+}
+
+function _updateDurHint() {
+  const hint = document.getElementById('dur-hint');
+  if (!hint || !TOPICS.length) return;
+  const count = calcQuestionCount(TOPICS, selectedDuration);
+  hint.textContent = count > 0 ? `→ ca. ${count} Fragen aus deinem Quiz` : '';
+}
+let curTopic = null;
+let curQ     = null;
+let wheelRot = 0;
+let spinning = false;
+
+function easeOut(t){ return 1 - Math.pow(1-t,4); }
+
+function availableTopicIndices() {
+  return TOPICS.map((_,i)=>i).filter(i => usedMap[i] && usedMap[i].size < TOPICS[i].questions.length);
+}
+
+function spinWheel() {
+  if (spinning) return;
+  const avail = availableTopicIndices();
+  if (avail.length === 0) { showEnd(); return; }
+
+  const N   = TOPICS.length;
+  const SEG = 360 / N;
+  const targetIdx = avail[Math.floor(Math.random()*avail.length)];
+  const unusedQs  = TOPICS[targetIdx].questions.map((_,i)=>i).filter(i=>!usedMap[targetIdx].has(i));
+  const targetQ   = unusedQs[Math.floor(Math.random()*unusedQs.length)];
+  curTopic = targetIdx; curQ = targetQ;
+
+  const exactLanding = ((360 - targetIdx*SEG) % 360);
+  const jitter       = (Math.random()-0.5)*28;
+  const currentMod   = ((wheelRot%360)+360)%360;
+  let delta = ((exactLanding+jitter-currentMod)+360)%360;
+  if (delta < 30) delta += 360;
+  const targetRot = wheelRot + 1800 + delta;
+
+  spinning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('ask-btn').style.display='none';
+  document.getElementById('topic-banner').classList.remove('show');
+
+  const startRot=wheelRot, duration=3600+Math.random()*600, startTime=performance.now();
+  let lastTick=Math.floor(startRot/(360/N));
+
+  function frame(now) {
+    const t=Math.min((now-startTime)/duration,1);
+    const cur=startRot+(targetRot-startRot)*easeOut(t);
+    wheelRot=cur; drawWheel(cur);
+    const curTick=Math.floor(cur/(360/N));
+    if (curTick!==lastTick) { playTick(Math.pow(1-t,2.5)); lastTick=curTick; }
+    if (t<1) requestAnimationFrame(frame);
+    else { wheelRot=targetRot; drawWheel(targetRot,targetIdx); spinning=false; onSpinEnd(targetIdx); }
+  }
+  requestAnimationFrame(frame);
+}
+
+function onSpinEnd(idx) {
+  const t = TOPICS[idx];
+  document.getElementById('t-name-text').textContent = t.icon+'  '+t.title;
+  document.getElementById('t-name-text').style.color  = t.color;
+  document.getElementById('topic-banner').classList.add('show');
+  document.getElementById('ask-btn').style.display = '';
+}
+
+// ════════════════════════════════════════════════════════════
+//  SCREEN NAVIGATION
+// ════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateProgress() {
+  const pct = totalQ > 0 ? (doneQ/totalQ)*100 : 0;
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('q-done').textContent = doneQ;
+}
+
+function startQuiz() {
+  getAC();
+  scores={a:0,b:0}; doneQ=0; wheelRot=0; raffleEntries=[];
+  // Vollen Fragenpool neu aufbauen, dann zufällig auf Spieldauer begrenzen
+  // → jeder Spielstart mischt neu, auch bei Wiederholung derselben Dauer
+  buildTopics();
+  TOPICS = limitTopicsToDuration(TOPICS, selectedDuration);
+  totalQ = TOPICS.reduce((s,t)=>s+t.questions.length,0);
+  TOPICS.forEach((_,i)=>usedMap[i]=new Set());
+  initCanvas(); drawWheel(0);
+  document.getElementById('spin-btn').disabled=false;
+  document.getElementById('ask-btn').style.display='none';
+  document.getElementById('topic-banner').classList.remove('show');
+  document.getElementById('q-total').textContent=totalQ;
+  updateProgress();
+  // Demo-Badge erst jetzt zeigen (nicht schon auf Startscreen)
+  if (_isDemo) showDemoBadge(true);
+  _updateWheelLogo();
+  showScreen('screen-wheel');
+}
+
+function abortDemo() {
+  stopAllAudio();
+  showDemoBadge(false);
+  _isDemo = false;
+  showScreen('screen-start');
+}
+
+// ════════════════════════════════════════════════════════════
+//  MEDIA DETECTION  (lokale Datei · Bild-URL · Spotify)
+// ════════════════════════════════════════════════════════════
+function detectMedia(mediaFile) {
+  if (!mediaFile) return null;
+  // Gefährliche Protokolle blockieren
+  if (/^javascript:/i.test(mediaFile)) return null;
+  if (/^data:(?!image\/|audio\/|video\/)/i.test(mediaFile)) return null;
+  // dataURL (lokale Datei via FileReader)
+  if (mediaFile.startsWith('data:')) {
+    if (mediaFile.startsWith('data:image/')) return { type: 'image', src: mediaFile };
+    if (mediaFile.startsWith('data:audio/')) return { type: 'audio', src: mediaFile };
+    if (mediaFile.startsWith('data:video/')) return { type: 'video', src: mediaFile };
+    return null;
+  }
+  // iTunes-Suchbegriff: Format "itunes:künstler songname"
+  if (mediaFile.trim().toLowerCase().startsWith('itunes:')) {
+    return { type: 'itunes', term: mediaFile.trim().slice(7).trim() };
+  }
+  const isUrl = /^https?:\/\//i.test(mediaFile);
+  if (isUrl) {
+const spotifyMatch = mediaFile.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(?:embed\/)?track\/([a-zA-Z0-9]+)/);
+    if (spotifyMatch) return { type: 'spotify', id: spotifyMatch[1] };
+    // Dateiendung aus URL prüfen (vor dem ersten ?)
+    const urlExt = mediaFile.split('?')[0].split('.').pop().toLowerCase();
+    if (['mp4','webm','mov'].includes(urlExt)) return { type: 'video', src: mediaFile };
+    if (['mp3','wav','ogg','aac','m4a'].includes(urlExt)) return { type: 'audio', src: mediaFile };
+    // Fallback: Bild-URL
+    return { type: 'image', src: mediaFile };
+  }
+  const ext = mediaFile.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return { type: 'image', src: mediaFile };
+  if (['mp3','wav','ogg','aac','m4a'].includes(ext)) return { type: 'audio', src: mediaFile };
+  if (['mp4','webm','mov'].includes(ext)) return { type: 'video', src: mediaFile };
+  return null;
+}
+
+async function renderItunesAudio(containerId, term, color, questionText) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const qfs = 'clamp(18px,2.8vw,36px)';
+  try {
+    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1&country=us`);
+    const data = await res.json();
+    const track = data.results && data.results[0];
+    if (!track || !track.previewUrl) throw new Error('Keine Vorschau gefunden');
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.5vh,32px);width:100%;max-width:680px">
+        <div style="font-size:${qfs};font-weight:700;color:#fff;text-align:center;animation:fadeUp .35s ease both">${questionText}</div>
+        <div style="border:3px solid ${color};border-radius:10px;background:#16163A;width:clamp(260px,50vw,520px);padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp .35s ease .15s both">
+          <div style="font-size:2em">🎵</div>
+          <audio id="main-audio" controls style="width:100%;accent-color:${color}">
+            <source src="${track.previewUrl}" type="audio/m4a">
+          </audio>
+          <div style="font-size:11px;color:#555;letter-spacing:1px">30-Sekunden-Vorschau · iTunes</div>
+        </div>
+      </div>`;
+    setTimeout(() => { const a = document.getElementById('main-audio'); if (a) a.play().catch(() => {}); }, 150);
+  } catch(e) {
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.5vh,32px);width:100%;max-width:680px">
+        <div style="font-size:${qfs};font-weight:700;color:#fff;text-align:center">${questionText}</div>
+        <div style="color:#888;font-size:.9em">iTunes-Vorschau konnte nicht geladen werden.</div>
+      </div>`;
+  }
+}
+
+function stopAllAudio() {
+  document.querySelectorAll('audio,video').forEach(a=>{ a.pause(); a.currentTime=0; });
+  document.querySelectorAll('iframe[src*="spotify"]').forEach(f=>{ f.src=''; });
+}
+
+function goToQuestion() {
+  if (curTopic===null||curQ===null) return;
+  const t=TOPICS[curTopic], q=t.questions[curQ];
+  document.getElementById('q-badge-l').textContent=`${t.icon}  ${t.title}`;
+  document.getElementById('q-badge-l').style.background=t.color;
+  document.getElementById('q-badge-r').textContent=`Frage ${doneQ+1} / ${totalQ}`;
+
+  const content=document.getElementById('q-content');
+  const media=detectMedia(q.mediaFile);
+  if (media) {
+    const qfs='clamp(18px,2.8vw,36px)';
+    if (media.type==='image') {
+      content.innerHTML=`
+        <div style="display:flex;gap:clamp(16px,3vw,48px);align-items:center;width:100%;max-width:1100px">
+          <div style="flex:1;font-weight:700;color:#fff;text-align:center;line-height:1.5;font-size:${qfs};animation:fadeUp .35s ease both">${esc(q.q)}</div>
+          <div style="flex:0 0 clamp(300px,50vw,640px);height:clamp(260px,52vh,580px);border:3px solid ${t.color};border-radius:10px;background:#0D0D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;animation:fadeUp .35s ease .15s both">
+            <img src="${esc(media.src)}" alt="Bild"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                 style="max-width:100%;max-height:100%;border-radius:6px;object-fit:contain">
+            <div style="display:none;flex-direction:column;align-items:center;gap:8px;color:${t.color};text-align:center">
+              <div style="font-size:2em">📷</div>
+              <div style="font-size:.85em;color:#888">Bild konnte nicht geladen werden</div>
+            </div>
+          </div>
+        </div>`;
+    } else if (media.type==='audio') {
+      const audioMime = media.src.startsWith('data:')
+        ? media.src.split(';')[0].slice(5)
+        : (() => { const x=media.src.split('.').pop().toLowerCase(); return `audio/${x==='mp3'?'mpeg':x}`; })();
+      content.innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.5vh,32px);width:100%;max-width:680px">
+          <div style="font-size:${qfs};font-weight:700;color:#fff;text-align:center;animation:fadeUp .35s ease both">${esc(q.q)}</div>
+          <div style="border:3px solid ${t.color};border-radius:10px;background:#16163A;width:clamp(260px,50vw,520px);padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp .35s ease .15s both">
+            <div style="font-size:2em">🎵</div>
+            <audio id="main-audio" controls style="width:100%;accent-color:${t.color}"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <source src="${esc(media.src)}" type="${audioMime}">
+            </audio>
+            <div style="display:none;color:#888;font-size:.85em;text-align:center">
+              Audio konnte nicht abgespielt werden.
+            </div>
+          </div>
+        </div>`;
+      setTimeout(()=>{ const a=document.getElementById('main-audio'); if(a) a.play().catch(()=>{}); },150);
+    } else if (media.type==='video') {
+      const videoMime = media.src.startsWith('data:')
+        ? media.src.split(';')[0].slice(5)
+        : `video/${media.src.split('.').pop().toLowerCase()}`;
+      content.innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2vh,24px);width:100%;max-width:820px">
+          <div style="font-size:${qfs};font-weight:700;color:#fff;text-align:center;animation:fadeUp .35s ease both">${esc(q.q)}</div>
+          <video controls autoplay style="max-width:100%;max-height:42vh;border-radius:10px;border:3px solid ${t.color};animation:fadeUp .35s ease .15s both"
+                 onerror="this.style.display='none'">
+            <source src="${esc(media.src)}" type="${videoMime}">
+          </video>
+        </div>`;
+    } else if (media.type==='itunes') {
+      content.innerHTML = `
+        <div id="itunes-container" style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.5vh,32px);width:100%;max-width:680px">
+          <div style="font-size:clamp(18px,2.8vw,36px);font-weight:700;color:#fff;text-align:center;animation:fadeUp .35s ease both">${esc(q.q)}</div>
+          <div style="border:3px solid ${t.color};border-radius:10px;background:#16163A;width:clamp(260px,50vw,520px);padding:28px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp .35s ease .15s both">
+            <div style="font-size:2em">🎵</div>
+            <div style="color:#888;font-size:.9em;letter-spacing:1px">Vorschau wird geladen …</div>
+          </div>
+        </div>`;
+      renderItunesAudio('itunes-container', media.term, t.color, esc(q.q));
+    } else if (media.type==='spotify') {
+      content.innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.5vh,32px);width:100%;max-width:680px">
+          <div style="font-size:${qfs};font-weight:700;color:#fff;text-align:center;animation:fadeUp .35s ease both">${esc(q.q)}</div>
+          <div style="border:3px solid ${t.color};border-radius:14px;background:#16163A;width:clamp(280px,52vw,540px);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp .35s ease .15s both">
+            <div style="font-size:1.8em">🎵</div>
+            <div style="position:relative;width:100%;border-radius:8px;overflow:hidden">
+              <iframe src="https://open.spotify.com/embed/track/${media.id}?utm_source=generator&theme=0&autoplay=1"
+                      width="100%" height="80" frameborder="0"
+                      allow="autoplay; encrypted-media"
+                      sandbox="allow-scripts allow-same-origin"
+                      style="display:block"></iframe>
+              <!-- Overlay versteckt Interpret + Titel, lässt Steuerelemente (rechts) frei -->
+              <div style="position:absolute;top:0;left:0;width:calc(100% - 190px);height:100%;background:#16163A;pointer-events:none;display:flex;align-items:center;justify-content:center">
+                <span style="font-size:13px;color:#555;letter-spacing:1px">🎵 Wer ist das?</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#555;letter-spacing:1px">▶ PLAY drücken zum Starten</div>
+          </div>
+        </div>`;
+    }
+  } else {
+    const n=q.q.length;
+    const fs=n<=60?'clamp(28px,5.5vw,60px)':n<=100?'clamp(22px,4vw,46px)':n<=150?'clamp(18px,3.2vw,36px)':'clamp(16px,2.5vw,28px)';
+    content.innerHTML=`<div class="q-text" style="font-size:${fs}">${esc(q.q)}</div>`;
+  }
+  showScreen('screen-question');
+}
+
+function revealAnswer() {
+  stopAllAudio();
+  const t=TOPICS[curTopic], q=t.questions[curQ];
+  document.getElementById('a-header').textContent=`✓  Auflösung – ${t.icon} ${t.title}`;
+  let recap=q.q; if (recap.length>90) recap=recap.substring(0,90)+'…';
+  document.getElementById('a-recap').textContent=recap;
+  const n=q.a.length;
+  const fs=n>55?'clamp(18px,3vw,36px)':n>35?'clamp(22px,3.8vw,44px)':'clamp(26px,4.5vw,54px)';
+  document.getElementById('a-answer-text').style.fontSize=fs;
+  document.getElementById('a-answer-text').textContent=q.a;
+  document.getElementById('a-explanation').textContent=q.e ? 'ℹ️  '+q.e : '';
+  ['a','b'].forEach(team=>{
+    const btn=document.getElementById('score-'+team);
+    btn.classList.remove('scored');
+    btn.innerHTML=team==='a'?'✅ &nbsp; Punkt für Team A':'✅ &nbsp; Punkt für Team B';
+  });
+  showScreen('screen-answer');
+}
+
+function addScore(team) {
+  const btn=document.getElementById('score-'+team);
+  if (btn.classList.contains('scored')) return;
+  scores[team]++; btn.classList.add('scored'); btn.innerHTML='✓';
+  btn.style.transform='scale(1.18)'; setTimeout(()=>btn.style.transform='',220);
+}
+
+function confirmEndGame() {
+  if (confirm('Spiel wirklich beenden und zum Startmenü zurückkehren?')) {
+    stopAllAudio();
+    showScreen('screen-start');
+  }
+}
+
+function backToWheel() {
+  stopAllAudio();
+  usedMap[curTopic].add(curQ); doneQ++; updateProgress();
+  if (availableTopicIndices().length===0&&doneQ>=totalQ){ showEnd(); return; }
+  document.getElementById('spin-btn').disabled=false;
+  document.getElementById('ask-btn').style.display='none';
+  document.getElementById('topic-banner').classList.remove('show');
+  drawWheel(wheelRot); _updateWheelLogo(); showScreen('screen-wheel');
+}
+
+function showEnd() {
+  document.getElementById('progress-bar').style.width='100%';
+  document.getElementById('reveal-btn').style.display='';
+  document.getElementById('end-scores').classList.remove('vis');
+  document.getElementById('end-verdict').classList.remove('vis');
+  document.getElementById('end-actions').classList.remove('vis');
+  ['a','b'].forEach(t=>{
+    document.getElementById('card-'+t).classList.remove('winner');
+    document.getElementById('crown-'+t).textContent='';
+  });
+  showScreen('screen-end');
+}
+
+function revealScores() {
+  document.getElementById('reveal-btn').style.display='none';
+  let n=3;
+  const ov=document.createElement('div'); ov.className='countdown-overlay';
+  document.body.appendChild(ov);
+  function tick(){
+    if (n>0){
+      ov.innerHTML=`<div class="countdown-num">${n}</div><div class="countdown-sub">Noch ${n}…</div>`;
+      playCountdownBeep(n); n--; setTimeout(tick,900);
+    } else {
+      ov.innerHTML='<div class="countdown-num">🎉</div>'; playWhoosh();
+      setTimeout(()=>{ ov.remove(); showResults(); },650);
+    }
+  }
+  tick();
+}
+
+function showResults() {
+  document.getElementById('score-disp-a').textContent=scores.a;
+  document.getElementById('score-disp-b').textContent=scores.b;
+  document.getElementById('end-scores').classList.add('vis');
+  setTimeout(()=>{
+    const v=document.getElementById('end-verdict');
+    if (scores.a>scores.b){
+      document.getElementById('card-a').classList.add('winner');
+      document.getElementById('crown-a').textContent='👑';
+      v.textContent='🏆  TEAM A GEWINNT!'; v.classList.add('vis'); playFanfare();
+      document.getElementById('end-actions').classList.add('vis');
+      _showRaffleBtn();
+    } else if (scores.b>scores.a){
+      document.getElementById('card-b').classList.add('winner');
+      document.getElementById('crown-b').textContent='👑';
+      v.textContent='🏆  TEAM B GEWINNT!'; v.classList.add('vis'); playFanfare();
+      document.getElementById('end-actions').classList.add('vis');
+      _showRaffleBtn();
+    } else {
+      setTimeout(()=>showTiebreaker(),1200);
+      v.textContent='⚡  GLEICHSTAND – Schätzfrage folgt!'; v.classList.add('vis');
+    }
+  },900);
+}
+
+function showTiebreaker() {
+  const tb=setupData.tiebreaker;
+  document.getElementById('tb-score-a').textContent=scores.a;
+  document.getElementById('tb-score-b').textContent=scores.b;
+  document.getElementById('tb-input-a').value='';
+  document.getElementById('tb-input-b').value='';
+  document.getElementById('tb-result').style.display='none';
+  document.getElementById('tb-answer-reveal').style.display='none';
+  document.getElementById('tb-calc-btn').style.display='';
+  const unitHint=tb.unit?` (Antwort in ${tb.unit})`:' (Schätze die Zahl)';
+  document.getElementById('tb-question-text').innerHTML=
+    `🎯 &nbsp; ${esc(tb.q)}<br><span style="font-size:.7em;color:#888;font-weight:400">${unitHint} – wer am nächsten dran ist, gewinnt!</span>`;
+  showScreen('screen-tiebreaker');
+}
+
+function calcTiebreaker() {
+  const ANSWER=setupData.tiebreaker.a||0;
+  const unit=setupData.tiebreaker.unit||'';
+  const rawA=parseFloat(document.getElementById('tb-input-a').value);
+  const rawB=parseFloat(document.getElementById('tb-input-b').value);
+  if (isNaN(rawA)||isNaN(rawB)){ alert('Bitte beide Teams eingeben!'); return; }
+  const diffA=Math.abs(rawA-ANSWER), diffB=Math.abs(rawB-ANSWER);
+  const fmt=n=>Math.round(n).toLocaleString('de-CH')+(unit?' '+unit:'');
+  let winner, detail;
+  if (diffA<diffB){
+    winner='🏆  TEAM A GEWINNT!';
+    detail=`Team A: ${fmt(rawA)} (Abstand: ${fmt(diffA)})\nTeam B: ${fmt(rawB)} (Abstand: ${fmt(diffB)})`;
+  } else if (diffB<diffA){
+    winner='🏆  TEAM B GEWINNT!';
+    detail=`Team A: ${fmt(rawA)} (Abstand: ${fmt(diffA)})\nTeam B: ${fmt(rawB)} (Abstand: ${fmt(diffB)})`;
+  } else {
+    winner='🤝  ABSOLUTER GLEICHSTAND – Los entscheidet!';
+    detail=`Beide Teams lagen gleich weit daneben (${fmt(diffA)})`;
+  }
+  document.getElementById('tb-result-winner').textContent=winner;
+  document.getElementById('tb-result-detail').style.whiteSpace='pre-line';
+  document.getElementById('tb-result-detail').textContent=detail;
+  document.getElementById('tb-answer-reveal').textContent=`✓ Richtige Antwort: ${fmt(ANSWER)}`;
+  document.getElementById('tb-answer-reveal').style.display='block';
+  document.getElementById('tb-calc-btn').style.display='none';
+  document.getElementById('tb-result').style.display='flex';
+  playFanfare();
+  // Verlosungs-Button im Tiebreaker-Screen zeigen falls aktiv
+  const tbRaffleBtn = document.getElementById('btn-raffle-tb');
+  if (tbRaffleBtn) tbRaffleBtn.style.display = (setupData.raffle && setupData.raffle.active) ? '' : 'none';
+}
+
+function restartQuiz() {
+  document.getElementById('progress-bar').style.width='0%';
+  showScreen('screen-start');
+}
+
+function shareQuizWheel(btn) {
+  const title  = (!_isDemo && setupData.quizTitle) ? setupData.quizTitle : null;
+  const text   = title
+    ? `Wir haben heute «${title}» mit QuizWheel gespielt 🎡 — macht euren Event zur Spielshow: quizwheel.ch`
+    : `Wir haben heute QuizWheel eingesetzt 🎡 — macht euren Event zur Spielshow: quizwheel.ch`;
+  const url    = 'https://www.quizwheel.ch';
+
+  if (navigator.share) {
+    navigator.share({ title: 'QuizWheel 🎡', text, url }).catch(() => {});
+    return;
+  }
+  // Fallback: in Zwischenablage kopieren
+  navigator.clipboard.writeText(text + '\n' + url).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ &nbsp; Link kopiert!';
+    btn.style.color = '#00C853';
+    btn.style.borderColor = '#00C853';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 2500);
+  }).catch(() => {
+    // Letzter Fallback: WhatsApp öffnen
+    window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank');
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  VERLOSUNG
+// ════════════════════════════════════════════════════════════
+let raffleEntries = [];
+
+function _showRaffleBtn() {
+  const r = setupData.raffle;
+  const btn = document.getElementById('btn-raffle');
+  if (btn) btn.style.display = (r && r.active) ? '' : 'none';
+}
+
+function showRaffle() {
+  const r = setupData.raffle || {};
+  // Preisbild
+  const img = document.getElementById('raffle-img');
+  if (r.mediaFile) {
+    img.src = r.mediaFile; img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
+  document.getElementById('raffle-prize-name').textContent = r.prize || '';
+  document.getElementById('raffle-prize-value').textContent = r.value ? 'im Wert von ' + r.value : '';
+  document.getElementById('raffle-invite').textContent = r.text || 'Trag dich ein und nimm an der Verlosung teil!';
+  document.getElementById('raffle-name').value = '';
+  document.getElementById('raffle-email').value = '';
+  _updateRaffleCount();
+  showScreen('screen-raffle');
+}
+
+function submitRaffleEntry() {
+  const name  = document.getElementById('raffle-name').value.trim();
+  const email = document.getElementById('raffle-email').value.trim();
+  if (!name || !email) { alert('Bitte Name und E-Mail eingeben.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Bitte eine gültige E-Mail-Adresse eingeben.'); return; }
+  raffleEntries.push({ name, email, ts: new Date().toLocaleString('de-CH') });
+  document.getElementById('raffle-name').value = '';
+  document.getElementById('raffle-email').value = '';
+  document.getElementById('raffle-name').focus();
+  _updateRaffleCount();
+}
+
+function _updateRaffleCount() {
+  const n = raffleEntries.length;
+  const el = document.getElementById('raffle-count');
+  if (el) el.textContent = n > 0 ? `✓ ${n} Person${n !== 1 ? 'en' : ''} eingetragen` : '';
+}
+
+function showRaffleAdmin() {
+  const n = raffleEntries.length;
+  document.getElementById('raffle-admin-count').textContent =
+    n === 0 ? 'Noch keine Einträge' : `${n} Teilnehmer${n !== 1 ? '' : 'in'} eingetragen`;
+  const list = document.getElementById('raffle-admin-list');
+  if (n === 0) {
+    list.innerHTML = '<div style="color:#555;text-align:center;padding:20px">Noch niemand eingetragen.</div>';
+  } else {
+    list.innerHTML = raffleEntries.map((e, i) => `
+      <div class="raffle-entry-row">
+        <span style="color:#555;font-size:12px;min-width:24px">${i+1}.</span>
+        <span class="raffle-entry-name">${esc(e.name)}</span>
+        <span class="raffle-entry-email">${esc(e.email)}</span>
+        <span style="color:#444;font-size:11px">${e.ts}</span>
+      </div>`).join('');
+  }
+  showScreen('screen-raffle-admin');
+}
+
+function downloadRaffleCSV() {
+  if (raffleEntries.length === 0) { alert('Noch keine Einträge vorhanden.'); return; }
+  const bom = '﻿';
+  const header = 'Nr.,Name,E-Mail,Zeitstempel';
+  const csvEsc = v => '"' + String(v).replace(/"/g,'""').replace(/^[=+\-@\t]/, "'$&") + '"';
+  const rows = raffleEntries.map((e, i) => `${i+1},${csvEsc(e.name)},${csvEsc(e.email)},${csvEsc(e.ts)}`).join('\n');
+  const csv = bom + header + '\n' + rows;
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'quizwheel_verlosung.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ════════════════════════════════════════════════════════════
+
+async function exportQuiz() {
+  // Aktuellen Schritt zuerst speichern
+  saveCurrentStepSilent();
+  // Kopie erstellen und idb:-Referenzen zu echten dataURLs auflösen
+  const copy = JSON.parse(JSON.stringify(setupData));
+  const resolvePromises = [];
+  copy.topics.forEach(t => t.questions.forEach(q => {
+    if (q.mediaFile && q.mediaFile.startsWith('idb:')) {
+      const key = q.mediaFile.slice(4);
+      resolvePromises.push(
+        _idbLoad(key).then(data => { q.mediaFile = data || ''; }).catch(() => { q.mediaFile = ''; })
+      );
+    }
+  }));
+  // Auch Raffle-Mediendatei auflösen falls nötig
+  if (copy.raffle && copy.raffle.mediaFile && copy.raffle.mediaFile.startsWith('idb:')) {
+    const key = copy.raffle.mediaFile.slice(4);
+    resolvePromises.push(
+      _idbLoad(key).then(data => { copy.raffle.mediaFile = data || ''; }).catch(() => { copy.raffle.mediaFile = ''; })
+    );
+  }
+  await Promise.all(resolvePromises);
+  // Export-Metadaten hinzufügen
+  copy._quizwheel_export = { version: 1, exportedAt: new Date().toISOString() };
+  const json = JSON.stringify(copy, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = (setupData.quizTitle || 'quiz').replace(/[^a-zA-Z0-9äöüÄÖÜ_-]/g, '_').substring(0, 40);
+  a.href = url; a.download = `QuizWheel_${safeName}.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importQuiz(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = ''; // Reset für erneuten Import derselben Datei
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Basis-Validierung
+      if (!data.quizTitle && data.quizTitle !== '') throw new Error('Kein gültiges QuizWheel-Quiz.');
+      if (!Array.isArray(data.topics) || data.topics.length === 0) throw new Error('Keine Themen gefunden.');
+      // Fehlende Felder ergänzen (Rückwärtskompatibilität)
+      if (!data.raffle) data.raffle = { active: false, prize: '', value: '', text: '', mediaFile: '' };
+      if (!data.tiebreaker) data.tiebreaker = { q: '', a: '', unit: '' };
+      // Sicherheit: brandColor/brandAccent nur wenn gültiges Hex-Format
+      const _validHex = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
+      if (!_validHex(data.brandColor))  data.brandColor  = '';
+      if (!_validHex(data.brandAccent)) data.brandAccent = '';
+      // Prototype Pollution verhindern
+      delete data.__proto__; delete data.constructor; delete data.prototype;
+      // dataURLs in IndexedDB speichern
+      const savePromises = [];
+      data.topics.forEach((t, ti) => {
+        if (!Array.isArray(t.questions)) t.questions = [];
+        t.questions.forEach((q, qi) => {
+          if (q.mediaFile && q.mediaFile.startsWith('data:')) {
+            const key = `t${ti}q${qi}`;
+            savePromises.push(
+              _idbSave(key, q.mediaFile).then(() => {
+                q.mediaFile = `idb:${key}`;
+                q._idbKey = key;
+              }).catch(() => {})
+            );
+          }
+        });
+      });
+      if (data.raffle && data.raffle.mediaFile && data.raffle.mediaFile.startsWith('data:')) {
+        savePromises.push(
+          _idbSave('raffle_media', data.raffle.mediaFile).then(() => {
+            data.raffle.mediaFile = 'idb:raffle_media';
+          }).catch(() => {})
+        );
+      }
+      await Promise.all(savePromises);
+      // Laden
+      setupData = data;
+      _isDemo = false;
+      saveData();
+      buildTopics();
+      updateStartScreen();
+      applyBranding();
+      currentStep = 1;
+      renderSetup();
+      alert(`✅ «${data.quizTitle || 'Quiz'}» erfolgreich geladen!`);
+    } catch(err) {
+      alert('⚠️ Import fehlgeschlagen: ' + err.message);
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+// ════════════════════════════════════════════════════════════
+//  KEYBOARD
+// ════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════
+//  RESIZE
+// ════════════════════════════════════════════════════════════
+window.addEventListener('resize',()=>{
+  if (document.getElementById('screen-wheel').classList.contains('active')){
+    initCanvas(); drawWheel(wheelRot);
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+(async function init() {
+  const raw = loadSavedData();
+  // Gespeicherte Demo-Daten erkennen und bereinigen
+  const isDemoData = raw && (raw.__isQuizWheelDemo || (raw.subject === 'Autohaus' && raw.quizTitle === 'AUTOHAUS QUIZ'));
+  if (isDemoData) {
+    localStorage.removeItem('quizwheel_data');
+  } else if (raw) {
+    const saved = await _resolveMedia(raw); // idb:-Referenzen → volle dataURLs
+    setupData = saved;
+    while (setupData.topics.length < 6) {
+      setupData.topics.push({ name:'', icon:'📚', questions:Array(5).fill(null).map(()=>({q:'',a:'',e:''})) });
+    }
+    setupData.topics.forEach(t=>{ while(t.questions.length<5) t.questions.push({q:'',a:'',e:''}); });
+    buildTopics();
+    if (TOPICS.length > 0) {
+      updateStartScreen();
+      applyBranding();
+      showScreen('screen-start');
+      return;
+    }
+  }
+  // Kein gespeichertes Quiz → Demo-Quiz anzeigen
+  initSetupData(true);
+  _isDemo = true;
+  if (setupData.logo) extractColors(setupData.logo);
+  goToStart();
+})();
+</script>
+
+<!-- Medien-Hilfe Popup -->
+<div id="media-help-overlay" onclick="if(event.target===this)closeMediaHelp()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#13132a;border:1px solid #2a2a5e;border-radius:16px;padding:32px 36px;max-width:480px;width:90%;box-shadow:0 8px 48px #000;position:relative;animation:fadeUp .25s ease both">
+    <button onclick="closeMediaHelp()" style="position:absolute;top:16px;right:18px;background:none;border:none;color:#666;font-size:20px;cursor:pointer;line-height:1">✕</button>
+    <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:20px">📎 MEDIEN HINZUFÜGEN</div>
+    <div style="display:flex;flex-direction:column;gap:16px;font-size:14px;line-height:1.7;color:#aaa">
+
+      <div style="background:#0d0d22;border-radius:10px;padding:14px 16px">
+        <div style="color:#fff;font-weight:700;margin-bottom:4px">🔗 Link</div>
+        Bild-URL direkt einfügen (z.B. von Wikipedia)<br>
+        Oder Musik über iTunes suchen:<br>
+        <code style="color:#7878ff;font-size:13px">itunes:taylor swift shake it off</code><br>
+        <span style="font-size:12px;color:#555">→ spielt automatisch eine 30-Sek. Vorschau</span>
+      </div>
+
+      <div style="background:#0d0d22;border-radius:10px;padding:14px 16px">
+        <div style="color:#fff;font-weight:700;margin-bottom:4px">📁 Datei</div>
+        JPG, PNG, MP3 oder MP4 per Drag &amp; Drop ins Feld ziehen<br>
+        oder klicken um eine Datei auszuwählen.<br>
+        <span style="font-size:12px;color:#555">→ Datei wird für diese Session geladen</span>
+      </div>
+
+      <div style="border-top:1px solid #1e1e40;padding-top:12px;font-size:12px;color:#555">
+        ⚖️ Du bist verantwortlich, dass du die Rechte an allen verwendeten Inhalten besitzt.
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showMediaHelp(){const o=document.getElementById('media-help-overlay');if(o){o.style.display='flex';}}
+function closeMediaHelp(){const o=document.getElementById('media-help-overlay');if(o){o.style.display='none';}}
+
+// ════════════════════════════════════════════════════════════
+//  SHOWTIME BACKGROUND — JAHRMARKT / FAIRGROUND NIGHT
+// ════════════════════════════════════════════════════════════
+(function(){
+  let cvs=document.getElementById('bg-canvas');
+  let ctx=cvs.getContext('2d');
+  let W,H,bokeh=[],bulbs=[],sparks=[],spots=[],raf,active=false,activeScreenId=null;
+
+  function getBrand(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--brand').trim()||'#C8102E';
+  }
+  function hex2rgb(h){const n=parseInt(h.replace('#',''),16);return[(n>>16)&255,(n>>8)&255,n&255];}
+
+  function resize(){
+    W=cvs.width=cvs.offsetWidth;
+    H=cvs.height=cvs.offsetHeight;
+    init();
+  }
+
+  function init(){
+    const[r,g,b]=hex2rgb(getBrand());
+
+    // BOKEH — large soft out-of-focus light circles (the fairground magic)
+    bokeh=Array.from({length:55},()=>{
+      const warm=Math.random()<0.55;
+      return{
+        x:Math.random()*W, y:Math.random()*H,
+        radius:30+Math.random()*90,
+        phase:Math.random()*Math.PI*2,
+        speed:0.3+Math.random()*0.7,
+        warm,
+        cr:warm?255:r, cg:warm?Math.floor(140+Math.random()*80):g, cb:warm?Math.floor(Math.random()*40):b,
+        baseA:0.04+Math.random()*0.09
+      };
+    });
+
+    // FAIRY BULBS — dense strings across top
+    bulbs=[];
+    for(let row=0;row<3;row++){
+      const n=22+row*4, yOff=row*32+14;
+      for(let i=0;i<n;i++){
+        const t=i/(n-1);
+        const sag=Math.sin(t*Math.PI)*20;
+        [{x:t*W*0.52,y:yOff+sag},{x:W-t*W*0.52,y:yOff+sag}].forEach(p=>{
+          const warm=Math.random()<0.65;
+          bulbs.push({...p,r:3+Math.random()*2.5,phase:Math.random()*Math.PI*2,
+            speed:0.6+Math.random()*2,warm,
+            cr:warm?255:r,cg:warm?160+Math.floor(Math.random()*80):g,cb:warm?0:b});
+        });
+      }
+    }
+
+    // STAGE SPOTLIGHTS — from top corners + top centre
+    spots=[
+      {ox:W*0.08,oy:-20,  ang:0.55, swing:0.18, spd:0.004, w:0.22, a:0.13},
+      {ox:W*0.92,oy:-20,  ang:2.59, swing:0.18, spd:0.005, w:0.22, a:0.13},
+      {ox:W*0.50,oy:-20,  ang:Math.PI/2, swing:0.10, spd:0.003, w:0.16, a:0.10},
+      {ox:W*0.22,oy:-20,  ang:0.70, swing:0.12, spd:0.007, w:0.14, a:0.08},
+      {ox:W*0.78,oy:-20,  ang:2.44, swing:0.12, spd:0.006, w:0.14, a:0.08},
+    ];
+    spots.forEach((s,i)=>s.phase=i*1.3);
+
+    // SPARKS — warm drifting embers
+    sparks=Array.from({length:70},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:0.4+Math.random()*1.8,
+      vx:(Math.random()-.5)*0.4,
+      vy:-(0.2+Math.random()*0.6),
+      a:Math.random(),
+      da:(0.003+Math.random()*0.007)*(Math.random()<.5?1:-1)
+    }));
+  }
+
+  function draw(ts){
+    if(!active){raf=null;return;}
+    raf=requestAnimationFrame(draw);
+    ctx.clearRect(0,0,W,H);
+    const t=ts*0.001;
+    const pulse=0.5+0.5*Math.sin(t*0.7);
+    const[r,g,b]=hex2rgb(getBrand());
+
+    // 1. DEEP VIGNETTE BASE
+    const vig=ctx.createRadialGradient(W/2,H/2,H*0.1,W/2,H/2,H*0.9);
+    vig.addColorStop(0,'rgba(20,8,2,0)');
+    vig.addColorStop(1,'rgba(0,0,0,0.72)');
+    ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+
+    // 2. BOKEH LAYER
+    bokeh.forEach(k=>{
+      const fl=0.4+0.6*Math.sin(t*k.speed+k.phase);
+      const a=k.baseA*fl;
+      const gk=ctx.createRadialGradient(k.x,k.y,0,k.x,k.y,k.radius);
+      gk.addColorStop(0,   `rgba(${k.cr},${k.cg},${k.cb},${a*2.2})`);
+      gk.addColorStop(0.35,`rgba(${k.cr},${k.cg},${k.cb},${a*1.1})`);
+      gk.addColorStop(0.7, `rgba(${k.cr},${k.cg},${k.cb},${a*0.3})`);
+      gk.addColorStop(1,   `rgba(${k.cr},${k.cg},${k.cb},0)`);
+      ctx.beginPath();
+      ctx.arc(k.x,k.y,k.radius,0,Math.PI*2);
+      ctx.fillStyle=gk; ctx.fill();
+    });
+
+    // 3. STAGE SPOTLIGHTS
+    spots.forEach(s=>{
+      s.phase+=s.spd;
+      const ang=s.ang+Math.sin(s.phase)*s.swing;
+      const len=H*2.4;
+      const ex=s.ox+Math.cos(ang)*len, ey=s.oy+Math.sin(ang)*len;
+      const gs=ctx.createLinearGradient(s.ox,s.oy,ex,ey);
+      gs.addColorStop(0,   `rgba(${r},${g},${b},${s.a*(0.8+pulse*0.4)})`);
+      gs.addColorStop(0.3, `rgba(255,220,120,${s.a*0.5})`);
+      gs.addColorStop(0.7, `rgba(${r},${g},${b},${s.a*0.15})`);
+      gs.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+      const da=Math.atan2(ey-s.oy,ex-s.ox);
+      const hw=s.w/2;
+      ctx.beginPath();
+      ctx.moveTo(s.ox,s.oy);
+      ctx.arc(s.ox,s.oy,len,da-hw,da+hw);
+      ctx.closePath();
+      ctx.fillStyle=gs; ctx.fill();
+    });
+
+    // 4. CENTRE GLOW
+    const cx=W/2,cy=H*0.40;
+    const gc=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*0.48);
+    gc.addColorStop(0,`rgba(${r},${g},${b},${0.20+pulse*0.14})`);
+    gc.addColorStop(0.4,`rgba(${r},${g},${b},${0.06+pulse*0.04})`);
+    gc.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gc; ctx.fillRect(0,0,W,H);
+
+    // 5. PERSPECTIVE FLOOR with reflection
+    const vpx=W/2, vpy=H*0.60;
+    const floorY=H*0.66;
+    // floor tint
+    const gf=ctx.createLinearGradient(0,floorY,0,H);
+    gf.addColorStop(0,`rgba(${r},${g},${b},0.07)`);
+    gf.addColorStop(0.5,`rgba(255,180,40,0.08)`);
+    gf.addColorStop(1,`rgba(0,0,0,0.4)`);
+    ctx.fillStyle=gf; ctx.fillRect(0,floorY,W,H-floorY);
+    // grid
+    ctx.lineWidth=0.8;
+    for(let i=0;i<=12;i++){
+      const bx=i/12*W;
+      ctx.strokeStyle=`rgba(${r},${g},${b},0.10)`;
+      ctx.beginPath(); ctx.moveTo(vpx,vpy); ctx.lineTo(bx,H); ctx.stroke();
+    }
+    for(let i=1;i<=5;i++){
+      const fy=floorY+(H-floorY)*(i/5);
+      ctx.strokeStyle=`rgba(255,200,80,${0.10*(i/5)})`;
+      ctx.beginPath(); ctx.moveTo(0,fy); ctx.lineTo(W,fy); ctx.stroke();
+    }
+    // floor reflection glow
+    const gr2=ctx.createRadialGradient(W/2,H,0,W/2,H,W*0.55);
+    gr2.addColorStop(0,`rgba(${r},${g},${b},${0.10+pulse*0.06})`);
+    gr2.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gr2; ctx.fillRect(0,floorY,W,H-floorY);
+
+    // 6. FAIRY BULBS with halos
+    bulbs.forEach(bul=>{
+      const fl=0.45+0.55*Math.sin(t*bul.speed+bul.phase);
+      // outer halo
+      const gh=ctx.createRadialGradient(bul.x,bul.y,0,bul.x,bul.y,bul.r*7);
+      gh.addColorStop(0,`rgba(${bul.cr},${bul.cg},${bul.cb},${fl*0.5})`);
+      gh.addColorStop(0.3,`rgba(${bul.cr},${bul.cg},${bul.cb},${fl*0.2})`);
+      gh.addColorStop(1,`rgba(${bul.cr},${bul.cg},${bul.cb},0)`);
+      ctx.beginPath(); ctx.arc(bul.x,bul.y,bul.r*7,0,Math.PI*2);
+      ctx.fillStyle=gh; ctx.fill();
+      // bulb core
+      ctx.beginPath(); ctx.arc(bul.x,bul.y,bul.r,0,Math.PI*2);
+      ctx.fillStyle=bul.warm?`rgba(255,${bul.cg},${bul.cb},${fl})`:`rgba(255,255,255,${fl})`;
+      ctx.fill();
+    });
+
+    // 7. WARM SPARKS
+    sparks.forEach(s=>{
+      s.x+=s.vx; s.y+=s.vy; s.a+=s.da;
+      if(s.a>1){s.a=1;s.da*=-1;} if(s.a<0){s.a=0;s.da*=-1;}
+      if(s.y<-4)s.y=H+4; if(s.x<-4)s.x=W+4; if(s.x>W+4)s.x=-4;
+      const gs2=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3);
+      gs2.addColorStop(0,`rgba(255,${180+Math.floor(Math.random()*75)},60,${s.a*0.9})`);
+      gs2.addColorStop(1,`rgba(255,100,0,0)`);
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r*3,0,Math.PI*2);
+      ctx.fillStyle=gs2; ctx.fill();
+    });
+  }
+
+  const canvasIds={'screen-wheel':'bg-canvas','screen-start':'bg-canvas-start'};
+  function startFor(screenId){
+    cvs=document.getElementById(canvasIds[screenId]);
+    ctx=cvs.getContext('2d');
+    activeScreenId=screenId;
+    active=true;resize();if(!raf)raf=requestAnimationFrame(draw);
+  }
+  function stopFor(screenId){
+    if(activeScreenId===screenId){active=false;activeScreenId=null;}
+  }
+  ['screen-wheel','screen-start'].forEach(id=>{
+    const el=document.getElementById(id);
+    new MutationObserver(()=>{
+      el.classList.contains('active')?startFor(id):stopFor(id);
+    }).observe(el,{attributes:true,attributeFilter:['class']});
+  });
+  window.addEventListener('resize',resize);
+  // Beim Laden: screen-start ist bereits aktiv (init() lief vor diesem Script)
+  if(document.getElementById('screen-start').classList.contains('active')) startFor('screen-start');
+})();</script>
+<div style="position:fixed;bottom:8px;right:12px;font-size:11px;color:rgba(255,255,255,0.25);pointer-events:none;z-index:1;">© 2026 baelli innovations</div>
+
+<!-- ── KIOSK / FULLSCREEN BUTTON ── -->
+<button id="btn-fullscreen" onclick="toggleFullscreen()" title="Vollbild" style="
+  position:fixed;bottom:12px;left:16px;z-index:9999;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.6);border-radius:8px;
+  font-size:11px;font-weight:700;letter-spacing:1px;font-family:inherit;
+  height:32px;padding:0 10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:background .2s,color .2s;white-space:nowrap
+" onmouseenter="this.style.background='rgba(255,255,255,0.18)';this.style.color='#fff'"
+   onmouseleave="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.6)'">
+  ↗ VOLLBILD
+</button>
+
+<script>
+function toggleFullscreen() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  if (!isFs) {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+}
+function _updateFsBtn() {
+  const btn = document.getElementById('btn-fullscreen');
+  if (!btn) return;
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  btn.innerHTML = isFs ? '↙ BEENDEN' : '↗ VOLLBILD';
+  btn.title = isFs ? 'Vollbild beenden (ESC)' : 'Vollbild';
+}
+document.addEventListener('fullscreenchange', _updateFsBtn);
+document.addEventListener('webkitfullscreenchange', _updateFsBtn);
+</script>
+
+</body>
+</html>
