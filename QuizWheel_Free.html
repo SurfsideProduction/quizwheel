@@ -964,25 +964,7 @@ function renderStep1(el) {
       <input class="inp" id="inp-title" placeholder="Beispiel: Firmen-Event, Messe, Vereinsfest …" value="${esc(setupData.quizTitle)}" style="text-transform:uppercase">
     </div>
 
-    <div class="form-group">
-      <label class="lbl">🎨 Logo hochladen <span style="color:#999;font-size:10px;letter-spacing:1px">(optional – Farben werden automatisch erkannt)</span></label>
-      <div onclick="showProHint('Logo &amp; CI')" style="border:2px dashed #1a1a3e;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;opacity:0.6">
-        <div style="font-size:22px;margin-bottom:8px">🔒</div>
-        <div style="font-size:13px;color:#666;font-weight:700">Logo hochladen — Vollversion</div>
-        <div style="font-size:11px;color:#444;margin-top:4px">quizwheel.ch/upgrade</div>
-      </div>
-      <div id="logo-preview-area" style="display:${setupData.logo ? 'flex' : 'none'};align-items:center;gap:14px;margin-top:12px">
-        <img id="logo-preview-img" src="${esc(setupData.logo)}" style="height:48px;max-width:160px;object-fit:contain;border-radius:6px;background:#fff;padding:4px">
-        <div>
-          <div class="color-chips" id="color-chips-display">
-            ${setupData.brandColor ? `<div class="color-chip" style="background:${esc(setupData.brandColor)};color:#fff">${esc(setupData.brandColor)}</div>` : ''}
-            ${setupData.brandAccent ? `<div class="color-chip" style="background:${esc(setupData.brandAccent)};color:#fff">${esc(setupData.brandAccent)}</div>` : ''}
-          </div>
-          <div class="color-hint">Automatisch aus deinem Logo extrahiert</div>
-          <button onclick="clearLogo()" style="margin-top:6px;background:none;border:none;color:#999;font-size:12px;cursor:pointer;padding:0">✕ Logo entfernen</button>
-        </div>
-      </div>
-    </div>
+    <div id="logo-preview-area" style="display:none"></div>
 
     <div class="setup-nav">
       <button class="btn btn-pink btn-lg" onclick="saveStep1()">Weiter →</button>
