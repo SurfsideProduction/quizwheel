@@ -427,7 +427,7 @@ label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transf
     <div id="raffle-free-banner" style="display:none;width:100%;max-width:400px;background:linear-gradient(135deg,rgba(255,45,120,.15),rgba(255,215,0,.08));border:1px solid rgba(255,45,120,.4);border-radius:12px;padding:14px 18px;text-align:center;cursor:pointer" onclick="showProHint('Verlosung &amp; Lead-Capture')">
       <div style="font-size:22px;margin-bottom:4px">🔒</div>
       <div style="font-size:11px;color:#FF2D78;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">Vollversion</div>
-      <div style="font-size:13px;color:#aaa;line-height:1.5">Einträge speichern &amp; CSV-Export<br><span style="color:#FF2D78;font-weight:700">→ Vollversion anfragen</span></div>
+      <div style="font-size:13px;color:#aaa;line-height:1.5">Einträge speichern &amp; CSV-Export<br><span style="color:#FF2D78;font-weight:700">→ Prototyp anfordern</span></div>
     </div>
     <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;margin-top:8px;position:relative">
       <input id="raffle-name"  class="raffle-inp" type="text"  placeholder="Dein Name" autocomplete="off">
@@ -2676,7 +2676,7 @@ function showProHint(feature) {
         Diese Funktion ist in der Vollversion verfügbar.<br>
         <strong style="color:#fff">45 Tage kostenlos testen</strong> — kein Abo, kein Risiko.
       </p>
-      <a href="https://www.quizwheel.ch/#beta" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🚀 Vollversion anfragen</a>
+      <a href="https://surfsideproduction.github.io/quizwheel/#beta" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🚀 Prototyp anfordern</a>
       <br><button onclick="document.getElementById('pro-hint-overlay').remove()" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:6px;padding:6px 12px">Schliessen</button>
     </div>`;
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
