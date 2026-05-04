@@ -9,7 +9,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:#0D0D1A;font-family:Arial,sans-serif;color:#fff}
 
-/* ── SCREENS ── */
+/* ── SCREENS ── *
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s;padding:20px;overflow:hidden}
 .screen.active{opacity:1;pointer-events:all}
 
@@ -2676,7 +2676,7 @@ function showProHint(feature) {
         Diese Funktion ist in der Vollversion verfügbar.<br>
         <strong style="color:#fff">45 Tage kostenlos testen</strong> — kein Abo, kein Risiko.
       </p>
-      <a href="https://surfsideproduction.github.io/quizwheel/#beta" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🚀 Prototyp anfordern</a>
+      <a href="https://www.quizwheel.ch/#beta" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🚀 Prototyp anfordern</a>
       <br><button onclick="document.getElementById('pro-hint-overlay').remove()" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:6px;padding:6px 12px">Schliessen</button>
     </div>`;
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
