@@ -370,9 +370,15 @@
   }
   .price-card:hover { transform:translateY(-4px); }
   .price-card.featured { border-color:var(--pink); box-shadow:0 0 48px rgba(255,45,120,.18); }
+  .price-card.featured-cyan { border-color:#00D4FF; box-shadow:0 0 48px rgba(0,212,255,.15); }
   .price-badge {
     position:absolute; top:-14px; left:50%; transform:translateX(-50%);
     background:var(--pink); color:#fff; font-size:11px; font-weight:800;
+    letter-spacing:2px; padding:4px 16px; border-radius:20px; white-space:nowrap;
+  }
+  .price-badge-cyan {
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    background:#00D4FF; color:#000; font-size:11px; font-weight:800;
     letter-spacing:2px; padding:4px 16px; border-radius:20px; white-space:nowrap;
   }
   .price-name { font-size:13px; color:var(--muted); letter-spacing:3px; font-weight:700; margin-bottom:16px; text-transform:uppercase; }
@@ -383,6 +389,7 @@
   .price-features { list-style:none; text-align:left; margin-bottom:32px; display:flex; flex-direction:column; gap:10px; flex:1; }
   .price-features li { font-size:14px; color:var(--muted); display:flex; gap:10px; align-items:flex-start; }
   .price-features li::before { content:'✓'; color:var(--pink); font-weight:900; flex-shrink:0; }
+  .featured-cyan .price-features li::before { color:#00D4FF; }
   .price-features li.out::before { content:'–'; color:#333; }
   .price-features li.out { color:#444; }
   .btn-plan { margin-top:auto;
@@ -392,6 +399,7 @@
   }
   .btn-plan:hover { opacity:.85; }
   .btn-plan-primary { background:var(--pink); color:#fff; }
+  .btn-plan-cyan { background:#00D4FF; color:#000; }
   .btn-plan-outline { background:transparent; border:1px solid var(--border); color:var(--muted); }
   .btn-plan-gold { background: linear-gradient(135deg, #FFD700, #FF9500); color:#000; }
 
@@ -733,7 +741,8 @@
   <p class="section-sub">Alle Kernfunktionen sind kostenlos — für immer. Profi-Features für Events auf grosser Bühne ab CHF 49. Jetzt als Beta-Tester 45 Tage die Vollversion gratis testen.</p>
   <div class="pricing-grid">
 
-    <div class="price-card reveal">
+    <div class="price-card featured-cyan reveal">
+      <div class="price-badge-cyan">FREE VERSION</div>
       <div class="price-name">Kostenlos</div>
       <div class="price-amount free-text">Gratis</div>
       <div class="price-period">für immer · keine Kreditkarte</div>
@@ -750,7 +759,7 @@
         <li class="out">Lead-Capture & CSV-Export</li>
         <li class="out">Quiz Export & Import</li>
       </ul>
-      <a href="QuizWheel_Free.html" class="btn-plan btn-plan-primary">Free Version starten</a>
+      <a href="QuizWheel_Free.html" class="btn-plan btn-plan-cyan">Free Version starten</a>
     </div>
 
     <div class="price-card featured reveal">
