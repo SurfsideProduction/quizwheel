@@ -941,7 +941,9 @@ function renderSetup() {
   const inner = document.getElementById('setup-inner');
   const pct = ((currentStep - 1) / TOTAL_STEPS) * 100;
   document.getElementById('setup-progress-fill').style.width = pct + '%';
-  document.getElementById('step-badge').textContent = `Schritt ${currentStep} / ${TOTAL_STEPS}`;
+  const filledTopics = setupData ? setupData.topics.filter(t => t.name.trim() && t.questions.some(q => q.q && q.a)).length : 0;
+  const topicBadge = (currentStep >= 2 && currentStep <= 7) ? ` · ${filledTopics} Thema${filledTopics !== 1 ? 'en' : ''} bereit` : '';
+  document.getElementById('step-badge').textContent = `Schritt ${currentStep} / ${TOTAL_STEPS}${topicBadge}`;
   inner.innerHTML = '';
 
   if (currentStep === 1) renderStep1(inner);
@@ -990,8 +992,9 @@ function renderStep1(el) {
       <button class="btn btn-dark" onclick="resetQuiz()" style="font-size:13px;padding:10px 18px;color:#555;border-color:#222">🗑 Neu starten</button>
     </div>
     <div style="margin-top:20px;font-size:12px;color:#aaa;line-height:1.8">
-      💡 Das Quiz hat 6 Themen mit je 5 Fragen (30 Fragen total).<br>
-      Im nächsten Schritt gibst du die Themen und Fragen ein.
+      💡 Das Quiz kann bis zu 6 Themen mit je 5 Fragen haben.<br>
+      Du musst nicht alle 6 Themen ausfüllen — leere Themen werden automatisch übersprungen.<br>
+      <strong style="color:#FFD700">Mindestens 1 Thema mit Fragen ist erforderlich.</strong>
     </div>
   `;
   setTimeout(() => document.getElementById('inp-title').focus(), 100);
@@ -1081,6 +1084,7 @@ function renderStepTopic(el, topicIdx) {
       <button class="btn btn-pink btn-lg" onclick="saveStepTopic(${topicIdx})">
         ${topicIdx < 5 ? `Thema ${topicIdx + 2} →` : 'Schätzfrage →'}
       </button>
+      <button class="btn btn-dark" onclick="skipStepTopic(${topicIdx})" style="font-size:13px;padding:10px 18px;color:#666;border-color:#222" title="Dieses Thema leer lassen und überspringen">⏭ Überspringen</button>
       <button class="btn btn-dark" onclick="previewQuiz()" style="font-size:13px;padding:10px 18px">👁 Vorschau</button>
     </div>
   `;
@@ -1464,6 +1468,15 @@ function saveStepTopic(idx) {
   renderSetup();
 }
 
+function skipStepTopic(idx) {
+  // Thema leeren und überspringen — buildTopics() filtert leere Themen automatisch raus
+  setupData.topics[idx].name = '';
+  setupData.topics[idx].questions = Array(5).fill(null).map(() => ({q:'',a:'',e:'',mediaFile:''}));
+  saveData();
+  currentStep++;
+  renderSetup();
+}
+
 function formatNumberInput(el) {
   const raw = el.value.replace(/[^0-9]/g, '');
   if (!raw) { el.value = ''; return; }
@@ -1733,6 +1746,12 @@ function finishSetup() {
   saveData();
   _isDemo = false;
   buildTopics();
+  if (TOPICS.length === 0) {
+    alert('⚠️ Dein Quiz hat noch keine gültigen Themen. Bitte fülle mindestens 1 Thema mit Name und Fragen aus.');
+    currentStep = 2;
+    renderSetup();
+    return;
+  }
   updateStartScreen();
   applyBranding();
   showDemoBadge(false);
@@ -2104,6 +2123,10 @@ function startQuiz() {
   // Vollen Fragenpool neu aufbauen, dann zufällig auf Spieldauer begrenzen
   // → jeder Spielstart mischt neu, auch bei Wiederholung derselben Dauer
   buildTopics();
+  if (TOPICS.length === 0) {
+    alert('⚠️ Keine Fragen gefunden. Bitte erstelle zuerst dein Quiz mit mindestens 1 Thema und Fragen.');
+    return;
+  }
   TOPICS = limitTopicsToDuration(TOPICS, selectedDuration);
   totalQ = TOPICS.reduce((s,t)=>s+t.questions.length,0);
   TOPICS.forEach((_,i)=>usedMap[i]=new Set());
@@ -2729,8 +2752,9 @@ window.addEventListener('resize',()=>{
   // Kein gespeichertes Quiz → Demo-Quiz anzeigen
   initSetupData(true);
   _isDemo = true;
-  // Free-Version: kein Logo / CI
-  setupData.logo = ''; setupData.brandColor = ''; setupData.brandAccent = '';
+  // Free-Version Demo: Logo SICHTBAR lassen (Kaufanreiz — Erklärung "fiktives Autohaus" macht sonst keinen Sinn)
+  // Nur CI-Farben weglassen (branding-unabhängig)
+  setupData.brandColor = ''; setupData.brandAccent = '';
   goToStart();
 })();
 </script>
