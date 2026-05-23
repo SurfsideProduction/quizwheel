@@ -832,7 +832,9 @@ const DEFAULT_DATA = {
     value: "CHF 3'490.–",
     text: 'Trag dich ein und nimm an der Verlosung teil!',
     mediaFile: ''
-  }
+  },
+  brandColor:  '#C8102E',
+  brandAccent: '#888888'
 };
 
 // ════════════════════════════════════════════════════════════
@@ -1389,7 +1391,17 @@ function applyBranding() {
   const root = document.documentElement;
   const bc  = setupData.brandColor;
   const bc2 = setupData.brandAccent;
-  if (!bc) return _showLogo();
+  if (!bc) {
+    // Kein CI → CSS-Variablen auf QuizWheel-Defaults zurücksetzen
+    root.style.removeProperty('--brand');
+    root.style.removeProperty('--brand2');
+    root.style.removeProperty('--brand-text');
+    root.style.removeProperty('--brand-glow');
+    document.querySelectorAll('.btn-pink,.btn-spin,.btn-primary-brand').forEach(el => {
+      el.style.background = ''; el.style.color = ''; el.style.boxShadow = '';
+    });
+    return _showLogo();
+  }
 
   const txt   = contrastText(bc);
   const alt   = alternateBrandColor(bc);
@@ -2041,9 +2053,43 @@ function setDuration(min) {
 
 function _updateDurHint() {
   const hint = document.getElementById('dur-hint');
-  if (!hint || !TOPICS.length) return;
+  if (!hint) return;
+  if (!TOPICS.length) { hint.textContent = ''; _updateDurButtons(); return; }
   const count = calcQuestionCount(TOPICS, selectedDuration);
   hint.textContent = count > 0 ? `→ ca. ${count} Fragen aus deinem Quiz` : '';
+  _updateDurButtons();
+}
+
+function _updateDurButtons() {
+  // Theoretische Maximale pro Dauer (bei vollem Quiz mit 6 Themen × 5 Fragen)
+  const maxPerDur = { 5: 6, 10: 6, 20: 12, 30: 18, 45: 30 };
+  const durations = [5, 10, 20, 30, 45];
+  const counts = {};
+  durations.forEach(d => { counts[d] = TOPICS.length > 0 ? calcQuestionCount(TOPICS, d) : 0; });
+  const totalAvail = counts[45]; // alle verfügbaren Fragen
+
+  durations.forEach(d => {
+    const btn = document.getElementById('dur-' + d);
+    if (!btn) return;
+    const count = counts[d];
+
+    if (count === 0) {
+      // Keine Fragen → ausgegraut
+      btn.style.opacity = '0.3';
+      btn.style.cursor  = 'not-allowed';
+      btn.title = 'Keine Fragen vorhanden';
+    } else if (totalAvail > 0 && count < maxPerDur[d] * 0.5) {
+      // Weniger als die Hälfte der erwarteten Fragen für diese Dauer → ausgegraut
+      btn.style.opacity = '0.4';
+      btn.style.cursor  = 'default';
+      btn.title = `Nur ${count} von ${maxPerDur[d]} möglichen Fragen — Quiz zu klein für ${d} Min.`;
+    } else {
+      // Genug Fragen → normal
+      btn.style.opacity = '1';
+      btn.style.cursor  = 'pointer';
+      btn.title = `${count} Fragen`;
+    }
+  });
 }
 let curTopic = null;
 let curQ     = null;
@@ -2752,9 +2798,8 @@ window.addEventListener('resize',()=>{
   // Kein gespeichertes Quiz → Demo-Quiz anzeigen
   initSetupData(true);
   _isDemo = true;
-  // Free-Version Demo: Logo SICHTBAR lassen (Kaufanreiz — Erklärung "fiktives Autohaus" macht sonst keinen Sinn)
-  // Nur CI-Farben weglassen (branding-unabhängig)
-  setupData.brandColor = ''; setupData.brandAccent = '';
+  // Free-Version Demo: Logo + CI-Farben SICHTBAR lassen (Kaufanreiz)
+  // Käufer soll sehen wie Branding im Spiel wirkt — Erklärung "fiktives Autohaus" macht sonst keinen Sinn
   goToStart();
 })();
 </script>
