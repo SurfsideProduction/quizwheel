@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; frame-src https://open.spotify.com; connect-src https://itunes.apple.com https://translate.googleapis.com; style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://translate.google.com; font-src 'self' https://fonts.gstatic.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; frame-src https://open.spotify.com; connect-src https://itunes.apple.com;">
 <title>QuizWheel Free – Jetzt kostenlos starten</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -2750,9 +2750,9 @@ function showProHint(feature) {
       <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:12px">${feature}</div>
       <p style="font-size:14px;color:#888;line-height:1.8;margin-bottom:24px">
         Diese Funktion ist in der Vollversion verfügbar.<br>
-        <strong style="color:#fff">€49 — einmalig.</strong> Kein Abo, kein Risiko.
+        <strong style="color:#fff">US$49 — einmalig.</strong> Kein Abo, kein Risiko.
       </p>
-      <a href="https://markusbaelli.gumroad.com/l/ruurid" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🛒 Jetzt kaufen – €49</a>
+      <a href="https://markusbaelli.gumroad.com/l/ruurid" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF2D78,#FFD700);color:#000;font-weight:800;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:1px;margin-bottom:14px">🛒 Jetzt kaufen – US$49</a>
       <br><button onclick="document.getElementById('pro-hint-overlay').remove()" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:6px;padding:6px 12px">Schliessen</button>
     </div>`;
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
@@ -3078,19 +3078,6 @@ function _updateFsBtn() {
 }
 document.addEventListener('fullscreenchange', _updateFsBtn);
 document.addEventListener('webkitfullscreenchange', _updateFsBtn);
-</script>
-
-<!-- Google Translate Widget -->
-<div id="google_translate_element" style="position:fixed;top:12px;right:16px;z-index:9999;"></div>
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'de',
-    includedLanguages: 'de,en,fr,es,it',
-    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-    autoDisplay: false
-  }, 'google_translate_element');
-}
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
