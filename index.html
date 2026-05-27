@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'none';">
-<title>QuizWheel – Dein Logo. Deine Farben. Deine Show.</title>
+<title>QuizWheel – die Spielshow für deinen Event.</title>
 
 <!-- SEO -->
-<meta name="description" content="QuizWheel verwandelt jeden Anlass in eine Spielshow. Animiertes Quiz-Rad für Events, Messen, Firmen-Events & Unterricht. Mit Logo & CI-Branding. Gratis ausprobieren.">
+<meta name="description" content="QuizWheel — die Spielshow für deinen Event. Animiertes Quiz-Rad für Messen, Autohäuser, Events & Unterricht. Mit Logo & CI-Branding. Gratis ausprobieren – Vollversion ab €49, einmalig.">
 <meta name="keywords" content="Quiz Rad, Quizrad, Quiz App, Spielshow, Event Quiz, Messe Quiz, Schulquiz, Lehrertool, Kahoot Alternative, interaktives Quiz, Schweiz">
 <meta name="author" content="baelli innovations">
 <meta name="robots" content="index, follow">
@@ -16,8 +16,8 @@
 <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.quizwheel.ch/">
-<meta property="og:title" content="QuizWheel – Jeder Anlass wird zur Spielshow.">
-<meta property="og:description" content="Animiertes Quiz-Rad mit Logo & CI-Branding für Events, Messen & Unterricht. Gratis ausprobieren – Vollversion ab US$49, einmalig.">
+<meta property="og:title" content="QuizWheel — die Spielshow für deinen Event.">
+<meta property="og:description" content="Animiertes Quiz-Rad mit Logo & CI-Branding für Events, Messen & Unterricht. Gratis ausprobieren – Vollversion ab €49, einmalig.">
 <meta property="og:image" content="https://www.quizwheel.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -28,7 +28,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://www.quizwheel.ch/">
-<meta name="twitter:title" content="QuizWheel – Jeder Anlass wird zur Spielshow.">
+<meta name="twitter:title" content="QuizWheel — die Spielshow für deinen Event.">
 <meta name="twitter:description" content="Animiertes Quiz-Rad mit Logo & CI-Branding für Events, Messen & Unterricht. Gratis ausprobieren.">
 <meta name="twitter:image" content="https://www.quizwheel.ch/og-image.png">
 
@@ -47,13 +47,13 @@
       "@type": "Offer",
       "name": "Kostenlos",
       "price": "0",
-      "priceCurrency": "USD"
+      "priceCurrency": "EUR"
     },
     {
       "@type": "Offer",
       "name": "Vollversion",
       "price": "49",
-      "priceCurrency": "USD"
+      "priceCurrency": "EUR"
     }
   ],
   "author": {
@@ -105,10 +105,10 @@
   /* HERO */
   .hero {
     min-height: 100vh;
-    display: flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align: center; padding: 120px 6vw 80px;
+    display: flex; align-items:center; justify-content:center;
+    padding: 120px 6vw 80px;
     position: relative; overflow: hidden;
-    isolation: isolate; /* eigener Stacking-Context für canvas z-index:-1 */
+    isolation: isolate;
   }
   #hero-canvas {
     position: absolute; inset: 0; width: 100%; height: 100%;
@@ -119,28 +119,49 @@
     background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,45,120,.12) 0%, rgba(255,215,0,.07) 60%, transparent 100%);
     pointer-events:none;
   }
-  .hero-badge {
-    display:inline-block; background:rgba(255,45,120,.15); border:1px solid rgba(255,45,120,.4);
-    color:var(--pink); font-size:12px; font-weight:700; letter-spacing:3px;
-    padding:6px 18px; border-radius:20px; margin-bottom:28px;
-    animation: fadeUp .6s ease both;
+  .hero-content {
+    display: flex; align-items: center; gap: 72px;
+    max-width: 1100px; width: 100%;
   }
+  .hero-text { flex: 1; }
   .hero h1 {
-    font-size: clamp(44px, 7.5vw, 98px); font-weight:900; line-height:1.02;
+    font-size: clamp(38px, 5.5vw, 82px); font-weight:900; line-height:1.05;
     letter-spacing:-2px; margin-bottom:24px;
     animation: fadeUp .6s ease .1s both;
   }
   .hero h1 .accent { color: var(--pink); }
   .hero h1 .accent2 { color: var(--cyan); }
   .hero-sub {
-    font-size: clamp(16px, 2vw, 22px); color: var(--muted); max-width:680px;
-    line-height:1.6; margin-bottom:48px;
+    font-size: clamp(15px, 1.6vw, 20px); color: var(--muted); max-width:520px;
+    line-height:1.7; margin-bottom:14px;
     animation: fadeUp .6s ease .2s both;
   }
   .hero-sub strong { color:#fff; }
+  .hero-tagline {
+    font-size: clamp(14px, 1.4vw, 17px); color: var(--muted); max-width:520px;
+    line-height:1.6; margin-bottom:40px;
+    animation: fadeUp .6s ease .25s both;
+  }
+  .hero-tagline strong { color:#fff; }
   .hero-btns {
-    display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+    display:flex; gap:16px; flex-wrap:wrap;
     animation: fadeUp .6s ease .3s both;
+  }
+  /* Hero Wheel */
+  .hero-wheel-wrap {
+    flex-shrink: 0; position: relative;
+    animation: fadeUp .8s ease .4s both;
+  }
+  #hero-main-wheel {
+    display: block;
+    filter: drop-shadow(0 0 40px rgba(255,45,120,.35));
+  }
+  @media (max-width: 900px) {
+    .hero { padding: 100px 6vw 60px; }
+    .hero-content { flex-direction: column; text-align: center; gap: 40px; }
+    .hero-btns { justify-content: center; }
+    .hero-sub, .hero-tagline { max-width: 100%; }
+    #hero-main-wheel { width: 260px; height: 260px; }
   }
   .btn-primary {
     background: linear-gradient(135deg, var(--pink), var(--gold)); color:#0A0A18; font-weight:800; font-size:16px;
@@ -452,90 +473,82 @@
     <a href="#preise">Preise</a>
     <a href="#kontakt">Kontakt</a>
   </div>
-  <a href="https://markusbaelli.gumroad.com/l/ruurid" class="nav-cta" target="_blank">Jetzt kaufen</a>
+  <a href="https://markusbaelli.gumroad.com/l/ruurid" class="nav-cta" target="_blank">Kaufen – €49</a>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
   <canvas id="hero-canvas"></canvas>
-  <h1>Dein Logo.<br><span class="accent">Deine Farben.</span><br>Deine Show.</h1>
-  <p class="hero-sub">
-    QuizWheel verwandelt jeden Event in eine Live-Spielshow — mit <strong>deiner Marke, deinen Fragen, deinen Preisen.</strong>
-    Einmal kaufen, immer nutzen. <strong>US$49 – keine Abos, keine Limits.</strong>
-  </p>
-  <div class="hero-btns">
-    <a href="https://markusbaelli.gumroad.com/l/ruurid" class="btn-primary" target="_blank">🛒 Jetzt kaufen – US$49</a>
-    <a href="QuizWheel_Free.html" class="btn-secondary">▶ Free Version</a>
-  </div>
-
-  <div class="branding-visual">
-    <div class="branding-card">
-      <div class="branding-step">
-        <div class="branding-step-num">1</div>
-        <div>
-          <div class="branding-step-text">Logo hochladen</div>
-          <div class="branding-step-sub">PNG oder SVG — fertig</div>
-        </div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1>QuizWheel —<br>die <span class="accent">Spielshow</span><br>für deinen Event.</h1>
+      <p class="hero-sub">Dein Logo. Deine Farben. Deine Show.</p>
+      <p class="hero-tagline">Animiertes Quizrad für Messen, Autohäuser, Events & Unterricht.<br>
+        <strong>Einmal kaufen – immer nutzen. €49, keine Abos.</strong>
+      </p>
+      <div class="hero-btns">
+        <a href="https://markusbaelli.gumroad.com/l/ruurid" class="btn-primary" target="_blank">🛒 Jetzt kaufen – €49</a>
+        <a href="QuizWheel_Free.html" class="btn-secondary">▶ Gratis testen</a>
       </div>
-      <div class="branding-arrow">↓</div>
-      <div class="branding-step">
-        <div class="branding-step-num step2">2</div>
-        <div>
-          <div class="branding-step-text">QuizWheel erkennt deine Markenfarben automatisch</div>
-          <div class="color-preview">
-            <div class="color-dot" style="background:#C8102E"></div>
-            <div class="color-dot" style="background:#FFFFFF;border:1px solid #333"></div>
-            <div class="color-dot" style="background:#1A1A2E"></div>
-          </div>
-        </div>
+      <div style="margin-top:20px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted);">
+        <span>🖥️ Desktop & Beamer</span>
+        <span>💻 Läuft im Browser</span>
+        <span>📡 Kein WLAN nötig</span>
+        <span>🎯 Kein App-Download</span>
       </div>
-      <div class="branding-arrow">↓</div>
-      <div class="branding-step">
-        <div class="branding-step-num step3">3</div>
-        <div>
-          <div class="branding-step-text">Das gesamte Quiz erscheint in deinen Farben</div>
-          <div class="branding-step-sub">Rad, Buttons, Screens — alles gebrandetH</div>
-        </div>
-      </div>
+    </div>
+    <div class="hero-wheel-wrap">
+      <canvas id="hero-main-wheel" width="380" height="380"></canvas>
     </div>
   </div>
 </div>
 
-<!-- SCREENSHOTS / LIVE IM EINSATZ -->
-<section style="background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);padding:60px 20px 50px;text-align:center;">
-  <p style="color:var(--accent);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Live im Einsatz</p>
-  <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:8px;">QuizWheel am Messestand — <span style="color:var(--accent)">Besucher kommen von selbst.</span></h2>
-  <p style="color:#999;max-width:540px;margin:0 auto 40px;font-size:0.95rem;">Läuft auf jedem Beamer, Flatscreen oder Laptop — ohne Installation, ohne WLAN-Abhängigkeit.</p>
-  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;max-width:1100px;margin:0 auto;">
-    <div style="flex:1;min-width:280px;max-width:360px;">
-      <img src="mockup_rad.png" alt="QuizWheel – Das Rad" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-      <p style="color:#999;font-size:0.85rem;margin-top:12px;">🎡 Rad drehen — Thema erscheint</p>
-    </div>
-    <div style="flex:1;min-width:280px;max-width:360px;">
-      <img src="mockup_frage.png" alt="QuizWheel – Die Frage" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-      <p style="color:#999;font-size:0.85rem;margin-top:12px;">🎤 Frage stellen — Spannung pur</p>
-    </div>
-    <div style="flex:1;min-width:280px;max-width:360px;">
-      <img src="mockup_sieger.png" alt="QuizWheel – Der Sieger" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-      <p style="color:#999;font-size:0.85rem;margin-top:12px;">🏆 Sieger enthüllen — grosses Finale</p>
+<!-- SO LÄUFT'S AB -->
+<section style="background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);padding:80px 6vw 70px;text-align:center;">
+  <p style="color:var(--pink);font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">So läuft's ab</p>
+  <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:0;">Rad drehen. Frage stellen. <span style="color:var(--pink)">Sieger feiern.</span></h2>
+
+  <!-- Quizmaster-Hinweis -->
+  <div style="display:inline-flex;align-items:center;gap:14px;margin:28px auto 48px;background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:14px;padding:16px 28px;max-width:620px;">
+    <span style="font-size:28px;">🎤</span>
+    <div style="text-align:left;">
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;">QuizWheel braucht einen Moderator — und das ist gut so.</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Du führst durchs Spiel, das Rad bestimmt das Thema, das Publikum fiebert mit. Ideal für alle die sowieso vor Menschen stehen.</div>
     </div>
   </div>
-  <div style="margin-top:40px;">
-    <a href="QuizWheel_Free.html" style="display:inline-block;padding:14px 32px;background:var(--c2);color:#000;font-weight:700;border-radius:8px;text-decoration:none;font-size:1rem;">▶ Gratis ausprobieren</a>
+
+  <!-- 3 Event-Schritte -->
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:860px;margin:0 auto 52px;">
+    <div style="flex:1;min-width:220px;max-width:260px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:24px 20px;">
+      <div style="font-size:36px;margin-bottom:12px;">🎡</div>
+      <div style="font-size:15px;font-weight:800;margin-bottom:6px;">Rad drehen</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Das Rad wählt zufällig ein Thema. Spannung ab der ersten Sekunde.</div>
+    </div>
+    <div style="flex:1;min-width:220px;max-width:260px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:24px 20px;">
+      <div style="font-size:36px;margin-bottom:12px;">🎤</div>
+      <div style="font-size:15px;font-weight:800;margin-bottom:6px;">Frage stellen</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Du liest die Frage vor, baust Spannung auf — das Publikum diskutiert, rätselt, lacht.</div>
+    </div>
+    <div style="flex:1;min-width:220px;max-width:260px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:24px 20px;">
+      <div style="font-size:36px;margin-bottom:12px;">🏆</div>
+      <div style="font-size:15px;font-weight:800;margin-bottom:6px;">Sieger enthüllen</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Punkte bleiben geheim bis zum 3-2-1 Countdown. Dann das grosse Finale mit Konfetti.</div>
+    </div>
+  </div>
+
+  <!-- Screenshots -->
+  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;max-width:1100px;margin:0 auto;">
+    <div style="flex:1;min-width:260px;max-width:340px;">
+      <img src="mockup_rad.png" alt="QuizWheel – Das Rad" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+    </div>
+    <div style="flex:1;min-width:260px;max-width:340px;">
+      <img src="mockup_frage.png" alt="QuizWheel – Die Frage" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+    </div>
+    <div style="flex:1;min-width:260px;max-width:340px;">
+      <img src="mockup_sieger.png" alt="QuizWheel – Der Sieger" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+    </div>
   </div>
 </section>
-
-
-<!-- TRUST BAR -->
-<div class="trust-bar">
-  <div class="trust-item">🚗 <span>Autohäuser & Showrooms</span></div>
-  <div class="trust-item">🏟️ <span>Messen & Ausstellungen</span></div>
-  <div class="trust-item">🏢 <span>Tag der offenen Tür</span></div>
-  <div class="trust-item">🏆 <span>Vereinsfeste & Events</span></div>
-  <div class="trust-item">✂️ <span>Coiffeur & Beauty</span></div>
-  <div class="trust-item">🛒 <span>Retail & Drogerie</span></div>
-  <div class="trust-item">📣 <span>Marken-Aktivierungen</span></div>
-</div>
 
 <!-- BRANDING SECTION -->
 <section class="branding-section" id="branding">
@@ -593,9 +606,9 @@
 
 <!-- USE CASES -->
 <section class="use-cases" id="anwendungen">
-  <div class="section-label">Für wen</div>
-  <h2 class="section-title">Ein Tool. <span style="color:var(--pink)">Unzählige Branchen.</span></h2>
-  <p class="section-sub">Überall dort wo Besucherkontakt zählt, Spannung Aufmerksamkeit schafft und Preise Menschen anziehen.</p>
+  <div class="section-label">Einsatzorte</div>
+  <h2 class="section-title">Für jeden Anlass. <span style="color:var(--pink)">Für jede Branche.</span></h2>
+  <p class="section-sub">Überall dort wo Besucherkontakt zählt, Spannung Aufmerksamkeit schafft und Begeisterung entsteht.</p>
   <div class="cases-grid">
     <div class="case-card reveal">
       <div class="case-icon">🚗</div>
@@ -648,29 +661,6 @@
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section id="so-funktionierts">
-  <div class="section-label">So einfach</div>
-  <h2 class="section-title">Ready in <span style="color:var(--cyan)">3 Schritten.</span></h2>
-  <p class="section-sub">Logo hochladen. Fragen eingeben. Show starten. Setup in fünf Minuten — ohne Designkenntnisse.</p>
-  <div class="steps reveal">
-    <div class="step">
-      <div class="step-num">🖼️</div>
-      <div class="step-title">Logo & Branding</div>
-      <p class="step-text">Logo hochladen, Farben werden automatisch erkannt. Quiz-Titel eingeben. Fertig mit dem Branding.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">🎡</div>
-      <div class="step-title">Fragen eingeben</div>
-      <p class="step-text">6 Themen, je 5 Fragen. Optional: Bilder, Audio, Spotify-Clips. Alles per Drag & Drop.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">🏆</div>
-      <div class="step-title">Show starten</div>
-      <p class="step-text">Auf Beamer oder TV — Punkte bleiben bis zum 3-2-1 Countdown geheim. Dann die explosive Sieger-Enthüllung.</p>
-    </div>
-  </div>
-</section>
 
 <!-- FEATURES -->
 <section style="background:var(--bg2)">
@@ -762,7 +752,7 @@
 <section class="pricing" id="preise">
   <div class="section-label">Preise</div>
   <h2 class="section-title">Einfach. <span style="color:var(--gold)">Ehrlich. Fair.</span></h2>
-  <p class="section-sub">Alle Kernfunktionen sind kostenlos — für immer. Profi-Features für Events auf grosser Bühne ab US$49. Einmal kaufen, immer nutzen.</p>
+  <p class="section-sub">Alle Kernfunktionen kostenlos — für immer. Profi-Features für Events auf grosser Bühne ab €49. Einmal kaufen, immer nutzen.</p>
   <div class="pricing-grid">
 
     <div class="price-card featured-cyan reveal">
@@ -789,8 +779,8 @@
     <div class="price-card featured reveal">
       <div class="price-badge">EVENT-PAKET</div>
       <div class="price-name">Vollversion</div>
-      <div class="price-amount"><sup>US$</sup>49</div>
-      <div class="price-period">einmalig · oder €12 / Monat</div>
+      <div class="price-amount"><sup>€</sup>49</div>
+      <div class="price-period">einmalig · keine Abos, keine Limits</div>
       <ul class="price-features">
         <li>Alles aus Kostenlos</li>
         <li>✦ Dein Logo + automatische CI-Farben</li>
@@ -800,25 +790,12 @@
         <li>Quiz exportieren & importieren</li>
         <li>Setup-Support per E-Mail</li>
       </ul>
-      <a href="https://markusbaelli.gumroad.com/l/ruurid" class="btn-plan btn-plan-primary" target="_blank">Jetzt kaufen – US$49 →</a>
-    </div>
-
-    <div class="price-card reveal">
-      <div class="price-name">Individuell</div>
-      <div class="price-amount" style="font-size:clamp(28px,3vw,40px);padding-top:8px">Auf Anfrage</div>
-      <div class="price-period">für Agenturen & grosse Events</div>
-      <ul class="price-features">
-        <li>Alles aus Event-Paket</li>
-        <li>Individuelle Anpassungen</li>
-        <li>White-Label / eigene Domain</li>
-        <li>Vor-Ort-Schulung & Support</li>
-      </ul>
-      <a href="#beta" class="btn-plan btn-plan-gold">Anfrage stellen</a>
+      <a href="https://markusbaelli.gumroad.com/l/ruurid" class="btn-plan btn-plan-primary" target="_blank">Jetzt kaufen – €49 →</a>
     </div>
 
   </div>
   <p style="text-align:center; margin-top:40px; font-size:14px; color:var(--muted)">
-    Fragen zum Modell? <a href="#beta" style="color:var(--pink); text-decoration:none;">Schreib uns →</a>
+    Fragen? <a href="#kontakt" style="color:var(--pink); text-decoration:none;">Schreib uns →</a>
   </p>
 </section>
 
@@ -861,53 +838,125 @@
 </footer>
 
 <script>
-// ── HERO WHEEL ──────────────────────────────────────────────────────────────
-const canvas = document.getElementById('hero-wheel');
-const ctx = canvas.getContext('2d');
-const topics = ['🚗 Auto','🏆 Preis','📦 Produkt','🎯 Marke','💡 Tipp','⭐ Bonus'];
-// Brand colors: Autohaus Müller rot
-const colors = ['#C8102E','#1A1A2E','#C8102E','#1A1A2E','#C8102E','#1A1A2E'];
-let angle = 0;
-let spinSpeed = 0.004;
-let targetSpeed = 0.004;
+// ── HERO MAIN WHEEL (neutral, gross) ─────────────────────────────────────────
+(function(){
+  const cvs = document.getElementById('hero-main-wheel');
+  if(!cvs) return;
+  const ctx = cvs.getContext('2d');
+  const topics = ['🎯 Quiz','🎸 Musik','🚗 Autos','🏆 Sport','🌍 Wissen','🎉 Spass'];
+  const colors = ['#FF2D78','#7B2FBE','#0066FF','#00B4D8','#06D6A0','#FFD700'];
+  const textColors = ['#fff','#fff','#fff','#fff','#0A0A18','#0A0A18'];
+  let angle = 0, spinSpeed = 0.006, targetSpeed = 0.006;
 
-function drawWheel() {
-  const cx = canvas.width/2, cy = canvas.height/2, R = 126;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  function draw() {
+    const W = cvs.width, H = cvs.height;
+    const cx = W/2, cy = H/2, R = W/2 - 12;
+    ctx.clearRect(0,0,W,H);
+    const slice = (Math.PI*2)/topics.length;
 
-  const slice = (Math.PI*2)/topics.length;
-  topics.forEach((t,i) => {
-    const start = angle + i*slice, end = start + slice;
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,R,start,end);
-    ctx.fillStyle = colors[i]; ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.lineWidth=2; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+slice/2);
-    ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 11px Helvetica Neue,Arial';
-    ctx.fillText(t, R-10, 5); ctx.restore();
-  });
+    // Outer glow ring
+    const glow = ctx.createRadialGradient(cx,cy,R-8,cx,cy,R+8);
+    glow.addColorStop(0,'rgba(255,45,120,.5)');
+    glow.addColorStop(1,'rgba(255,45,120,0)');
+    ctx.beginPath(); ctx.arc(cx,cy,R+6,0,Math.PI*2);
+    ctx.fillStyle=glow; ctx.fill();
 
-  // Center hub with logo placeholder
-  ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2);
-  ctx.fillStyle='#0A0A18'; ctx.fill();
-  ctx.strokeStyle='#C8102E'; ctx.lineWidth=3; ctx.stroke();
-  ctx.fillStyle='#fff'; ctx.font='bold 11px Helvetica Neue'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('LOGO',cx,cy);
-}
+    topics.forEach((t,i) => {
+      const start = angle + i*slice, end = start + slice;
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R,start,end);
+      ctx.fillStyle = colors[i]; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=2; ctx.stroke();
 
-function animate() {
-  spinSpeed += (targetSpeed - spinSpeed) * 0.05;
-  angle += spinSpeed;
-  drawWheel();
-  requestAnimationFrame(animate);
-}
+      // Two-line text
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+slice/2);
+      const emoji = t.split(' ')[0];
+      const label = t.split(' ').slice(1).join(' ');
+      const tr = R*0.62;
+      ctx.textAlign='center'; ctx.fillStyle=textColors[i];
+      ctx.font=`bold ${Math.round(W*0.052)}px Helvetica Neue,Arial`;
+      ctx.fillText(emoji, tr, -6);
+      ctx.font=`bold ${Math.round(W*0.038)}px Helvetica Neue,Arial`;
+      ctx.fillText(label, tr, +10);
+      ctx.restore();
+    });
 
-function dramaSpin() {
-  targetSpeed = 0.06 + Math.random() * 0.04;
-  setTimeout(() => { targetSpeed = 0.004; }, 2000 + Math.random()*1000);
-}
-setInterval(dramaSpin, 5000);
-animate();
+    // Arrow pointer (top)
+    ctx.save(); ctx.translate(cx, 6);
+    ctx.beginPath(); ctx.moveTo(0,-4); ctx.lineTo(-10,10); ctx.lineTo(10,10);
+    ctx.fillStyle='#FF2D78'; ctx.fill();
+    ctx.restore();
+
+    // Center hub
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.18,0,Math.PI*2);
+    const hubGrad = ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.18);
+    hubGrad.addColorStop(0,'#1a1a3e'); hubGrad.addColorStop(1,'#0A0A18');
+    ctx.fillStyle=hubGrad; ctx.fill();
+    ctx.strokeStyle='rgba(255,45,120,.8)'; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${Math.round(W*0.048)}px Helvetica Neue`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('🎡',cx,cy);
+  }
+
+  function tick() {
+    spinSpeed += (targetSpeed - spinSpeed) * 0.04;
+    angle += spinSpeed;
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  function dramaSpin() {
+    targetSpeed = 0.055 + Math.random()*0.04;
+    setTimeout(() => { targetSpeed = 0.006; }, 2200 + Math.random()*900);
+  }
+  setInterval(dramaSpin, 4500);
+  tick();
+})();
+
+// ── BRANDING PREVIEW WHEEL ───────────────────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('hero-wheel');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const topics = ['🚗 Auto','🏆 Preis','📦 Produkt','🎯 Marke','💡 Tipp','⭐ Bonus'];
+  const colors = ['#C8102E','#1A1A2E','#C8102E','#1A1A2E','#C8102E','#1A1A2E'];
+  let angle = 0, spinSpeed = 0.004, targetSpeed = 0.004;
+
+  function drawWheel() {
+    const cx = canvas.width/2, cy = canvas.height/2, R = 126;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const slice = (Math.PI*2)/topics.length;
+    topics.forEach((t,i) => {
+      const start = angle + i*slice, end = start + slice;
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R,start,end);
+      ctx.fillStyle = colors[i]; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.lineWidth=2; ctx.stroke();
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+slice/2);
+      ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 11px Helvetica Neue,Arial';
+      ctx.fillText(t, R-10, 5); ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2);
+    ctx.fillStyle='#0A0A18'; ctx.fill();
+    ctx.strokeStyle='#C8102E'; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 11px Helvetica Neue'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('LOGO',cx,cy);
+  }
+
+  function animate() {
+    spinSpeed += (targetSpeed - spinSpeed) * 0.05;
+    angle += spinSpeed;
+    drawWheel();
+    requestAnimationFrame(animate);
+  }
+
+  function dramaSpin() {
+    targetSpeed = 0.06 + Math.random() * 0.04;
+    setTimeout(() => { targetSpeed = 0.004; }, 2000 + Math.random()*1000);
+  }
+  setInterval(dramaSpin, 5000);
+  animate();
+})();
 
 // ── SCROLL REVEAL ───────────────────────────────────────────────────────────
 const observer = new IntersectionObserver(entries => {
