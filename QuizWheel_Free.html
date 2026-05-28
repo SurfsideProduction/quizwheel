@@ -24,7 +24,7 @@ html,body{width:100%;height:100%;background:#0D0D1A;font-family:Arial,sans-serif
 .btn-dark{background:#1A1A3E;color:#fff;border:2px solid #333}
 .btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4)}
 .btn-spin{background:linear-gradient(135deg,#FF2D78,#FFD700);color:#fff;font-size:clamp(18px,3vw,32px);padding:clamp(12px,2.5vh,22px) clamp(40px,8vw,80px);border-radius:50px;box-shadow:0 4px 24px rgba(255,45,120,.45);letter-spacing:3px}
-.btn-spin:disabled{background:#222;color:#444;box-shadow:none;cursor:not-allowed;transform:none}
+.btn-spin:disabled{background:#222 !important;color:#444 !important;box-shadow:none !important;cursor:not-allowed;transform:none}
 
 /* ════════════════════════════
    SETUP SCREEN
@@ -225,6 +225,41 @@ label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transf
 .color-chips{display:flex;gap:8px;flex-wrap:wrap}
 .color-chip{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px}
 .color-hint{font-size:12px;color:#999;margin-top:6px;line-height:1.6}
+
+/* ── HILFE-MODAL ─────────────────────────────────────────────────── */
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(5,5,20,.94);z-index:9000;overflow-y:auto;backdrop-filter:blur(8px)}
+.help-overlay.open{display:flex;flex-direction:column;align-items:center;padding:24px 0 48px}
+.help-modal{width:min(660px,94vw);background:#0f0f26;border:1px solid #252550;border-radius:16px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.hm-header{background:#FF2D78;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.hm-body{padding:20px 22px 4px}
+.hm-sec{margin-bottom:16px;background:#141432;border-radius:10px;overflow:hidden}
+.hm-sec-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #1e1e48}
+.hm-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.hm-ul{margin:0;padding:8px 14px 10px 14px;list-style:none}
+.hm-ul li{font-size:12.5px;color:#ccc;line-height:1.6;padding:1px 0 1px 12px;position:relative}
+.hm-ul li::before{content:"›";position:absolute;left:2px;color:#555}
+.hv{display:inline-block;font-size:10px;font-weight:700;color:#00D4FF;background:#002535;border:1px solid rgba(0,212,255,.4);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;line-height:1.4}
+.hm-tip{margin:0 0 16px;padding:12px 14px;background:#1e0028;border:1px solid rgba(255,45,120,.3);border-radius:8px;font-size:12px;color:#ccc;line-height:1.6}
+.hm-note{padding:8px 14px 16px;font-size:11px;color:#555;text-align:center}
+.hm-actions{display:flex;gap:8px;justify-content:flex-end;padding:0 22px 18px}
+.hm-btn{background:rgba(255,255,255,.06);border:1px solid #2a2a5e;color:#aaa;border-radius:6px;font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:background .15s,color .15s}
+.hm-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.hm-btn-pink{background:#FF2D78;border-color:#FF2D78;color:#fff}
+.hm-btn-pink:hover{background:#e01060;color:#fff}
+@media print{
+  body>*:not(.help-overlay){display:none!important}
+  .help-overlay{position:static!important;background:#fff!important;display:block!important;padding:0!important}
+  .help-modal{border:none!important;background:#fff!important;box-shadow:none!important;width:100%!important;border-radius:0!important}
+  .hm-header{background:#FF2D78!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .hm-sec{background:#f5f5f5!important;border:1px solid #ddd!important}
+  .hm-ul li,.hm-tip{color:#222!important}
+  .hm-actions,.hm-note{display:none!important}
+}
+/* ── QR-CODE ─────────────────────────────────────────────────────── */
+.player-qr{position:absolute;bottom:54px;left:18px;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:.65;transition:opacity .2s;cursor:default;z-index:10}
+.player-qr:hover{opacity:1}
+.player-qr img{border-radius:6px;display:block}
+.player-qr-label{font-size:8px;color:#00D4FF;letter-spacing:2px;font-weight:700;text-transform:uppercase;text-align:center}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.umd.js"></script>
 </head>
@@ -242,6 +277,7 @@ label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transf
       <div class="setup-step-badge" id="step-badge">Schritt 1 / 9</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
+      <button onclick="openHelpModal()" title="Spielanleitung" style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;border-radius:6px;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px;white-space:nowrap" onmouseenter="this.style.background='rgba(0,212,255,0.18)'" onmouseleave="this.style.background='rgba(0,212,255,0.08)'">❓ Hilfe</button>
       <button onclick="showProHint('Export &amp; Import')" title="Vollversion erforderlich" style="background:rgba(255,255,255,0.03);border:1px solid #2a2a5e;color:#555;border-radius:6px;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px;white-space:nowrap">🔒 Export</button>
       <button onclick="showProHint('Export &amp; Import')" title="Vollversion erforderlich" style="background:rgba(255,255,255,0.03);border:1px solid #2a2a5e;color:#555;border-radius:6px;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px;white-space:nowrap">🔒 Import</button>
       <button class="btn btn-dark" onclick="goToStart()" style="font-size:12px;padding:6px 14px;color:#666;border-color:#333">← Startseite</button>
@@ -318,6 +354,12 @@ label.lbl{display:block;font-size:11px;color:#999;letter-spacing:2px;text-transf
     ✏️ &nbsp; Eigenes Quiz erstellen
   </button>
   <div style="position:absolute;bottom:12px;right:18px;font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif;user-select:none">© baelli-innovations</div>
+
+  <!-- QR-Code für Spieler-Anleitung -->
+  <div class="player-qr" title="Spielregeln auf dem Handy öffnen">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https%3A%2F%2Fwww.quizwheel.ch%2FQuizWheel_Spieler.pdf&color=00D4FF&bgcolor=0d0d1a&margin=6" width="80" height="80" alt="QR Spielregeln">
+    <div class="player-qr-label">Spielregeln</div>
+  </div>
 </div>
 
 <!-- Demo-Abbrechen: direkt im DEMO-Badge integriert (klickbar) -->
@@ -1804,6 +1846,7 @@ function updateStartScreen() {
 }
 
 function goToStart() {
+  stopBgMusic();
   // Aktuellen Formularstand lesen, damit der Titel auf dem Startscreen stimmt
   saveCurrentStepSilent();
   buildTopics();
@@ -1905,6 +1948,270 @@ function playFanfare() {
     });
   } catch(e) {}
 }
+
+// ─── ANSWER REVEAL STINGER  (Ta – Taaaa, Trompeten-Stil) ─────
+function playAnswerFanfare() {
+  try {
+    const c = getAC();
+    // Blechbläser-Ton: Sägezahn + Tiefpass + Sub-Oktave
+    function brass(freq, t0, dur, vol) {
+      const osc=c.createOscillator(), flt=c.createBiquadFilter(), env=c.createGain();
+      osc.type='sawtooth'; osc.frequency.value=freq;
+      flt.type='lowpass'; flt.Q.value=1;
+      flt.frequency.setValueAtTime(2800, t0);
+      flt.frequency.exponentialRampToValueAtTime(1400, t0+dur);
+      env.gain.setValueAtTime(0, t0);
+      env.gain.linearRampToValueAtTime(vol, t0+0.028);   // weicherer Anschlag
+      env.gain.setValueAtTime(vol*0.82, t0+0.06);
+      env.gain.setValueAtTime(vol*0.82, t0+dur-0.04);
+      env.gain.linearRampToValueAtTime(0, t0+dur);
+      osc.connect(flt); flt.connect(env); env.connect(c.destination);
+      osc.start(t0); osc.stop(t0+dur+0.05);
+      // Sub-Oktave für Körper
+      const sub=c.createOscillator(), sg=c.createGain();
+      sub.type='triangle'; sub.frequency.value=freq*0.5;
+      sg.gain.setValueAtTime(0,t0); sg.gain.linearRampToValueAtTime(vol*0.28,t0+0.02);
+      sg.gain.exponentialRampToValueAtTime(0.0001, t0+dur*0.7);
+      sub.connect(sg); sg.connect(c.destination);
+      sub.start(t0); sub.stop(t0+dur);
+    }
+    const t = c.currentTime;
+    brass(349, t,       0.13, 0.12);   // "Ta"  – F4, kurz
+    brass(523, t+0.17,  0.78, 0.13);   // "Taaaa" – C5, gehalten
+    brass(440, t+0.17,  0.72, 0.06);   // Terz A4 dazu (F-Dur-Klang)
+  } catch(e) {}
+}
+
+// ─── UI CLICK SOUNDS ─────────────────────────────────────────
+function uiTick() {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const osc = c.createOscillator(), env = c.createGain();
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(900, t);
+    osc.frequency.exponentialRampToValueAtTime(600, t + 0.03);
+    env.gain.setValueAtTime(0.07, t); env.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+    osc.connect(env); env.connect(c.destination);
+    osc.start(t); osc.stop(t + 0.05);
+  } catch(e) {}
+}
+function uiPop() {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const osc = c.createOscillator(), env = c.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(320, t);
+    osc.frequency.exponentialRampToValueAtTime(180, t + 0.06);
+    env.gain.setValueAtTime(0.12, t); env.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    osc.connect(env); env.connect(c.destination);
+    osc.start(t); osc.stop(t + 0.08);
+  } catch(e) {}
+}
+function uiDing() {
+  try {
+    const c = getAC(), t = c.currentTime;
+    const osc = c.createOscillator(), env = c.createGain();
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(1050, t);
+    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(0.09, t + 0.008);
+    env.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    osc.connect(env); env.connect(c.destination);
+    osc.start(t); osc.stop(t + 0.20);
+    // subtle overtone
+    const osc2 = c.createOscillator(), env2 = c.createGain();
+    osc2.type = 'sine'; osc2.frequency.setValueAtTime(2100, t);
+    env2.gain.setValueAtTime(0, t); env2.gain.linearRampToValueAtTime(0.03, t + 0.008);
+    env2.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    osc2.connect(env2); env2.connect(c.destination);
+    osc2.start(t); osc2.stop(t + 0.14);
+  } catch(e) {}
+}
+// Global button sound delegation (capture phase)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('button, .dur-btn, [data-sound]');
+  if (!btn) return;
+  const id = btn.id || '';
+  // spin button already has ratchet sounds — skip
+  if (id === 'spin-btn') return;
+  // score buttons → ding
+  if (btn.classList.contains('score-btn') || id === 'score-a' || id === 'score-b') { uiDing(); return; }
+  // duration buttons → tick
+  if (btn.classList.contains('dur-btn')) { uiTick(); return; }
+  // back / nav / secondary → tick
+  if (id === 'btn-back-to-start' || id === 'btn-edit' || id === 'btn-demo-create' ||
+      btn.classList.contains('btn-back') || btn.classList.contains('close-help') ||
+      id === 'btn-close-help' || btn.getAttribute('onclick') === 'closeHelpModal()') {
+    uiTick(); return;
+  }
+  // primary action buttons → pop
+  if (id === 'btn-start-quiz' || id === 'ask-btn' || id === 'reveal-btn' ||
+      id === 'saveStep1' || id === 'saveStepTopic' || id === 'saveStepTiebreaker' ||
+      id === 'btn-raffle-start' || id === 'btn-raffle-enter' ||
+      id === 'btn-export' || id === 'btn-import' || id === 'btn-fullscreen' ||
+      btn.classList.contains('btn-primary') || btn.classList.contains('btn-plan')) {
+    uiPop(); return;
+  }
+  // default: subtle tick for all other buttons
+  uiTick();
+}, true);
+
+// ════════════════════════════════════════════════════════════
+//  BACKGROUND MUSIC  (synthesized loop, game-show style)
+// ════════════════════════════════════════════════════════════
+const BG_BPM  = 118;
+const BG_BEAT = 60 / BG_BPM;        // 0.508 s per beat
+const BG_BAR  = BG_BEAT * 4;        // 2.034 s per bar
+const BG_LOOP = BG_BAR  * 4;        // 8.136 s total loop
+
+// Chord progression: Am | Am | Dm | E
+const BGCHORDS = [
+  { root:110.00, tones:[220.00, 261.63, 329.63] },  // Am bar 1
+  { root:110.00, tones:[220.00, 261.63, 329.63] },  // Am bar 2
+  { root:146.83, tones:[146.83, 174.61, 220.00] },  // Dm bar 3
+  { root:164.81, tones:[164.81, 207.65, 246.94] },  // E  bar 4
+];
+const BG_ARP = [0,1,2,1, 2,1,0,2];  // 8th-note arpeggio pattern
+
+let bgMusicGain = null;   // master gain node (null = music not running)
+let bgMusicOn   = true;   // user toggle preference
+let bgLoopTimer = null;   // look-ahead re-schedule handle
+
+let _bgNoiseBuffer = null;
+function _getBgNoise(ac) {
+  if (_bgNoiseBuffer) return _bgNoiseBuffer;
+  const len = ac.sampleRate * 0.5, buf = ac.createBuffer(1, len, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  _bgNoiseBuffer = buf;
+  return buf;
+}
+
+(function() {
+  function schedLoop(ac, masterGain, startTime) {
+    const PAD=0.040, ARP=0.070, BASS=0.120, HAT=0.035, KICK=0.180;
+
+    for (let bar = 0; bar < 4; bar++) {
+      const barT  = startTime + bar * BG_BAR;
+      const chord = BGCHORDS[bar];
+
+      // PAD – 2 detuned triangle oscillators per chord tone, lowpass
+      chord.tones.forEach(freq => {
+        [-4, +4].forEach(det => {
+          const osc=ac.createOscillator(), lp=ac.createBiquadFilter(), env=ac.createGain();
+          osc.type='triangle'; osc.frequency.value=freq; osc.detune.value=det;
+          lp.type='lowpass'; lp.frequency.value=900;
+          env.gain.setValueAtTime(0,barT);
+          env.gain.linearRampToValueAtTime(PAD, barT+0.08);
+          env.gain.setValueAtTime(PAD, barT+BG_BAR-0.08);
+          env.gain.linearRampToValueAtTime(0, barT+BG_BAR);
+          osc.connect(lp); lp.connect(env); env.connect(masterGain);
+          osc.start(barT); osc.stop(barT+BG_BAR+0.01);
+        });
+      });
+
+      // ARPEGGIO – 8 eighth notes per bar, sine, one octave up
+      for (let s = 0; s < 8; s++) {
+        const sT=barT+s*BG_BEAT*0.5, freq=chord.tones[BG_ARP[s]]*2;
+        const osc=ac.createOscillator(), env=ac.createGain();
+        osc.type='sine'; osc.frequency.value=freq;
+        env.gain.setValueAtTime(0,sT);
+        env.gain.linearRampToValueAtTime(ARP, sT+0.02);
+        env.gain.exponentialRampToValueAtTime(0.0001, sT+BG_BEAT*0.45);
+        osc.connect(env); env.connect(masterGain);
+        osc.start(sT); osc.stop(sT+BG_BEAT*0.5);
+      }
+
+      // BASS – root, beats 1 & 3
+      [0,2].forEach(b => {
+        const bT=barT+b*BG_BEAT;
+        const osc=ac.createOscillator(), env=ac.createGain();
+        osc.type='sine'; osc.frequency.value=chord.root;
+        env.gain.setValueAtTime(BASS,bT);
+        env.gain.exponentialRampToValueAtTime(0.0001, bT+BG_BEAT*0.8);
+        osc.connect(env); env.connect(masterGain);
+        osc.start(bT); osc.stop(bT+BG_BEAT*0.9);
+      });
+
+      // HI-HAT – every 8th note, noise + highpass
+      for (let s = 0; s < 8; s++) {
+        const hT=barT+s*BG_BEAT*0.5, vel=s%2===0?HAT:HAT*0.5;
+        const src=ac.createBufferSource(), hp=ac.createBiquadFilter(), env=ac.createGain();
+        src.buffer=_getBgNoise(ac); src.loop=false;
+        hp.type='highpass'; hp.frequency.value=8000;
+        env.gain.setValueAtTime(vel,hT);
+        env.gain.exponentialRampToValueAtTime(0.0001, hT+0.06);
+        src.connect(hp); hp.connect(env); env.connect(masterGain);
+        src.start(hT); src.stop(hT+0.07);
+      }
+
+      // KICK – freq sweep 110→32 Hz, beats 1 & 3
+      [0,2].forEach(b => {
+        const kT=barT+b*BG_BEAT;
+        const osc=ac.createOscillator(), env=ac.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(110,kT);
+        osc.frequency.exponentialRampToValueAtTime(32,kT+0.25);
+        env.gain.setValueAtTime(KICK,kT);
+        env.gain.exponentialRampToValueAtTime(0.0001, kT+0.30);
+        osc.connect(env); env.connect(masterGain);
+        osc.start(kT); osc.stop(kT+0.32);
+      });
+    }
+
+    // Re-schedule 0.6 s before loop end to avoid gaps/drift
+    bgLoopTimer = setTimeout(() => {
+      if (!bgMusicGain) return;
+      schedLoop(ac, masterGain, startTime + BG_LOOP);
+    }, (BG_LOOP - 0.6) * 1000);
+  }
+
+  window.startBgMusic = function() {
+    if (!bgMusicOn || bgMusicGain) return;
+    try {
+      const ac=getAC(), mg=ac.createGain();
+      mg.gain.setValueAtTime(0, ac.currentTime);
+      mg.gain.linearRampToValueAtTime(0.55, ac.currentTime+1.5);
+      mg.connect(ac.destination);
+      bgMusicGain=mg;
+      schedLoop(ac, mg, ac.currentTime+0.1);
+    } catch(e) {}
+  };
+
+  window.stopBgMusic = function(instant) {
+    clearTimeout(bgLoopTimer); bgLoopTimer=null;
+    if (!bgMusicGain) return;
+    try {
+      const mg=bgMusicGain, ac=getAC();
+      bgMusicGain=null;
+      if (instant) {
+        mg.gain.setValueAtTime(0, ac.currentTime);
+        setTimeout(()=>{ try{mg.disconnect();}catch(e){} }, 50);
+      } else {
+        mg.gain.setValueAtTime(mg.gain.value, ac.currentTime);
+        mg.gain.linearRampToValueAtTime(0, ac.currentTime+1.2);
+        setTimeout(()=>{ try{mg.disconnect();}catch(e){} }, 1300);
+      }
+    } catch(e) {}
+  };
+
+  window.duckBgMusic = function() {
+    if (!bgMusicGain) return;
+    try {
+      const ac=getAC(), t=ac.currentTime;
+      bgMusicGain.gain.setValueAtTime(bgMusicGain.gain.value, t);
+      bgMusicGain.gain.linearRampToValueAtTime(0.08, t+0.4);
+    } catch(e) {}
+  };
+
+  window.toggleBgMusic = function() {
+    bgMusicOn=!bgMusicOn;
+    const btn=document.getElementById('btn-bgmusic');
+    if (bgMusicOn) {
+      if (btn) btn.textContent='🔊';
+      startBgMusic();
+    } else {
+      if (btn) btn.textContent='🔇';
+      stopBgMusic();
+    }
+  };
+})();
 
 // ════════════════════════════════════════════════════════════
 //  CANVAS WHEEL
@@ -2186,9 +2493,11 @@ function startQuiz() {
   if (_isDemo) showDemoBadge(true);
   _updateWheelLogo();
   showScreen('screen-wheel');
+  startBgMusic();
 }
 
 function abortDemo() {
+  stopBgMusic(true);
   stopAllAudio();
   showDemoBadge(false);
   _isDemo = false;
@@ -2263,6 +2572,7 @@ async function renderItunesAudio(containerId, term, color, questionText) {
 }
 
 function stopAllAudio() {
+  // Hinweis: Hintergrundmusik wird NICHT hier gestoppt – nur explizit via stopBgMusic()
   document.querySelectorAll('audio,video').forEach(a=>{ a.pause(); a.currentTime=0; });
   document.querySelectorAll('iframe[src*="spotify"]').forEach(f=>{ f.src=''; });
 }
@@ -2363,7 +2673,9 @@ function goToQuestion() {
 }
 
 function revealAnswer() {
+  stopBgMusic(true);
   stopAllAudio();
+  playAnswerFanfare();
   const t=TOPICS[curTopic], q=t.questions[curQ];
   document.getElementById('a-header').textContent=`✓  Auflösung – ${t.icon} ${t.title}`;
   let recap=q.q; if (recap.length>90) recap=recap.substring(0,90)+'…';
@@ -2390,6 +2702,7 @@ function addScore(team) {
 
 function confirmEndGame() {
   if (confirm('Spiel wirklich beenden und zum Startmenü zurückkehren?')) {
+    stopBgMusic(true);
     stopAllAudio();
     showScreen('screen-start');
   }
@@ -2403,6 +2716,7 @@ function backToWheel() {
   document.getElementById('ask-btn').style.display='none';
   document.getElementById('topic-banner').classList.remove('show');
   drawWheel(wheelRot); _updateWheelLogo(); showScreen('screen-wheel');
+  startBgMusic();
 }
 
 function showEnd() {
@@ -2423,6 +2737,7 @@ function revealScores() {
   let n=3;
   const ov=document.createElement('div'); ov.className='countdown-overlay';
   document.body.appendChild(ov);
+  duckBgMusic();
   function tick(){
     if (n>0){
       ov.innerHTML=`<div class="countdown-num">${n}</div><div class="countdown-sub">Noch ${n}…</div>`;
@@ -2444,13 +2759,13 @@ function showResults() {
     if (scores.a>scores.b){
       document.getElementById('card-a').classList.add('winner');
       document.getElementById('crown-a').textContent='👑';
-      v.textContent='🏆  TEAM A GEWINNT!'; v.classList.add('vis'); playFanfare();
+      v.textContent='🏆  TEAM A GEWINNT!'; v.classList.add('vis'); playFanfare(); setTimeout(stopBgMusic,1500);
       document.getElementById('end-actions').classList.add('vis');
       _showRaffleBtn();
     } else if (scores.b>scores.a){
       document.getElementById('card-b').classList.add('winner');
       document.getElementById('crown-b').textContent='👑';
-      v.textContent='🏆  TEAM B GEWINNT!'; v.classList.add('vis'); playFanfare();
+      v.textContent='🏆  TEAM B GEWINNT!'; v.classList.add('vis'); playFanfare(); setTimeout(stopBgMusic,1500);
       document.getElementById('end-actions').classList.add('vis');
       _showRaffleBtn();
     } else {
@@ -2501,7 +2816,7 @@ function calcTiebreaker() {
   document.getElementById('tb-answer-reveal').style.display='block';
   document.getElementById('tb-calc-btn').style.display='none';
   document.getElementById('tb-result').style.display='flex';
-  playFanfare();
+  playFanfare(); setTimeout(stopBgMusic,1500);
   // Verlosungs-Button im Tiebreaker-Screen zeigen falls aktiv
   const tbRaffleBtn = document.getElementById('btn-raffle-tb');
   if (tbRaffleBtn) tbRaffleBtn.style.display = (setupData.raffle && setupData.raffle.active) ? '' : 'none';
@@ -3057,6 +3372,17 @@ function closeMediaHelp(){const o=document.getElementById('media-help-overlay');
   ↗ VOLLBILD
 </button>
 
+<!-- ── MUSIK TOGGLE ── -->
+<button id="btn-bgmusic" onclick="toggleBgMusic()" title="Musik ein/aus" style="
+  position:fixed;bottom:12px;left:120px;z-index:9999;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.7);border-radius:8px;
+  font-size:17px;width:32px;height:32px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,color .2s
+" onmouseenter="this.style.background='rgba(255,255,255,0.18)';this.style.color='#fff'"
+   onmouseleave="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.6)'">🔊</button>
+
 <script>
 function toggleFullscreen() {
   const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -3078,8 +3404,119 @@ function _updateFsBtn() {
 }
 document.addEventListener('fullscreenchange', _updateFsBtn);
 document.addEventListener('webkitfullscreenchange', _updateFsBtn);
+
+// ── HILFE-MODAL ──────────────────────────────────────────────────────────────
+function openHelpModal() {
+  document.getElementById('help-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeHelpModal() {
+  document.getElementById('help-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function printHelp() { window.print(); }
+async function shareHelp() {
+  const url  = 'https://www.quizwheel.ch/QuizWheel_Spieler.pdf';
+  const title = 'QuizWheel – Spielregeln';
+  if (navigator.share) {
+    try { await navigator.share({ title, url }); } catch(e) {}
+  } else if (navigator.clipboard) {
+    await navigator.clipboard.writeText(url);
+    const btn = document.getElementById('help-share-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Link kopiert!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  } else {
+    prompt('Link kopieren:', url);
+  }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpModal(); });
 </script>
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- ══════════════════════════════════════════════
+     HILFE-MODAL
+══════════════════════════════════════════════ -->
+<div id="help-overlay" class="help-overlay" onclick="if(event.target===this)closeHelpModal()">
+  <div class="help-modal">
+    <div class="hm-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">🎡</span>
+        <span style="color:#fff;font-weight:800;font-size:15px;letter-spacing:2px">QUIZMASTER-GUIDE</span>
+      </div>
+      <button onclick="closeHelpModal()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div class="hm-body">
+      <div class="hm-sec">
+        <div class="hm-sec-head">
+          <div class="hm-num" style="background:#FF2D78;color:#fff">1</div>
+          <div><div style="font-size:13px;font-weight:700;color:#FF2D78">Spielvorbereitung</div><div style="font-size:10px;color:#666">Vor dem Event · ca. 10–20 Min.</div></div>
+        </div>
+        <ul class="hm-ul">
+          <li>Öffne QuizWheel im Browser und starte den Setup-Assistenten.</li>
+          <li>Gib bis zu 6 Themen ein — jedes mit 5 Fragen und den Antworten.</li>
+          <li>Lade dein Logo hoch — die App übernimmt deine CI-Farben automatisch.<span class="hv">Vollversion</span></li>
+          <li>Füge pro Frage optional eine Bild-URL oder einen iTunes-Musik-Link hinzu.</li>
+          <li>Audio- und Videodateien können direkt hochgeladen werden.<span class="hv">Vollversion</span></li>
+          <li>Lege eine Schätzfrage für einen allfälligen Gleichstand fest.</li>
+          <li>Aktiviere optional die Verlosung und hinterlege Preistitel und -foto.<span class="hv">Vollversion</span></li>
+        </ul>
+      </div>
+      <div class="hm-sec">
+        <div class="hm-sec-head">
+          <div class="hm-num" style="background:#00D4FF;color:#0d0d1a">2</div>
+          <div><div style="font-size:13px;font-weight:700;color:#00D4FF">Spielstart</div><div style="font-size:10px;color:#666">Direkt vor dem Spiel</div></div>
+        </div>
+        <ul class="hm-ul">
+          <li>Bilde zwei Teams: <strong style="color:#FF2D78">Team A</strong> und <strong style="color:#00D4FF">Team B</strong>.</li>
+          <li>Wähle die Spieldauer: ⚡ Speed · 10 · 20 · 30 · 45 Minuten.</li>
+          <li>Starte das Spiel — die Punktzahl bleibt bis zum Schluss verborgen.</li>
+        </ul>
+      </div>
+      <div class="hm-sec">
+        <div class="hm-sec-head">
+          <div class="hm-num" style="background:#FF2D78;color:#fff">3</div>
+          <div><div style="font-size:13px;font-weight:700;color:#FF2D78">Das Spiel moderieren</div><div style="font-size:10px;color:#666">Ablauf jeder Runde</div></div>
+        </div>
+        <ul class="hm-ul">
+          <li>Team A beginnt: Ein Spieler dreht das Quizrad.</li>
+          <li>Das Rad wählt zufällig ein Thema — die Frage erscheint auf dem Bildschirm.</li>
+          <li>Lies die Frage laut vor. Team A berät sich und nennt eine Antwort.</li>
+          <li>Weiss Team A nicht weiter, darf Team B die Frage übernehmen.</li>
+          <li>Decke die Lösung auf — das richtige Team erhält automatisch 1 Punkt.</li>
+          <li>Beim nächsten Zug ist Team B dran — so geht es abwechselnd weiter.</li>
+        </ul>
+      </div>
+      <div class="hm-sec">
+        <div class="hm-sec-head">
+          <div class="hm-num" style="background:#00D4FF;color:#0d0d1a">4</div>
+          <div><div style="font-size:13px;font-weight:700;color:#00D4FF">Gleichstand — Schätzfrage</div><div style="font-size:10px;color:#666">Nur bei Punktegleichstand</div></div>
+        </div>
+        <ul class="hm-ul">
+          <li>Bei Gleichstand erscheint die Schätzfrage automatisch.</li>
+          <li>Beide Teams nennen gleichzeitig eine Zahl — QuizWheel berechnet den Sieger.</li>
+        </ul>
+      </div>
+      <div class="hm-sec">
+        <div class="hm-sec-head">
+          <div class="hm-num" style="background:#FF2D78;color:#fff">5</div>
+          <div><div style="font-size:13px;font-weight:700;color:#FF2D78">Sieger &amp; Verlosung</div><div style="font-size:10px;color:#666">Das grosse Finale</div></div>
+        </div>
+        <ul class="hm-ul">
+          <li>Klicke auf «Auswertung» — 3-2-1 Countdown — Sieger mit Konfetti enthüllt!</li>
+          <li>Starte optional die Verlosung: Spieler tragen sich freiwillig mit ihrer E-Mail ein.<span class="hv">Vollversion</span></li>
+          <li>CSV-Export aller Einträge im Admin-Bereich.<span class="hv">Vollversion</span></li>
+        </ul>
+      </div>
+      <div class="hm-tip">💡 <strong style="color:#FF2D78">Profi-Tipps:</strong> Zögere beim Aufdecken kurz — lass das Publikum mitfiebern. Für Messen: wähle ⚡ Speed wenn viele Leute in der Schlange warten.</div>
+    </div>
+    <div class="hm-actions">
+      <button id="help-share-btn" class="hm-btn" onclick="shareHelp()">⬆ Spielregeln teilen</button>
+      <button class="hm-btn" onclick="printHelp()">🖨 Drucken</button>
+      <button class="hm-btn hm-btn-pink" onclick="closeHelpModal()">Schliessen</button>
+    </div>
+    <div class="hm-note"><span class="hv" style="font-size:10px">Vollversion</span> = exklusiv im Event-Paket · €49, einmalig · quizwheel.ch</div>
+  </div>
+</div>
 
 </body>
 </html>
