@@ -536,18 +536,86 @@
     </div>
   </div>
 
-  <!-- Screenshots -->
-  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;max-width:1100px;margin:0 auto;">
-    <div style="flex:1;min-width:260px;max-width:340px;">
-      <img src="mockup_rad.png" alt="QuizWheel – Das Rad" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+  <!-- Slider -->
+  <div style="position:relative;max-width:1100px;margin:0 auto;padding:0 48px;">
+    <div style="overflow:hidden;" id="gal-wrap">
+      <div id="gal-track" style="display:flex;gap:20px;transition:transform .5s ease;">
+        <img src="mockup_rad.png"    alt="Das Rad"         class="gal-slide" style="border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);flex-shrink:0;">
+        <img src="mockup_frage.png"  alt="Die Frage"       class="gal-slide" style="border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);flex-shrink:0;">
+        <img src="mockup_sieger.png" alt="Der Sieger"      class="gal-slide" style="border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);flex-shrink:0;">
+        <img src="hero_event.jpg"    alt="Live im Einsatz" class="gal-slide" style="border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);flex-shrink:0;object-fit:cover;">
+      </div>
     </div>
-    <div style="flex:1;min-width:260px;max-width:340px;">
-      <img src="mockup_frage.png" alt="QuizWheel – Die Frage" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-    </div>
-    <div style="flex:1;min-width:260px;max-width:340px;">
-      <img src="mockup_sieger.png" alt="QuizWheel – Der Sieger" style="width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-    </div>
+    <button id="gal-prev" onclick="galSlide(-1)" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer;line-height:1;opacity:0.3">‹</button>
+    <button id="gal-next" onclick="galSlide(1)"  style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer;line-height:1;">›</button>
   </div>
+  <script>
+  (function(){
+    var galPos = 0, galTotal = 4, galVisible = 3, galTimer, itemW = 0;
+
+    function galInit() {
+      var wrap = document.getElementById('gal-wrap');
+      var track = document.getElementById('gal-track');
+      var origSlides = Array.from(document.querySelectorAll('.gal-slide'));
+      itemW = (wrap.offsetWidth - 20 * (galVisible - 1)) / galVisible;
+
+      // Klone anhängen für nahtlose Schleife (erste galVisible Bilder klonen)
+      track.querySelectorAll('.gal-clone').forEach(function(c){ c.remove(); });
+      for (var i = 0; i < galVisible; i++) {
+        var clone = origSlides[i % origSlides.length].cloneNode(true);
+        clone.classList.add('gal-clone');
+        clone.classList.remove('gal-slide');
+        track.appendChild(clone);
+      }
+
+      // Alle Bilder auf gleiche Breite setzen
+      Array.from(track.querySelectorAll('img')).forEach(function(img){
+        img.style.width = itemW + 'px';
+        img.style.height = (itemW * 0.70) + 'px';
+      });
+      galPos = 0;
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0)';
+    }
+
+    window.galSlide = function(d) {
+      var track = document.getElementById('gal-track');
+      var wrap  = document.getElementById('gal-wrap');
+      itemW = (wrap.offsetWidth - 20 * (galVisible - 1)) / galVisible;
+      var step = itemW + 20;
+      var maxPos = galTotal; // 4 steps before seamless reset
+
+      galPos += d;
+      if (galPos < 0) galPos = 0;
+
+      track.style.transition = 'transform .5s ease';
+      track.style.transform  = 'translateX(-' + (galPos * step) + 'px)';
+
+      document.getElementById('gal-prev').style.opacity = galPos === 0 ? '0.3' : '1';
+      document.getElementById('gal-next').style.opacity = '1';
+
+      // Nahtloser Reset nach dem letzten Schritt
+      if (galPos >= maxPos) {
+        setTimeout(function(){
+          track.style.transition = 'none';
+          galPos = 0;
+          track.style.transform = 'translateX(0)';
+          setTimeout(function(){ track.style.transition = 'transform .5s ease'; }, 30);
+          document.getElementById('gal-prev').style.opacity = '0.3';
+        }, 520);
+      }
+
+      clearInterval(galTimer);
+      galTimer = setInterval(function(){ galSlide(1); }, 5000);
+    };
+
+    window.addEventListener('load', function(){
+      galInit();
+      galTimer = setInterval(function(){ galSlide(1); }, 5000);
+    });
+    window.addEventListener('resize', function(){ galInit(); });
+  })();
+  </script>
 </section>
 
 <!-- BRANDING SECTION -->
