@@ -1,0 +1,37 @@
+# --- Interne Dateien: NIE auf GitHub, denn dieses Repo ist quizwheel.ch (öffentlich) ---
+PROTOKOLL.md
+START.md
+ÜBERGABE_LEHRER.md
+_persist_test.txt
+*.command
+
+# --- Bezahlprodukt: gehört ausschliesslich auf Gumroad ---
+QuizWheel.html
+QuizWheel_Vollversion.zip
+ziifNXhZ
+
+# --- Kundenspezifisches / Arbeitsstände ---
+index_backup.html
+QuizWheel_Musik_Sek.json
+
+# --- Systemkram ---
+.DS_Store
+node_modules/
+package-lock.json
+
+# --- Desktop-App-Quelle: gehoert NICHT auf die Website ---
+# src/index.html ist eine aeltere Vollversion ohne Pro-Sperren (geprueft 18.08.2026)
+src/
+
+# --- Gumroad-Verkaufsbilder: nur fuer den Shop, nicht fuer die Website ---
+product-images/
+
+# Nicht auf die Website: unbenutzte Dateien und fremde Logos
+UWA_Logo.svg
+APEX_Motors_Logo.svg
+Porsche_911_Targa_Drohne.webm
+couvert.png
+QuizWheel_Ausstellung.html
+QuizWheel_UmweltArena_Vorschau.html
+Export_Test.html
+*.png.bak

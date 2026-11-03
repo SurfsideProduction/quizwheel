@@ -2828,27 +2828,59 @@ function restartQuiz() {
 }
 
 function shareQuizWheel(btn) {
-  const title  = (!_isDemo && setupData.quizTitle) ? setupData.quizTitle : null;
-  const text   = title
+  const title = (!_isDemo && setupData.quizTitle) ? setupData.quizTitle : null;
+  const text  = title
     ? `Wir haben heute «${title}» mit QuizWheel gespielt 🎡 — macht euren Event zur Spielshow: quizwheel.ch`
     : `Wir haben heute QuizWheel eingesetzt 🎡 — macht euren Event zur Spielshow: quizwheel.ch`;
-  const url    = 'https://www.quizwheel.ch';
+  const url  = 'https://www.quizwheel.ch';
+  const full = text + '\n' + url;
 
+  // Toggle: bereits offen → schliessen
+  const existing = document.getElementById('share-dropdown');
+  if (existing) { existing.remove(); return; }
+
+  const rect = btn.getBoundingClientRect();
+  const dd = document.createElement('div');
+  dd.id = 'share-dropdown';
+  dd.style.cssText = 'position:fixed;bottom:' + (window.innerHeight - rect.top + 8) + 'px;left:' + (rect.left + rect.width / 2) + 'px;transform:translateX(-50%);background:#0f0f26;border:1px solid #252550;border-radius:12px;overflow:hidden;z-index:10000;min-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.7)';
+
+  const options = [];
   if (navigator.share) {
-    navigator.share({ title: 'QuizWheel 🎡', text, url }).catch(() => {});
-    return;
+    options.push({ icon: '📱', label: 'Teilen (System)', fn: () => navigator.share({ title: 'QuizWheel 🎡', text, url }).catch(() => {}) });
   }
-  // Fallback: in Zwischenablage kopieren
-  navigator.clipboard.writeText(text + '\n' + url).then(() => {
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✓ &nbsp; Link kopiert!';
-    btn.style.color = '#00C853';
-    btn.style.borderColor = '#00C853';
-    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 2500);
-  }).catch(() => {
-    // Letzter Fallback: WhatsApp öffnen
-    window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank');
+  options.push(
+    { icon: '✉️', label: 'E-Mail',        fn: () => window.open('mailto:?subject=' + encodeURIComponent('QuizWheel 🎡') + '&body=' + encodeURIComponent(full)) },
+    { icon: '💬', label: 'WhatsApp',      fn: () => window.open('https://wa.me/?text=' + encodeURIComponent(full), '_blank') },
+    { icon: '💼', label: 'LinkedIn',      fn: () => window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url) + '&summary=' + encodeURIComponent(text), '_blank') },
+    { icon: '📋', label: 'Link kopieren', fn: () => {
+      navigator.clipboard.writeText(full).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ &nbsp; Kopiert!';
+        btn.style.color = '#00C853';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2200);
+      }).catch(() => {});
+    }}
+  );
+
+  options.forEach(function(opt, i) {
+    const item = document.createElement('button');
+    item.style.cssText = 'display:flex;align-items:center;gap:12px;width:100%;padding:11px 18px;background:none;border:none;' + (i < options.length - 1 ? 'border-bottom:1px solid #1a1a3e;' : '') + 'color:#ccc;font-size:14px;font-family:inherit;cursor:pointer;text-align:left;transition:background .12s';
+    item.innerHTML = '<span style="font-size:18px;line-height:1">' + opt.icon + '</span><span>' + opt.label + '</span>';
+    item.onmouseenter = function() { item.style.background = 'rgba(255,255,255,.07)'; };
+    item.onmouseleave = function() { item.style.background = 'none'; };
+    item.onclick = function(e) { e.stopPropagation(); dd.remove(); opt.fn(); };
+    dd.appendChild(item);
   });
+
+  document.body.appendChild(dd);
+
+  setTimeout(function() {
+    document.addEventListener('click', function close() {
+      const d = document.getElementById('share-dropdown');
+      if (d) d.remove();
+      document.removeEventListener('click', close);
+    }, { once: true });
+  }, 0);
 }
 
 // ════════════════════════════════════════════════════════════

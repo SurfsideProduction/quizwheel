@@ -1,0 +1,50 @@
+{
+  "name": "quizrad",
+  "version": "1.0.0",
+  "description": "Weniger vorbereiten. Mehr begeistern.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build": "electron-builder --mac --win"
+  },
+  "build": {
+    "appId": "ch.quizrad.app",
+    "productName": "Quizrad",
+    "directories": {
+      "output": "../Programme"
+    },
+    "mac": {
+      "category": "public.app-category.education",
+      "icon": "src/assets/icon.icns",
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] },
+        { "target": "zip", "arch": ["arm64", "x64"] }
+      ]
+    },
+    "dmg": {
+      "title": "Quizrad",
+      "backgroundColor": "#0D0D1A"
+    },
+    "win": {
+      "icon": "src/assets/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "files": ["src/**/*"],
+    "extraResources": []
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
